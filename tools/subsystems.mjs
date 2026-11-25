@@ -40,6 +40,14 @@ export const POLY_GRAY = 0.4;
 // Assemblies that stay in one piece in the exploded view: [test, shared centre]
 export const RIGID = [{ test: (path) => inPath(path, /^Orange Pi 5 Case/), centre: [-54, 235, 83] }];
 
+// Unnamed parts to relocate, found by where they sit in the CAD: [from centre, to centre] in mm,
+// turn = quarter turns about vertical.
+// The two CANivores go side by side on top of the roboRIO (its top face is z = 120.9).
+export const PLACE = [
+  { from: [44.5, -29.7, 106.4], to: [-11, 217, 130.5], turn: 1 },
+  { from: [-44.5, -29.7, 106.4], to: [-11, 269, 130.5], turn: 1 },
+];
+
 // Color overrides, sRGB 0..1. Anything not matched keeps its CAD color.
 export function recolor(path) {
   const name = path[path.length - 1];

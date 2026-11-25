@@ -942,6 +942,8 @@ intake	Poly Intake plate	-321,-494,156
 intake	Poly Intake plate	321,-494,156
 intake	Wrist Plate	-314,-344,194
 intake	Wrist Plate	314,-344,194
+power		-11,217,131
+power		-11,269,131
 power		-15,-14,69
 power		-15,-32,69
 power		-15,-47,69
@@ -953,7 +955,6 @@ power		-15,16,69
 power		-15,31,69
 power		-15,46,69
 power		-18,243,117
-power		-44,-30,106
 power		0,-1,103
 power		15,-13,69
 power		15,-31,69
@@ -965,7 +966,6 @@ power		15,17,69
 power		15,2,69
 power		15,32,69
 power		15,47,69
-power		44,-30,106
 power	120A Main Breaker	89,254,119
 power	La Polulu Base	29,298,88
 power	La Polulu Lid	29,298,82

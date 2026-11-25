@@ -8,7 +8,7 @@ import fs from 'node:fs';
 import { OLD, flywheelDrive, intakeBelt } from './flywheel-drive.mjs';
 import { elastic } from './elastic.mjs';
 import { weightedNormals } from './normals.mjs';
-import { classify, rig, spin, finish, removed, recolor, DROP, REPOSE, MOVE, RIGID, POLY_GRAY } from './subsystems.mjs';
+import { classify, rig, spin, finish, removed, recolor, DROP, REPOSE, MOVE, PLACE, RIGID, POLY_GRAY } from './subsystems.mjs';
 
 const SRC = process.argv[2] || 'Kentropy Main.glb';
 const OUT = 'public/model/robot.glb';
@@ -123,6 +123,15 @@ function emit(source, M, path) {
     xf[k] = { P, Q };
   }
   const centre = mn.map((a, d) => (a + mx[d]) * 500);
+  const place = !path[path.length - 1] && PLACE.find((f) => f.from.every((v, d) => Math.abs(v - centre[d]) < 2));
+  if (place) {
+    const by = place.to.map((v, d) => v - centre[d]);
+    for (let q = 0; q < (place.turn || 0); q++) for (const k in xf) for (const [A, cx, cy] of [[xf[k].P, centre[0] / 1000, centre[1] / 1000], [xf[k].Q, 0, 0]])
+      for (let v = 0; v < A.length; v += 3) [A[v], A[v + 1]] = [cx - (A[v + 1] - cy), cy + (A[v] - cx)];
+    for (const k in xf) for (let v = 0; v < xf[k].P.length; v++) xf[k].P[v] += by[v % 3] / 1000;
+    for (let d = 0; d < 3; d++) { centre[d] += by[d]; mn[d] += by[d] / 1000; mx[d] += by[d] / 1000; }
+    console.log('placed unnamed part at', centre.map(Math.round).join());
+  }
   for (const k in OLD) if (typeof source === 'number' && centre[0] < -300 && path.some((n) => /^Shootdexer/.test(n)) && OLD[k].test(path[path.length - 1])) {
     slots[k] = centre;
     return console.log('replaced', path[path.length - 1], centre.map(Math.round).join());
