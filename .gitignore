@@ -1,0 +1,15 @@
+node_modules
+dist
+
+# CAD exports and references: too big for GitHub (100 MB limit) and not needed to build the site
+/*.glb
+/*.step
+/*.stp
+/*.mp4
+/*.png
+/*.jpg
+
+*.log
+.DS_Store
+
+.claude
