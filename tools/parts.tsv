@@ -538,7 +538,6 @@ hopper	Mounting Spacer	347,-5,379
 hopper	Side Hopper Panel	-347,-304,369
 hopper	Side Hopper Panel	347,-304,369
 hopper	Top Hopper Panel	0,-233,548
-hopper	Ziptie (Configurable)	257,-4,542
 indexer	#10 Aluminum Spacer (1-3/8" L, 3/8" OD)	-295,0,57
 indexer	#10 Aluminum Spacer (1-3/8" L, 3/8" OD)	-295,0,82
 indexer	#10 Aluminum Spacer (1-3/8" L, 3/8" OD)	-295,165,57
@@ -1027,7 +1026,7 @@ shooter	1/2" Rounded Hex (13.75mm) ID Bearing (1.125" OD, 0.313" WD, Shielded, F
 shooter	1/2" Rounded Hex (13.75mm) ID Bearing (1.125" OD, 0.313" WD, Shielded, Flanged)	-315,278,443
 shooter	1/2" Rounded Hex (13.75mm) ID Bearing (1.125" OD, 0.313" WD, Shielded, Flanged)	315,278,443
 shooter	1/2" Rounded Hex (27.031" L, 13.75mm OD)	1,278,443
-shooter	18t Custom HTD 5mm Pulley (0.354" Wide,‎ *0.5" Hex Bore)	-327,253,321
+shooter	15T Custom HTD 5mm Pulley	-327,253,321
 shooter	20t Custom HTD 5mm Pulley (0.375" Wide, SplineXS Insert)	-293,307,327
 shooter	20t Custom HTD 5mm Pulley (0.375" Wide, SplineXS Insert)	293,307,327
 shooter	30t Aluminum Pulley (HTD 5mm, 9mm Wide, 1/2" Hex Bore)-Mirrored	300,278,443
@@ -1036,10 +1035,10 @@ shooter	3D-Print Adapter (8mm SplineXS Bore)	-283,307,327
 shooter	3D-Print Adapter (8mm SplineXS Bore)	-302,307,327
 shooter	3D-Print Adapter (8mm SplineXS Bore)	283,307,327
 shooter	3D-Print Adapter (8mm SplineXS Bore)	302,307,327
-shooter	54t Custom HTD 5mm Pulley (0.375" Wide, 1/2" Hex Bore w/ TTB Insert )	-327,278,443
+shooter	61T Custom HTD 5mm Pulley	-327,278,443
 shooter	73T 5M 9mm Wide Belt	-298,288,389
 shooter	73T 5M 9mm Wide Belt	298,288,389
-shooter	87T 5M 9mm Wide Belt	-327,278,397
+shooter	90T 5M 9mm Wide Belt	-327,278,400
 shooter	Cattongue	0,278,443
 shooter	Fancy Shoulder Bolt	-345,253,321
 shooter	Flywheel retention Plate	-348,245,305

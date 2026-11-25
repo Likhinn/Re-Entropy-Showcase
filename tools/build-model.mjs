@@ -5,8 +5,9 @@ import { EXTMeshoptCompression, KHRMeshQuantization } from '@gltf-transform/exte
 import { reorder, quantize } from '@gltf-transform/functions';
 import { MeshoptSimplifier, MeshoptEncoder } from 'meshoptimizer';
 import fs from 'node:fs';
+import { OLD, flywheelDrive } from './flywheel-drive.mjs';
 import { weightedNormals } from './normals.mjs';
-import { classify, rig, finish, removed, recolor, DROP, REPOSE, MOVE, POLY_GRAY } from './subsystems.mjs';
+import { classify, rig, finish, removed, recolor, DROP, REPOSE, MOVE, RIGID, POLY_GRAY } from './subsystems.mjs';
 
 const SRC = process.argv[2] || 'Kentropy Main.glb';
 const OUT = 'public/model/robot.glb';
@@ -100,11 +101,12 @@ function part(mi) {
 
 // ---- walk the assembly and bake every part into a (subsystem, finish) bucket -------------
 const buckets = new Map(), stats = {}, listing = [];
-function emit(mi, M, path) {
+const slots = {}; // where the replaced flywheel pulleys sat
+function emit(source, M, path) {
   const move = MOVE.find((f) => f.test(path));
   if (move) { M = [...M]; move.by.forEach((v, d) => { M[12 + d] += v / 1000; }); console.log('moved', path[path.length - 1]); }
   const paint = recolor(path);
-  const pm = part(mi), xf = {}, { mn, mx } = bounds();
+  const pm = typeof source === 'number' ? part(source) : source, xf = {}, { mn, mx } = bounds();
   for (const k in pm) {
     const { p, n } = pm[k], P = new Float32Array(p.length), Q = new Float32Array(n.length);
     for (let v = 0; v < p.length; v += 3) for (let r = 0; r < 3; r++) {
@@ -116,6 +118,10 @@ function emit(mi, M, path) {
     xf[k] = { P, Q };
   }
   const centre = mn.map((a, d) => (a + mx[d]) * 500);
+  for (const k in OLD) if (typeof source === 'number' && centre[0] < -300 && path.some((n) => /^Shootdexer/.test(n)) && OLD[k].test(path[path.length - 1])) {
+    slots[k] = centre;
+    return console.log('replaced', path[path.length - 1], centre.map(Math.round).join());
+  }
   if (removed(path, centre)) return console.log('removed', path[path.length - 1], centre.map(Math.round).join());
   const fix = REPOSE.find((f) => f.name.test(path[path.length - 1]));
   if (fix) {
@@ -132,7 +138,8 @@ function emit(mi, M, path) {
     console.log('reposed', path[path.length - 1], (a * 180 / Math.PI).toFixed(1) + ' deg');
   }
   // part centre in viewer axes, stored per vertex (int16, +-1 = +-2 m) so the viewer can explode parts
-  const home = [centre[0], centre[2], -centre[1], 0].map((v) => Math.round(v / 2000 * 32767));
+  const hub = RIGID.find((f) => f.test(path))?.centre || centre;
+  const home = [hub[0], hub[2], -hub[1], 0].map((v) => Math.round(v / 2000 * 32767));
   const sub = classify(path, centre);
   listing.push([sub, path[path.length - 1], centre.map(Math.round).join()].join('\t'));
   home[3] = rig(path, sub, centre) * 1000;
@@ -168,6 +175,7 @@ function walk(ni, M, path) {
   (nd.children || []).forEach((c) => walk(c, W, np));
 }
 g.scenes[g.scene || 0].nodes.forEach((n) => walk(n, I4, []));
+if (slots.big && slots.small) for (const { name, pm } of flywheelDrive(slots.big, slots.small)) emit(pm, I4, ['robot', 'Shootdexer Complete Assembly <1>', 'Static Shootdexer Assembly <1>', name]);
 
 // ---- write ------------------------------------------------------------------------------
 const doc = new Document(), buf = doc.createBuffer(), scene = doc.createScene('robot'), root = doc.createNode('robot');

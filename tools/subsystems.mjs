@@ -11,6 +11,8 @@ export function removed(path, [x, y, z]) {
   // unattached roller adapter and screw floating next to the hood rack
   if (/^3D-Print Adapter/.test(name) && x > 300 && Math.abs(y - 87) < 3 && Math.abs(z - 504) < 3) return true;
   if (/9\/16" L BHCS/.test(name) && x > 300 && Math.abs(y - 67) < 3 && Math.abs(z - 483) < 3) return true;
+  // zip tie sticking up through the back of the hopper roof
+  if (/^Ziptie/.test(name) && inPath(path, /^Hopper Complete/)) return true;
   // loose pulley floating inside the shooter drum
   if (/^17t Custom HTD/.test(name) && Math.abs(x) < 20 && Math.abs(y - 278) < 3 && Math.abs(z - 443) < 3) return true;
   // stray bushing floating behind the intake pivot gearbox
@@ -34,6 +36,9 @@ export const MOVE = [
 
 // Dark tinted polycarbonate is lightened to at least this gray (CAD uses 0.25).
 export const POLY_GRAY = 0.4;
+
+// Assemblies that stay in one piece in the exploded view: [test, shared centre]
+export const RIGID = [{ test: (path) => inPath(path, /^Orange Pi 5 Case/), centre: [-54, 235, 83] }];
 
 // Color overrides, sRGB 0..1. Anything not matched keeps its CAD color.
 export function recolor(path) {

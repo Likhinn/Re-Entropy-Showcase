@@ -23,27 +23,27 @@ export const EXPLODE = {
 export const SUBSYSTEMS = [
   {
     id: 'intake', title: 'Over-Bumper Intake', label: ['Over-bumper', 'intake'], dir: [38, 20], anchor: [0, 0.17, 0.585],
-    text: 'A pivoting roller reaches past the bumpers to pull game pieces into the hopper.',
+    text: 'A tube roller intake designed for maximum durability and throughput. A robust crash bar at the front takes the force of collisions, and two 1/4 in thick polycarbonate plates absorb that force rather than just transmitting it. Aluminum “wrist” plates attach to the pivot sprocket, so the entire intake can come off by removing 12 bolts, allowing for fast swaps in case of damage.',
     specs: [['Roller drive', '2× Kraken X60'], ['Pivot drive', 'Kraken X60, MAXPlanetary 5:1 × 5:1'], ['Final stage', '#25 chain, 12T to 36T']],
   },
   {
     id: 'hopper', title: 'Hopper', label: ['Hopper'], dir: [-42, 30], anchor: [-0.347, 0.42, 0.35],
-    text: 'Panels on bent brackets enclose the storage volume between the intake and the indexer.',
-    specs: [['Width', '27.4 in'], ['Structure', 'Panels on bent brackets'], ['Mount', 'Moving frame with lock plates']],
+    text: 'The polycarbonate hopper is designed to minimize weight while maximizing rigidity. Its chamfered front edge allows our intake to pull upward while shooting, forcing balls through our indexer and giving consistent feeding through our entire 55-ball capacity. To prevent the hopper from moving back in, a lock mechanism on each side uses an elastic pivot to slide a bolt into a slot once the hopper is fully extended. Bent aluminum brackets hold the polycarbonate panels together. A CANrange near the top of the hopper tells the intake when to actuate and compress the hopper.',
+    specs: [['Capacity', '55 balls'], ['Panels', 'Polycarbonate on bent aluminum brackets'], ['Extension', '12 in'], ['Lock', 'Elastic-pivot bolt on each side']],
   },
   {
     id: 'indexer', title: 'Roller Floor Indexer', label: ['Roller floor', 'indexer'], dir: [28, 40], anchor: [0, 0.165, 0.12],
-    text: 'Belt-linked silicone rollers carry game pieces back and lift them into the shooter.',
+    text: 'The roller floor indexer sits at a 15-degree angle and is belted together using a stub roller system, which allows for quick replacement of each roller. The kicker roller uses compliant wheels to grab each ball directly while it is still in the hopper and push it all the way into the shooter while maintaining a firm grip. It is geared to have the same tangential speed under compression as the indexer floor, keeping wear low and throughput high. A CANrange right under the main drum allows up to 8 extra balls to be stored inside the indexer leading up to the shooter.',
     specs: [['Drive', '4× Kraken X60'], ['Rollers', 'Silicone over polycarbonate tube'], ['Kicker', '10× 2.25 in compliant wheels']],
   },
   {
     id: 'shooter', title: 'Flywheel Shooter', label: ['Flywheel', 'shooter'], dir: [-150, 22], anchor: [0.02, 0.443, -0.278],
-    text: 'A full-width gripped drum, with a belt-driven side flywheel that stores energy between shots.',
-    specs: [['Drive', '4× Kraken X60'], ['Reduction', '20T to 30T, HTD 5 mm'], ['Flywheel', 'Geared up 54T to 18T']],
+    text: 'The shooter is a 4-inch-diameter aluminum drum covered with grip tape to ensure the fuel is accelerated instantly. The flywheel has a rotational inertia of 7 lb·in² and is geared up at about 4:1 from the drum to maximize rotational energy.',
+    specs: [['Drive', '4× Kraken X60'], ['Reduction', '20T to 30T, HTD 5 mm'], ['Flywheel', 'Geared up 61T to 15T']],
   },
   {
     id: 'hood', title: 'Adjustable Hood', label: ['Adjustable', 'hood'], dir: [142, 30], anchor: [0, 0.593, -0.146],
-    text: 'Rotates about the shooter axis to set launch angle. Its rollers are belted to the drum.',
+    text: 'The hood actuates to a variety of angles, allowing for accurate shots at any distance without excessively changing our shooter RPM. The hood rollers are also aluminum tubes covered with grip tape, and are geared to have the same surface speed as the main drum.',
     specs: [['Drive', 'Kraken X44'], ['First stage', '12T to 36T, 143T belt'], ['Output', '10T pinions on twin hood plates']],
   },
   {
@@ -63,7 +63,7 @@ export const SUBSYSTEMS = [
   },
   {
     id: 'bumpers', title: 'Bumpers & Armor', label: ['Bumpers', '& armor'], dir: [-35, 24], anchor: [-0.43, 0.095, 0.1],
-    text: 'A two-piece bumper wraps the frame, with side panels that protect the shooter and hopper.',
-    specs: [['Footprint', '33.9 × 33.9 in'], ['Construction', 'Foam on wood backing'], ['Armor', 'Side panels on aluminum brackets']],
+    text: 'A two-piece bumper wraps the frame, with side panels that protect the belts, gears, and pulleys of the shooter and indexer.',
+    specs: [['Footprint', '33.9 × 33.9 in'], ['Construction', 'Foam on wood backing'], ['Armor', 'Polycarb side panels bolted to aluminum brackets']],
   },
 ];
