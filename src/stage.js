@@ -129,7 +129,7 @@ export class Stage {
 
     this.subs = new Map();
     this.shift = { x: 0, y: 0 }; // current view offset, fraction of the viewport
-    this.mech = { d: 1, h: 1, l: 1 }; // d: intake deployed, h: hood raised, l: hopper locked
+    this.mech = { d: 1, h: 1, l: 1, p: 1 }; // see pose() in mechanism.js
     this.fuel = new Fuel(this.scene);
     this.rate = {}; // roller speed per subsystem, rad/s
     this.ex = 0; // explode progress 0..1 and its goal
@@ -331,9 +331,9 @@ export class Stage {
   }
 
   // --- mechanism --------------------------------------------------------------------------
-  setMech(d, h, l) {
-    this.mech = { d, h, l };
-    const at = pose(d, h, l);
+  setMech(d, h, l, p = 1) {
+    this.mech = { d, h, l, p };
+    const at = pose(d, h, l, p);
     for (const id in at) this.subs.get(id)?.u.uMove.value.fromArray(at[id]);
     this.renderer.shadowMap.needsUpdate = true;
     this.dirty = true;
@@ -353,7 +353,7 @@ export class Stage {
     const c = this.clip, k = c.keys[0];
     c.t += dt * 1000;
     const q = ease(Math.min(1, c.t / k.ms));
-    this.setMech(...['d', 'h', 'l'].map((v) => THREE.MathUtils.lerp(c.from[v], k[v] ?? c.from[v], q)));
+    this.setMech(...['d', 'h', 'l', 'p'].map((v) => THREE.MathUtils.lerp(c.from[v], k[v] ?? c.from[v], q)));
     if (c.t < k.ms) return;
     c.keys.shift();
     c.t = 0;
@@ -383,7 +383,7 @@ export class Stage {
     const a = this.fuel.active;
     if (a) {
       const h = !a.stopping && a.run.hood?.(a.t, a.end);
-      if (typeof h === 'number') this.setMech(this.mech.d, h, this.mech.l);
+      if (typeof h === 'number') this.setMech(this.mech.d, h, this.mech.l, this.mech.p);
       else if (a.run.hood && !this.clip && this.mech.h < 1) this.play('rest', true);
       this.fuel.step(dt);
       this.renderer.shadowMap.needsUpdate = true;
@@ -411,8 +411,8 @@ export class Stage {
 
   // --- isolation --------------------------------------------------------------------------
   isolate(id) {
-    // intake and hopper move together, so each stays readable while the other is in focus
-    const pair = { intake: 'hopper', hopper: 'intake' }[id];
+    // the intake folds in as the hopper retracts, so keep it readable while the hopper is in focus
+    const pair = { hopper: 'intake' }[id];
     for (const s of this.subs.values()) s.to = !id || s.id === id ? 1 : s.id === pair ? 0.3 : GHOST;
     this.focusId = id;
     this.dirty = true;
