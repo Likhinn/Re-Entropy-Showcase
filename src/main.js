@@ -223,7 +223,7 @@ function wire() {
 try {
   stage = new Stage($('#stage'));
   window.__stage = stage;
-  await stage.load(`${import.meta.env.BASE_URL}model/robot.glb`, EXPLODE, (e) => {
+  await stage.load(`${import.meta.env.BASE_URL}model/robot.glb?v=${import.meta.env.VITE_MODEL_VERSION}`, EXPLODE, (e) => {
     const total = e.lengthComputable ? e.total : 3.6e6;
     goal = Math.min(0.92, e.loaded / total);
   });
