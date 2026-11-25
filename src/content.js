@@ -28,7 +28,7 @@ export const SUBSYSTEMS = [
   },
   {
     id: 'hopper', title: 'Hopper', label: ['Hopper'], dir: [-42, 30], anchor: [-0.347, 0.42, 0.35],
-    text: 'The polycarbonate hopper is designed to minimize weight while maximizing rigidity. Its chamfered front edge allows our intake to pull upward while shooting, forcing balls through our indexer and giving consistent feeding through our entire 55-ball capacity. To prevent the hopper from moving back in, a lock mechanism on each side uses an elastic pivot to slide a bolt into a slot once the hopper is fully extended. Bent aluminum brackets hold the polycarbonate panels together. A CANrange near the top of the hopper tells the intake when to actuate and compress the hopper.',
+    text: 'The polycarbonate hopper is designed to minimize weight while maximizing rigidity. Its chamfered front edge allows our intake to pull upward while shooting, forcing balls through our indexer and giving consistent feeding through our entire 55-ball capacity. To prevent the hopper from moving back in, a lock mechanism on each side uses an elastic pivot to slide a bolt into a slot once the hopper is fully extended. Bent aluminum brackets hold the polycarbonate panels together. A CANrange near the top of the hopper tells the intake when to actuate.',
     specs: [['Capacity', '55 balls'], ['Panels', 'Polycarbonate on bent aluminum brackets'], ['Extension', '12 in'], ['Lock', 'Elastic-pivot bolt on each side']],
   },
   {
