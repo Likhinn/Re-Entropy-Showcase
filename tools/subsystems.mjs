@@ -101,7 +101,7 @@ export function classify(path, c) {
   return 'frame';
 }
 
-// Moving parts. 1 = moves with the mechanism, 2 = spins on its drive shaft, 0 = fixed.
+// Moving parts. 1 = moves with the mechanism, 2 = turns on a second pivot, 3 = elastic, 0 = fixed.
 // Pivots and travel live in src/mechanism.js.
 export function rig(path, sub, [x, y, z]) {
   const name = path[path.length - 1];
@@ -110,7 +110,14 @@ export function rig(path, sub, [x, y, z]) {
     // 12T sprocket shaft that drives the pivot chains
     if (/12t Steel Sprocket|36t Aluminum Spur|^210-004|Clamping Shaft Collar/.test(name)) return 2;
   }
-  if (sub === 'hopper') return inPath(path, /^Dynamic Hopper/) ? 1 : 0;
+  if (sub === 'hopper') {
+    if (inPath(path, /^Dynamic Hopper/)) return 1;
+    if (/^Lock Elastic/.test(name)) return 3;
+    // lock plate, its bolt stack and the screw that holds the elastic
+    const at = (Y, Z) => Math.abs(y - Y) < 4 && Math.abs(z - Z) < 4;
+    if (/^Lock Plate/.test(name) || at(-55.5, 250.5) || at(20.5, 252.5)) return 2;
+    return 0;
+  }
   if (sub === 'hood') {
     if (inPath(path, /^Dynamic Shootdexer/)) return 1;
     // pinion shaft

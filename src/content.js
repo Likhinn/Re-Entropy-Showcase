@@ -52,7 +52,7 @@ export const SUBSYSTEMS = [
     specs: [['Modules', '4× SDS MK5n'], ['Drive', '4× Kraken X60'], ['Steer', '4× Kraken X44']],
   },
   {
-    id: 'vision', title: 'Vision System', label: ['Vision', 'system'], dir: [-158, 22], anchor: [-0.242, 0.38, -0.336],
+    id: 'vision', title: 'Vision System', label: ['Vision', 'system'], dir: [-112, 16], anchor: [-0.242, 0.38, -0.336],
     text: 'A wide-angle camera paired with an onboard coprocessor.',
     specs: [['Camera', 'ThriftyCam, 80° lens'], ['Coprocessor', 'Orange Pi 5'], ['Cooling', '40 mm fan']],
   },

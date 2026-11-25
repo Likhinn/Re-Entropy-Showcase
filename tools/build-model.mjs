@@ -6,6 +6,7 @@ import { reorder, quantize } from '@gltf-transform/functions';
 import { MeshoptSimplifier, MeshoptEncoder } from 'meshoptimizer';
 import fs from 'node:fs';
 import { OLD, flywheelDrive } from './flywheel-drive.mjs';
+import { elastic } from './elastic.mjs';
 import { weightedNormals } from './normals.mjs';
 import { classify, rig, finish, removed, recolor, DROP, REPOSE, MOVE, RIGID, POLY_GRAY } from './subsystems.mjs';
 
@@ -148,6 +149,7 @@ function emit(source, M, path) {
   for (let d = 0; d < 3; d++) { st.mn[d] = Math.min(st.mn[d], mn[d]); st.mx[d] = Math.max(st.mx[d], mx[d]); }
   const det = M[0] * (M[5] * M[10] - M[6] * M[9]) - M[4] * (M[1] * M[10] - M[2] * M[9]) + M[8] * (M[1] * M[6] - M[2] * M[5]);
   for (const k in pm) {
+    if (k === 'clear' && path.some((n) => /ThriftyCam/.test(n))) continue; // field-of-view cone: the viewer draws its own
     const key = `${sub}__${k === 'clear' ? 'clear' : finish(path.slice(1))}`;
     if (!buckets.has(key)) buckets.set(key, { p: [], n: [], c: [], i: [], o: [] });
     const B = buckets.get(key), off = B.p.length / 3, { P, Q } = xf[k], { c, i } = pm[k];
@@ -175,6 +177,7 @@ function walk(ni, M, path) {
   (nd.children || []).forEach((c) => walk(c, W, np));
 }
 g.scenes[g.scene || 0].nodes.forEach((n) => walk(n, I4, []));
+for (const x of [-330, 330]) emit(elastic(x), I4, ['robot', 'Hopper Complete Assembly <1>', 'Static Hopper Assembly <1>', 'Lock Elastic']);
 if (slots.big && slots.small) for (const { name, pm } of flywheelDrive(slots.big, slots.small)) emit(pm, I4, ['robot', 'Shootdexer Complete Assembly <1>', 'Static Shootdexer Assembly <1>', name]);
 
 // ---- write ------------------------------------------------------------------------------

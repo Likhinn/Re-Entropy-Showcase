@@ -3,7 +3,7 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
-import { PIVOT, CLIPS, pose } from './mechanism.js';
+import { PIVOT, CLIPS, CONE, ELASTIC, pose } from './mechanism.js';
 import { MeshBVH, acceleratedRaycast } from 'three-mesh-bvh';
 
 THREE.Mesh.prototype.raycast = acceleratedRaycast;
@@ -14,24 +14,32 @@ const CLEAR_BY = { intake: 0.95 }; // per-subsystem overrides of CLEAR
 const GHOST = 0.07; // opacity dimmed subsystems settle at
 const EXPLODE_MS = 2200;
 // moves every part by shift + (part centre - subsystem centre) * spread; shared by color, depth pre-pass and shadow
+const v2 = (p) => `vec2(${p.map((n) => n.toFixed(5)).join(', ')})`;
 const explodeVertex = (s, u) => {
   Object.assign(s.uniforms, u);
   s.vertexShader = s.vertexShader
     .replace('void main() {', `attribute vec4 _center;
-      uniform vec3 uShift, uSpread, uOrigin, uMove;
-      uniform vec4 uPivot;
+      uniform vec3 uShift, uSpread, uOrigin;
+      uniform vec4 uPivot, uMove;
       uniform float uUnit;
       vec2 swing(vec2 p, float a) { return vec2(p.x * cos(a) - p.y * sin(a), p.x * sin(a) + p.y * cos(a)); }
       void main() {
       float rigId = floor(_center.w * 32.767 + 0.5);`)
     .replace('#include <beginnormal_vertex>', `#include <beginnormal_vertex>
-      if (rigId > 0.5) objectNormal.yz = swing(objectNormal.yz, rigId < 1.5 ? uMove.x : uMove.z);`)
+      if (rigId > 0.5 && rigId < 2.5) objectNormal.yz = swing(objectNormal.yz, rigId < 1.5 ? uMove.x : uMove.z);`)
     .replace('#include <begin_vertex>', `#include <begin_vertex>
-      if (rigId > 0.5) {
+      if (rigId > 2.5) { // elastic: the lower end follows the lock plate, the rest stretches toward the post
+        vec3 wp = transformed * uUnit + modelMatrix[3].xyz;
+        vec2 post = ${v2(ELASTIC.post)}, pin = ${v2(ELASTIC.pin)};
+        float along = clamp(dot(wp.yz - post, pin - post) / dot(pin - post, pin - post), 0.0, 1.0);
+        wp.yz += along * (uPivot.zw + swing(pin - uPivot.zw, uMove.z) + vec2(0.0, uMove.w) - pin);
+        wp += normal * 0.0022 * uMove.z; // thicker as it relaxes
+        transformed = (wp - modelMatrix[3].xyz) / uUnit;
+      } else if (rigId > 0.5) {
         vec2 pv = rigId < 1.5 ? uPivot.xy : uPivot.zw;
         vec3 wp = transformed * uUnit + modelMatrix[3].xyz;
         wp.yz = pv + swing(wp.yz - pv, rigId < 1.5 ? uMove.x : uMove.z);
-        if (rigId < 1.5) wp.z += uMove.y;
+        wp.z += rigId < 1.5 ? uMove.y : uMove.w;
         transformed = (wp - modelMatrix[3].xyz) / uUnit;
       }
       transformed += (uShift + (_center.xyz * 2.0 - uOrigin) * uSpread) / uUnit;`);
@@ -98,7 +106,7 @@ export class Stage {
 
     this.subs = new Map();
     this.shift = { x: 0, y: 0 }; // current view offset, fraction of the viewport
-    this.mech = { d: 1, h: 1 }; // d: intake deployed, h: hood raised
+    this.mech = { d: 1, h: 1, l: 1 }; // d: intake deployed, h: hood raised, l: hopper locked
     this.ex = 0; // explode progress 0..1 and its goal
     this.exTo = 0;
     this.dirty = true;
@@ -131,7 +139,7 @@ export class Stage {
       m.geometry.computeBoundingBox();
       const [id, fin] = m.name.split('__');
       const sub = this.subs.get(id) || { id, a: 1, to: 1, parts: [], box: new THREE.Box3(), exBox: new THREE.Box3(), shift: new THREE.Vector3(...(explode[id]?.shift || [0, 0, 0])), spread: new THREE.Vector3(...(explode[id]?.spread || [0, 0, 0])) };
-      sub.u ||= { uShift: { value: new THREE.Vector3() }, uSpread: { value: new THREE.Vector3() }, uOrigin: { value: new THREE.Vector3() }, uMove: { value: new THREE.Vector3() }, uPivot: { value: new THREE.Vector4(...(PIVOT[id]?.main || [0, 0]), ...(PIVOT[id]?.spin || [0, 0])) } };
+      sub.u ||= { uShift: { value: new THREE.Vector3() }, uSpread: { value: new THREE.Vector3() }, uOrigin: { value: new THREE.Vector3() }, uMove: { value: new THREE.Vector4() }, uPivot: { value: new THREE.Vector4(...(PIVOT[id]?.main || [0, 0]), ...(PIVOT[id]?.spin || [0, 0])) } };
       const u = { ...sub.u, uUnit: { value: m.matrixWorld.getMaxScaleOnAxis() } };
       const displace = (mt) => { mt.onBeforeCompile = (s) => explodeVertex(s, u); return mt; };
       this.subs.set(id, sub);
@@ -181,6 +189,7 @@ export class Stage {
       sub.box.union(new THREE.Box3().setFromObject(m));
     }
     this.scene.add(gltf.scene);
+    this.addCone();
     this.meshes = meshes;
     this.box = new THREE.Box3();
     for (const s of this.subs.values()) this.box.union(s.box);
@@ -199,6 +208,36 @@ export class Stage {
       setTimeout(buildBvh, 8);
     };
     setTimeout(buildBvh, 600);
+  }
+
+  // camera field of view, only shown while the vision system is in focus
+  addCone() {
+    const pos = [0, 0, 0], col = [0.29, 0.87, 0.5, 0.26];
+    for (const r of CONE.rays) {
+      pos.push(...new THREE.Vector3(...r).setLength(CONE.length).toArray());
+      col.push(0.29, 0.87, 0.5, 0);
+    }
+    const attr = (g) => g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)).setAttribute('color', new THREE.Float32BufferAttribute(col, 4));
+    const look = { vertexColors: true, transparent: true, depthWrite: false, toneMapped: false };
+    const faces = new THREE.Mesh(attr(new THREE.BufferGeometry()).setIndex([0, 1, 2, 0, 2, 3, 0, 3, 4, 0, 4, 1]), new THREE.MeshBasicMaterial({ ...look, side: THREE.DoubleSide }));
+    const edges = new THREE.LineSegments(attr(new THREE.BufferGeometry()).setIndex([0, 1, 0, 2, 0, 3, 0, 4]), new THREE.LineBasicMaterial(look));
+    this.cone = new THREE.Group().add(faces, edges);
+    this.cone.visible = false;
+    this.cone.a = 0;
+    for (const m of [faces, edges]) { m.renderOrder = 900; m.frustumCulled = false; }
+    this.scene.add(this.cone);
+  }
+
+  stepCone(dt) {
+    const c = this.cone, to = this.focusId === 'vision' ? 1 : 0;
+    if (c.a !== to) {
+      c.a = calm || Math.abs(to - c.a) < 0.004 ? to : THREE.MathUtils.damp(c.a, to, 4, dt);
+      c.visible = c.a > 0;
+      c.scale.setScalar(0.35 + 0.65 * c.a);
+      for (const m of c.children) m.material.opacity = c.a;
+      this.dirty = true;
+    }
+    if (c.visible) this.displaced('vision', this.lens ||= new THREE.Vector3(...CONE.lens), c.position);
   }
 
   // --- exploded view -----------------------------------------------------------------------
@@ -220,7 +259,8 @@ export class Stage {
 
   explode(on) {
     this.exTo = on ? 1 : 0;
-    if (on) this.play('rest');
+    this.afterAssembly = null;
+    if (on) this.play('rest', true);
     this.dirty = true;
   }
 
@@ -228,6 +268,8 @@ export class Stage {
     const s = id ? this.subs.get(id) : this;
     if (this.exTo) return s.exBox;
     // leave headroom for the folded intake
+    // and for the camera's view cone
+    if (id === 'vision') return s.box.clone().expandByPoint(new THREE.Vector3(-0.24, 0.55, -0.7));
     if (id === 'intake') return s.box.clone().expandByPoint(new THREE.Vector3(0, 0.5, 0.2));
     return s.box;
   }
@@ -261,16 +303,17 @@ export class Stage {
   }
 
   // --- mechanism --------------------------------------------------------------------------
-  setMech(d, h) {
-    this.mech = { d, h };
-    const at = pose(d, h);
-    for (const id in at) this.subs.get(id)?.u.uMove.value.set(...at[id]);
+  setMech(d, h, l) {
+    this.mech = { d, h, l };
+    const at = pose(d, h, l);
+    for (const id in at) this.subs.get(id)?.u.uMove.value.fromArray([...at[id], 0]);
     this.renderer.shadowMap.needsUpdate = true;
     this.dirty = true;
   }
 
-  play(clip) {
-    if (calm) return this.setMech(1, 1);
+  // force: the viewer asked for it, so play even with reduced motion
+  play(clip, force) {
+    if (calm && !force) return this.setMech(1, 1, 1);
     if (clip !== 'rest' && this.exTo) return; // stays in its CAD pose while exploded
     this.clip = { keys: CLIPS[clip](this.mech), t: 0, from: { ...this.mech } };
     this.dirty = true;
@@ -280,7 +323,7 @@ export class Stage {
     const c = this.clip, k = c.keys[0];
     c.t += dt * 1000;
     const q = ease(Math.min(1, c.t / k.ms));
-    this.setMech(THREE.MathUtils.lerp(c.from.d, k.d ?? c.from.d, q), THREE.MathUtils.lerp(c.from.h, k.h ?? c.from.h, q));
+    this.setMech(...['d', 'h', 'l'].map((v) => THREE.MathUtils.lerp(c.from[v], k[v] ?? c.from[v], q)));
     if (c.t < k.ms) return;
     c.keys.shift();
     c.t = 0;
@@ -290,8 +333,9 @@ export class Stage {
 
   // --- isolation --------------------------------------------------------------------------
   isolate(id) {
-    // the hopper rides on the intake, so keep it readable while the intake is in focus
-    for (const s of this.subs.values()) s.to = !id || s.id === id ? 1 : id === 'intake' && s.id === 'hopper' ? 0.3 : GHOST;
+    // intake and hopper move together, so each stays readable while the other is in focus
+    const pair = { intake: 'hopper', hopper: 'intake' }[id];
+    for (const s of this.subs.values()) s.to = !id || s.id === id ? 1 : s.id === pair ? 0.3 : GHOST;
     this.focusId = id;
     this.dirty = true;
   }
@@ -420,7 +464,9 @@ export class Stage {
         const d = calm ? 1 : (dt * 1000) / EXPLODE_MS;
         this.ex = this.exTo ? Math.min(1, this.ex + d) : Math.max(0, this.ex - d);
         this.applyExplode();
+        if (!this.ex && this.afterAssembly) { this.afterAssembly(); this.afterAssembly = null; }
       }
+      this.stepCone(dt);
       if (this.tween) this.stepTween(now);
       else {
         this.settleShift(dt);

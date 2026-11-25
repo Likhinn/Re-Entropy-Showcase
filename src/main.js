@@ -9,6 +9,7 @@ import { EXPLODE, SUBSYSTEMS } from './content.js';
 const $ = (s) => document.querySelector(s);
 const body = document.body;
 const HOME_DIR = [-139, 25];
+const ANIMATED = ['intake', 'hopper', 'hood']; // subsystems with a clip in mechanism.js
 let exploded = false, current = -1, view = 'loading';
 
 // ---- build list + hotspots ---------------------------------------------------------------
@@ -29,6 +30,14 @@ const items = SUBSYSTEMS.map((s, i) => {
     b.textContent = val;
     d.append(a, b);
     li.querySelector('dl').append(d);
+  }
+  if (ANIMATED.includes(s.id)) {
+    const play = document.createElement('button');
+    play.className = 'play';
+    play.type = 'button';
+    play.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15l12-7.5z" /></svg>Play animation';
+    play.onclick = () => playClip(s.id);
+    li.querySelector('dl').before(play);
   }
   $('#list').append(li);
 
@@ -79,6 +88,13 @@ function toggleExploded() {
   frame(2000);
 }
 
+// mechanisms only move on the assembled robot, so put it back together first
+function playClip(id) {
+  if (!exploded) return stage.play(id, true);
+  toggleExploded();
+  stage.afterAssembly = () => items[current]?.s.id === id && stage.play(id, true);
+}
+
 function mark(i) {
   current = i;
   items.forEach((it, k) => {
@@ -93,7 +109,7 @@ function mark(i) {
 
 function select(i) {
   if (view === 'loading') return;
-  if (['intake', 'hood'].includes(items[i]?.s.id)) stage.play(items[i].s.id);
+  if (ANIMATED.includes(items[i]?.s.id)) stage.play(items[i].s.id);
   mark(i);
   stage.isolate(i >= 0 ? items[i].s.id : null);
   if (view !== 'view') setView('view');
@@ -208,7 +224,7 @@ try {
   for (const it of items) it.pos = it.s.anchor ? new THREE.Vector3(...it.s.anchor) : stage.subs.get(it.s.id).box.getCenter(new THREE.Vector3());
   const deep = SUBSYSTEMS.findIndex((s) => `#${s.id}` === location.hash);
   wire();
-  stage.setMech(deep >= 0 ? 1 : 0, deep >= 0 ? 1 : 0);
+  stage.setMech(...(deep >= 0 ? [1, 1, 1] : [0, 0, 0]));
   stage.warmUp(new THREE.Vector3(-3.9, 2.6, -1.2));
   goal = 1;
   await filled;
