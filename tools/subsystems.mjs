@@ -48,6 +48,7 @@ export function recolor(path) {
   if (/^Battery Plate|^Gusset \d/.test(name)) return [0.75, 0.76, 0.78]; // bare aluminum
   if (/^LockingOpi5/.test(name)) return [0.06, 0.06, 0.065]; // Orange Pi case
   if (/^Mounting Plate$/.test(name) && inPath(path, /^Hopper Complete/)) return [0.72, 0.725, 0.73]; // hopper triangle plates
+  if (/^Part 43$/.test(name)) return [0.25, 0.25, 0.25]; // hood bearing support, same as the other plates
   if (/^Part 11$/.test(name) && inPath(path, /^Intake Moving Assembly/)) return [0.13, 0.84, 0.3]; // printed motor mounts
 }
 
@@ -60,6 +61,8 @@ export function classify(path, c) {
     return 'power';
 
   if (inPath(path, /^Bumpers/)) return 'bumpers';
+  // the roller around the intake pivot is the first roller of the indexer
+  if (inPath(path, /^Tube Roller System/) || /^55T 5M 6mm/.test(name) || (name === 'Part 3' && Math.abs(y + 286) < 3)) return 'indexer';
   if (inPath(path, /^Intake Master/)) return 'intake';
   if (inPath(path, /^Hopper Complete/)) return 'hopper';
   // the RIO, gyro and CAN devices come through the export without a name
@@ -101,10 +104,12 @@ export function classify(path, c) {
   return 'frame';
 }
 
-// Moving parts. 1 = moves with the mechanism, 2 = turns on a second pivot, 3 = elastic, 0 = fixed.
+// Moving parts. 1 = moves with the mechanism, 2 = turns on a second pivot, 3 = elastic,
+// 4 = swerve turret, 5 = swerve wheel, 0 = fixed.
 // Pivots and travel live in src/mechanism.js.
 export function rig(path, sub, [x, y, z]) {
   const name = path[path.length - 1];
+  if (sub === 'drive') return /Turret Assembly/.test(name) ? 4 : /Molded Wheel/.test(name) ? 5 : 0;
   if (sub === 'intake') {
     if (inPath(path, /^Intake Moving Assembly/)) return 1;
     // 12T sprocket shaft that drives the pivot chains
@@ -124,6 +129,20 @@ export function rig(path, sub, [x, y, z]) {
     if (Math.abs(y - 66) < 3 && Math.abs(z - 403) < 3 && !/Bushing/.test(name)) return 2;
   }
   return 0;
+}
+
+// Rollers that spin about their own axis while a subsystem runs: [axis y, axis z, direction].
+// 1 / 2 = either direction, 3 = like 2 but at flywheel speed.
+const SPINNERS = {
+  intake: [[-584, 169.5, 1], [-575, 248.4, 1]],
+  indexer: [[-286, 194, 2], [-228.5, 194.5, 2], [-169, 179, 2], [-110, 163, 2], [-51, 147, 2], [9, 131, 2], [70, 120.5, 2], [156.5, 137.5, 2], [225, 192, 2], [260, 272.5, 2], [255, 359.5, 2], [78.5, 304.5, 1]],
+  shooter: [[278, 443, 2], [253, 321, 3]],
+  hood: [[107, 547, 1], [146, 593, 1], [130, 567, 2]],
+};
+export function spin(path, sub, [x, y, z]) {
+  const name = path[path.length - 1];
+  if (/Plate|Kraken|ID Bearing|Belt$|Shoulder Bolt$|^Bearing Hat/.test(name)) return 0;
+  return SPINNERS[sub]?.find(([Y, Z]) => Math.abs(y - Y) < 2.5 && Math.abs(z - Z) < 2.5)?.[2] || 0;
 }
 
 // Coarse surface finish, used to pick PBR parameters in the viewer.

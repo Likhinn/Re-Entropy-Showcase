@@ -527,10 +527,10 @@ hopper	Lock Plate	-339,-17,252
 hopper	Lock Plate	339,-17,252
 hopper	MCM 92311A433 10-32 stud,	-350,-5,379
 hopper	MCM 92311A433 10-32 stud,	350,-5,379
-hopper	Mounting Plate	-344,-68,307
-hopper	Mounting Plate	-349,-68,307
-hopper	Mounting Plate	344,-68,307
-hopper	Mounting Plate	349,-68,307
+hopper	Mounting Plate	-344,-68,316
+hopper	Mounting Plate	-349,-68,316
+hopper	Mounting Plate	344,-68,316
+hopper	Mounting Plate	349,-68,316
 hopper	Mounting Spacer	-347,-132,252
 hopper	Mounting Spacer	-347,-5,252
 hopper	Mounting Spacer	-347,-5,379
@@ -546,6 +546,10 @@ indexer	#10 Aluminum Spacer (1-3/8" L, 3/8" OD)	-295,165,57
 indexer	#10 Aluminum Spacer (1-3/8" L, 3/8" OD)	295,0,57
 indexer	#10 Aluminum Spacer (1-3/8" L, 3/8" OD)	295,0,82
 indexer	#10 Aluminum Spacer (1-3/8" L, 3/8" OD)	295,165,57
+indexer	#10-32 Hex Nut	-284,-268,194
+indexer	#10-32 Hex Nut	-284,-303,194
+indexer	#10-32 Hex Nut	279,-268,194
+indexer	#10-32 Hex Nut	279,-303,194
 indexer	#10-32 x 0.5" L Shaft End Screw (Steel, Black Oxide)	-314,78,305
 indexer	#10-32 x 0.5" L Shaft End Screw (Steel, Black Oxide)	-329,156,137
 indexer	#10-32 x 0.5" L Shaft End Screw (Steel, Black Oxide)	-329,225,192
@@ -606,6 +610,8 @@ indexer	0.375" ID Bearing (0.875" OD, 0.281" WD, Shielded, Flanged)	316,255,360
 indexer	0.375" ID Bearing (0.875" OD, 0.281" WD, Shielded, Flanged)	316,260,272
 indexer	0.375" ID Bearing (0.875" OD, 0.281" WD, Shielded, Flanged)	316,71,120
 indexer	0.375" ID Bearing (0.875" OD, 0.281" WD, Shielded, Flanged)	316,9,131
+indexer	0.541" ID Custom Spacer (0.75" OD,0.062" L)	309,-286,194
+indexer	0.541" ID Custom Spacer (0.75" OD,0.25" L)	-306,-286,194
 indexer	1.125" OD Bearing Retention Plate (Centered, 2" C-C)	319,85,270
 indexer	1.25x 1.125 PolyCarbTube	-12,-110,163
 indexer	1.25x 1.125 PolyCarbTube	-12,-169,179
@@ -649,9 +655,11 @@ indexer	1/2" Hex Bore Custom Spacer (0.75" OD,1.111" L)	54,79,305
 indexer	1/2" Hex Bore Custom Spacer (0.75" OD,2.25" L)	-283,78,305
 indexer	1/2" Hex Bore Custom Spacer (0.75" OD,2.25" L)	283,78,305
 indexer	1/2" Rounded Hex (1.344" L, 13.75mm OD)	328,85,270
+indexer	1/2" Rounded Hex (13.75mm) ID Bearing (1.125" OD, 0.313" WD, Shielded, Flanged)	-299,-286,194
 indexer	1/2" Rounded Hex (13.75mm) ID Bearing (1.125" OD, 0.313" WD, Shielded, Flanged)	-315,156,137
 indexer	1/2" Rounded Hex (13.75mm) ID Bearing (1.125" OD, 0.313" WD, Shielded, Flanged)	-315,225,192
 indexer	1/2" Rounded Hex (13.75mm) ID Bearing (1.125" OD, 0.313" WD, Shielded, Flanged)	-315,78,305
+indexer	1/2" Rounded Hex (13.75mm) ID Bearing (1.125" OD, 0.313" WD, Shielded, Flanged)	304,-286,194
 indexer	1/2" Rounded Hex (13.75mm) ID Bearing (1.125" OD, 0.313" WD, Shielded, Flanged)	315,156,137
 indexer	1/2" Rounded Hex (13.75mm) ID Bearing (1.125" OD, 0.313" WD, Shielded, Flanged)	315,225,192
 indexer	1/2" Rounded Hex (13.75mm) ID Bearing (1.125" OD, 0.313" WD, Shielded, Flanged)	315,78,305
@@ -701,6 +709,7 @@ indexer	51T 5M 9mm Wide Belt	-287,307,288
 indexer	51T 5M 9mm Wide Belt	287,307,288
 indexer	53T 5M 9mm Wide Belt	290,258,316
 indexer	53T 5M 9mm Wide Belt	302,242,232
+indexer	55T 5M 6mm Wide Belt	302,-299,210
 indexer	60T 5M 9mm Wide Belt	-291,89,78
 indexer	60T 5M 9mm Wide Belt	-326,191,165
 indexer	60T 5M 9mm Wide Belt	300,89,78
@@ -708,6 +717,7 @@ indexer	60T 5M 9mm Wide Belt	303,113,129
 indexer	90T 5M 9mm Wide Belt	339,152,234
 indexer	Bearing Hat A	319,-79,158
 indexer	Bearing Hat B	-319,-79,158
+indexer	Deadaxle Tube_23.188_in	-2,-286,194
 indexer	Double 25T	295,156,137
 indexer	DoublePulley PlugA	219,-110,163
 indexer	DoublePulley PlugA	219,-169,179
@@ -749,6 +759,9 @@ indexer	NB Plug	-228,71,120
 indexer	NB Plug	-228,9,131
 indexer	NB Plug	-288,255,359
 indexer	NB Plug	-288,260,272
+indexer	Part 3	-2,-286,194
+indexer	Roller Endcap_HTD_38_Tooth_Hex Nut	287,-286,194
+indexer	Roller Endcap_None_24_Tooth_Hex Nut	-287,-286,194
 indexer	SILICONE 23.5in	-13,-110,163
 indexer	SILICONE 23.5in	-13,-169,179
 indexer	SILICONE 23.5in	-13,-229,195
@@ -776,10 +789,6 @@ indexer	ShoulderBolt Stubroller	308,260,272
 indexer	ShoulderBolt Stubroller	308,71,120
 indexer	ShoulderBolt Stubroller	308,9,131
 intake	#10 Aluminum Spacer (3/4" L 3/8" OD)	303,-203,57
-intake	#10-32 Hex Nut	-284,-268,194
-intake	#10-32 Hex Nut	-284,-303,194
-intake	#10-32 Hex Nut	279,-268,194
-intake	#10-32 Hex Nut	279,-303,194
 intake	#10-32 Nylon-Insert Locknut	-338,-265,182
 intake	#10-32 Nylon-Insert Locknut	-338,-265,206
 intake	#10-32 Nylon-Insert Locknut	-338,-286,170
@@ -841,8 +850,6 @@ intake	#10-32 x 5/8" L BHCS (Steel, Black Oxide)	-320,-622,227
 intake	#10-32 x 5/8" L BHCS (Steel, Black Oxide)	320,-622,201
 intake	#10-32 x 5/8" L BHCS (Steel, Black Oxide)	320,-622,214
 intake	#10-32 x 5/8" L BHCS (Steel, Black Oxide)	320,-622,227
-intake	0.541" ID Custom Spacer (0.75" OD,0.062" L)	309,-286,194
-intake	0.541" ID Custom Spacer (0.75" OD,0.25" L)	-306,-286,194
 intake	1.125" OD Bearing Retention Plate (2" C-C)	-325,-584,169
 intake	1.125" OD Bearing Retention Plate (2" C-C)	325,-584,169
 intake	1/2" Hex Bore Custom Spacer (0.5" OD,0.689" L)	-322,-575,248
@@ -857,12 +864,10 @@ intake	1/2" Hex Bore Custom Spacer (0.75" OD,0.163" L)	341,-126,110
 intake	1/2" Hex Bore Custom Spacer (0.75" OD,0.314" L)	291,-146,77
 intake	1/2" Hex Clamping Shaft Collar	-326,-126,109
 intake	1/2" Rounded Hex (1.25" L, 13.75mm OD)	292,-146,77
-intake	1/2" Rounded Hex (13.75mm) ID Bearing (1.125" OD, 0.313" WD, Shielded, Flanged)	-299,-286,194
 intake	1/2" Rounded Hex (13.75mm) ID Bearing (1.125" OD, 0.313" WD, Shielded, Flanged)	-314,-286,194
 intake	1/2" Rounded Hex (13.75mm) ID Bearing (1.125" OD, 0.313" WD, Shielded, Flanged)	-321,-584,169
 intake	1/2" Rounded Hex (13.75mm) ID Bearing (1.125" OD, 0.313" WD, Shielded, Flanged)	-337,-286,194
 intake	1/2" Rounded Hex (13.75mm) ID Bearing (1.125" OD, 0.313" WD, Shielded, Flanged)	291,-126,109
-intake	1/2" Rounded Hex (13.75mm) ID Bearing (1.125" OD, 0.313" WD, Shielded, Flanged)	304,-286,194
 intake	1/2" Rounded Hex (13.75mm) ID Bearing (1.125" OD, 0.313" WD, Shielded, Flanged)	314,-286,194
 intake	1/2" Rounded Hex (13.75mm) ID Bearing (1.125" OD, 0.313" WD, Shielded, Flanged)	321,-584,169
 intake	1/2" Rounded Hex (13.75mm) ID Bearing (1.125" OD, 0.313" WD, Shielded, Flanged)	337,-286,194
@@ -904,13 +909,13 @@ intake	24t Aluminum Spur Gear (20 DP, 1/2" Hex Bore)	302,-146,77
 intake	36t Aluminum Billet Sprocket (#25, 1.125" Round Bore)	-334,-286,194
 intake	36t Aluminum Billet Sprocket (#25, 1.125" Round Bore)	334,-286,194
 intake	36t Aluminum Spur Gear (20 DP, 1/2" Hex Bore)	302,-126,110
-intake	55T 5M 6mm Wide Belt	302,-299,210
+intake	50T 5M 9mm Wide Belt	-306,-579,209
+intake	50T 5M 9mm Wide Belt	306,-579,209
 intake	8585K27	0,-584,169
 intake	Aluminum Tube Plug (2" x 1" x 1/8" Tube)	-308,-622,214
 intake	Aluminum Tube Plug (2" x 1" x 1/8" Tube)	308,-622,214
 intake	Big Intake Washer	-325,-394,194
 intake	Big Intake Washer	325,-394,194
-intake	Deadaxle Tube_23.188_in	-2,-286,194
 intake	INT 4	-325,-575,261
 intake	INT 4	325,-575,261
 intake	Intake Tube	0,-622,214
@@ -932,12 +937,9 @@ intake	Part 24	0,-462,61
 intake	Part 25	291,-159,88
 intake	Part 27	-325,-456,55
 intake	Part 27	325,-456,55
-intake	Part 3	-2,-286,194
 intake	Part 3	3,-584,169
 intake	Poly Intake plate	-321,-494,156
 intake	Poly Intake plate	321,-494,156
-intake	Roller Endcap_HTD_38_Tooth_Hex Nut	287,-286,194
-intake	Roller Endcap_None_24_Tooth_Hex Nut	-287,-286,194
 intake	Wrist Plate	-314,-344,194
 intake	Wrist Plate	314,-344,194
 power		-15,-14,69

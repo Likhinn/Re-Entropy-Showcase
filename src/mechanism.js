@@ -5,7 +5,7 @@ const rad = (d) => (d * Math.PI) / 180;
 const INTAKE_STOW = 130; // degrees the intake folds back over the rollers
 const HOOD_DOWN = 34; // degrees the hood drops; needed to clear the retracted hopper
 const LOCK_ANGLE = 15; // degrees the hopper lock plates swing down into their notches
-const LOCK_SLIDE = 0.0038; // metres forward as they drop, which centres the bolts in the notches
+const HOPPER_SEAT = 4.3; // mm short of fully out where the panel notches line up with the lock bolts
 // the hopper-lock elastic: [y, z] of the top post and of the screw on the lock plate's tail
 // camera field of view: lens position and the four corner rays (from the CAD), length in metres
 export const CONE = {
@@ -23,7 +23,7 @@ export const PIVOT = {
   hood: { main: [0.443, -0.278], spin: [0.403, -0.066] },
 };
 
-// d: 0 stowed .. 1 deployed, h: 0 down .. 1 raised, l: 0 hopper unlocked .. 1 locked -> per subsystem [angle, slide along Z, second pivot angle, its slide]
+// d: 0 stowed .. 1 deployed, h: 0 down .. 1 raised, l: 0 hopper unlocked .. 1 locked -> per subsystem [angle, slide along Z, second pivot angle]
 export function pose(d, h, l) {
   const a = INTAKE_STOW * (1 - d), k = Math.min(HOPPER_PUSH.length - 1.001, a / 10), i = Math.floor(k);
   // Catmull-Rom through the table so the hopper never jerks
@@ -32,9 +32,17 @@ export function pose(d, h, l) {
   const drop = rad(HOOD_DOWN * (1 - h));
   return {
     intake: [-rad(a), 0, -rad(a) * 3], // #25 chain, 12T to 36T
-    hopper: [0, d >= 1 ? 0 : -Math.max(0, push) / 1000, rad(LOCK_ANGLE) * l, LOCK_SLIDE * l],
+    hopper: [0, -(HOPPER_SEAT + Math.max(0, push) * (1 - HOPPER_SEAT / 304)) / 1000, rad(LOCK_ANGLE) * l],
     hood: [drop, 0, -drop * 17], // 10T pinion on the hood rack
   };
+}
+
+// Swerve demo: drive forward, strafe, then turn in place. The wheels' CAD pose is the turning one.
+// -> steer (-1 forward .. 0 turning .. 1 strafe) and how far the wheels have rolled in each mode (radians)
+export const SWERVE_SECONDS = 6.4;
+export function swerve(t) {
+  const go = (a, b) => { const k = Math.max(0, Math.min(1, (t - a) / (b - a))); return k * k * (3 - 2 * k); };
+  return { steer: -go(0, 0.6) + 2 * go(2.1, 2.9) - go(4.3, 4.9), roll: [14 * go(0.5, 2.2), 12 * go(2.8, 4.4), 12 * go(4.8, 6.4)] };
 }
 
 // Keyframes: each eases to d / h / l over ms. `now` is the current { d, h, l }.

@@ -3,7 +3,8 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
-import { PIVOT, CLIPS, CONE, ELASTIC, pose } from './mechanism.js';
+import { PIVOT, CLIPS, CONE, ELASTIC, SWERVE_SECONDS, pose, swerve } from './mechanism.js';
+import { Fuel, RUNS } from './fuel.js';
 import { MeshBVH, acceleratedRaycast } from 'three-mesh-bvh';
 
 THREE.Mesh.prototype.raycast = acceleratedRaycast;
@@ -20,26 +21,48 @@ const explodeVertex = (s, u) => {
   s.vertexShader = s.vertexShader
     .replace('void main() {', `attribute vec4 _center;
       uniform vec3 uShift, uSpread, uOrigin;
-      uniform vec4 uPivot, uMove;
-      uniform float uUnit;
+      uniform vec4 uPivot;
+      uniform vec3 uMove;
+      uniform float uUnit, uSpin;
+      uniform vec4 uDrive;
       vec2 swing(vec2 p, float a) { return vec2(p.x * cos(a) - p.y * sin(a), p.x * sin(a) + p.y * cos(a)); }
+      vec3 about(vec3 p, vec3 k, float a) { return p * cos(a) + cross(k, p) * sin(a) + k * dot(k, p) * (1.0 - cos(a)); }
       void main() {
-      float rigId = floor(_center.w * 32.767 + 0.5);`)
+      float code = floor(_center.w * 32.767 + 0.5), spinId = floor(code / 10.0), rigId = code - spinId * 10.0;
+      float spinBy = uSpin * (spinId < 0.5 ? 0.0 : spinId < 1.5 ? 1.0 : spinId < 2.5 ? -1.0 : -4.07);
+      // swerve: the axle points out from the robot's centre in the rest pose
+      vec2 side = sign(_center.xz);
+      vec3 axle = normalize(vec3(side.x, 0.0, side.y));
+      float steerBy = uDrive.x * 0.785398 * side.x * side.y, rollBy = rigId > 4.5 ? uDrive.y * side.x + uDrive.z * side.y + uDrive.w : 0.0;`)
     .replace('#include <beginnormal_vertex>', `#include <beginnormal_vertex>
+      if (rigId > 3.5) {
+        objectNormal = about(objectNormal, axle, rollBy);
+        objectNormal.xz = swing(objectNormal.xz, steerBy);
+      }
+      if (spinId > 0.5) objectNormal.yz = swing(objectNormal.yz, spinBy);
       if (rigId > 0.5 && rigId < 2.5) objectNormal.yz = swing(objectNormal.yz, rigId < 1.5 ? uMove.x : uMove.z);`)
     .replace('#include <begin_vertex>', `#include <begin_vertex>
-      if (rigId > 2.5) { // elastic: the lower end follows the lock plate, the rest stretches toward the post
+      if (spinId > 0.5) {
+        vec3 hub = _center.xyz * 2.0, sp = transformed * uUnit + modelMatrix[3].xyz - hub;
+        sp.yz = swing(sp.yz, spinBy);
+        transformed = (sp + hub - modelMatrix[3].xyz) / uUnit;
+      }
+      if (rigId > 3.5) {
+        vec3 hub = _center.xyz * 2.0, sp = about(transformed * uUnit + modelMatrix[3].xyz - hub, axle, rollBy);
+        sp.xz = swing(sp.xz, steerBy);
+        transformed = (sp + hub - modelMatrix[3].xyz) / uUnit;
+      } else if (rigId > 2.5) { // elastic: the lower end follows the lock plate, the rest stretches toward the post
         vec3 wp = transformed * uUnit + modelMatrix[3].xyz;
         vec2 post = ${v2(ELASTIC.post)}, pin = ${v2(ELASTIC.pin)};
         float along = clamp(dot(wp.yz - post, pin - post) / dot(pin - post, pin - post), 0.0, 1.0);
-        wp.yz += along * (uPivot.zw + swing(pin - uPivot.zw, uMove.z) + vec2(0.0, uMove.w) - pin);
+        wp.yz += along * (uPivot.zw + swing(pin - uPivot.zw, uMove.z) - pin);
         wp += normal * 0.0022 * uMove.z; // thicker as it relaxes
         transformed = (wp - modelMatrix[3].xyz) / uUnit;
       } else if (rigId > 0.5) {
         vec2 pv = rigId < 1.5 ? uPivot.xy : uPivot.zw;
         vec3 wp = transformed * uUnit + modelMatrix[3].xyz;
         wp.yz = pv + swing(wp.yz - pv, rigId < 1.5 ? uMove.x : uMove.z);
-        wp.z += rigId < 1.5 ? uMove.y : uMove.w;
+        if (rigId < 1.5) wp.z += uMove.y;
         transformed = (wp - modelMatrix[3].xyz) / uUnit;
       }
       transformed += (uShift + (_center.xyz * 2.0 - uOrigin) * uSpread) / uUnit;`);
@@ -107,6 +130,8 @@ export class Stage {
     this.subs = new Map();
     this.shift = { x: 0, y: 0 }; // current view offset, fraction of the viewport
     this.mech = { d: 1, h: 1, l: 1 }; // d: intake deployed, h: hood raised, l: hopper locked
+    this.fuel = new Fuel(this.scene);
+    this.rate = {}; // roller speed per subsystem, rad/s
     this.ex = 0; // explode progress 0..1 and its goal
     this.exTo = 0;
     this.dirty = true;
@@ -139,7 +164,7 @@ export class Stage {
       m.geometry.computeBoundingBox();
       const [id, fin] = m.name.split('__');
       const sub = this.subs.get(id) || { id, a: 1, to: 1, parts: [], box: new THREE.Box3(), exBox: new THREE.Box3(), shift: new THREE.Vector3(...(explode[id]?.shift || [0, 0, 0])), spread: new THREE.Vector3(...(explode[id]?.spread || [0, 0, 0])) };
-      sub.u ||= { uShift: { value: new THREE.Vector3() }, uSpread: { value: new THREE.Vector3() }, uOrigin: { value: new THREE.Vector3() }, uMove: { value: new THREE.Vector4() }, uPivot: { value: new THREE.Vector4(...(PIVOT[id]?.main || [0, 0]), ...(PIVOT[id]?.spin || [0, 0])) } };
+      sub.u ||= { uShift: { value: new THREE.Vector3() }, uSpread: { value: new THREE.Vector3() }, uOrigin: { value: new THREE.Vector3() }, uMove: { value: new THREE.Vector3() }, uSpin: { value: 0 }, uDrive: { value: new THREE.Vector4() }, uPivot: { value: new THREE.Vector4(...(PIVOT[id]?.main || [0, 0]), ...(PIVOT[id]?.spin || [0, 0])) } };
       const u = { ...sub.u, uUnit: { value: m.matrixWorld.getMaxScaleOnAxis() } };
       const displace = (mt) => { mt.onBeforeCompile = (s) => explodeVertex(s, u); return mt; };
       this.subs.set(id, sub);
@@ -260,7 +285,10 @@ export class Stage {
   explode(on) {
     this.exTo = on ? 1 : 0;
     this.afterAssembly = null;
-    if (on) this.play('rest', true);
+    if (on) {
+      this.stopRun();
+      this.play('rest', true);
+    }
     this.dirty = true;
   }
 
@@ -306,7 +334,7 @@ export class Stage {
   setMech(d, h, l) {
     this.mech = { d, h, l };
     const at = pose(d, h, l);
-    for (const id in at) this.subs.get(id)?.u.uMove.value.fromArray([...at[id], 0]);
+    for (const id in at) this.subs.get(id)?.u.uMove.value.fromArray(at[id]);
     this.renderer.shadowMap.needsUpdate = true;
     this.dirty = true;
   }
@@ -314,7 +342,9 @@ export class Stage {
   // force: the viewer asked for it, so play even with reduced motion
   play(clip, force) {
     if (calm && !force) return this.setMech(1, 1, 1);
+    if (clip !== 'rest') this.stopRun();
     if (clip !== 'rest' && this.exTo) return; // stays in its CAD pose while exploded
+    if (clip === 'drive') { this.driveT = 0; return; }
     this.clip = { keys: CLIPS[clip](this.mech), t: 0, from: { ...this.mech } };
     this.dirty = true;
   }
@@ -329,6 +359,54 @@ export class Stage {
     c.t = 0;
     c.from = { ...this.mech };
     if (!c.keys.length) this.clip = null;
+  }
+
+  // --- running a subsystem ------------------------------------------------------------------
+  run(id) {
+    if (this.exTo) return;
+    this.stopRun();
+    this.fuel.clear();
+    this.play('rest', true); // finish any folding first
+    this.pending = id;
+  }
+
+  stopRun() {
+    this.pending = null;
+    this.fuel.stop();
+  }
+
+  stepRun(dt) {
+    if (this.pending && !this.clip) {
+      this.fuel.start(this.pending);
+      this.pending = null;
+    }
+    const a = this.fuel.active;
+    if (a) {
+      const h = !a.stopping && a.run.hood?.(a.t, a.end);
+      if (typeof h === 'number') this.setMech(this.mech.d, h, this.mech.l);
+      else if (a.run.hood && !this.clip && this.mech.h < 1) this.play('rest', true);
+      this.fuel.step(dt);
+      this.renderer.shadowMap.needsUpdate = true;
+      this.dirty = true;
+    }
+    // rollers spin up and coast down
+    for (const s of this.subs.values()) {
+      const want = this.fuel.active && !this.fuel.active.stopping ? this.fuel.active.run.spin[s.id] || 0 : 0;
+      let r = this.rate[s.id] || 0;
+      if (!want && !r) continue;
+      r = Math.abs(want - r) < 0.05 ? want : THREE.MathUtils.damp(r, want, 4, dt);
+      this.rate[s.id] = r;
+      s.u.uSpin.value += r * dt;
+      this.dirty = true;
+    }
+    if (this.driveT !== undefined) {
+      this.driveT += dt;
+      const w = swerve(this.driveT), over = this.driveT >= SWERVE_SECONDS;
+      this.subs.get('drive').u.uDrive.value.set(...(over ? [0, 0, 0, 0] : [w.steer, ...w.roll]));
+      if (over) this.driveT = undefined;
+      this.renderer.shadowMap.needsUpdate = true;
+      this.dirty = true;
+    }
   }
 
   // --- isolation --------------------------------------------------------------------------
@@ -460,6 +538,7 @@ export class Stage {
       }
       if (fading) { this.applyAlpha(); this.dirty = true; }
       if (this.clip) this.stepMech(dt);
+      this.stepRun(dt);
       if (this.ex !== this.exTo) {
         const d = calm ? 1 : (dt * 1000) / EXPLODE_MS;
         this.ex = this.exTo ? Math.min(1, this.ex + d) : Math.max(0, this.ex - d);

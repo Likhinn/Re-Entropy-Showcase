@@ -4,12 +4,13 @@ import './style.css';
 import * as THREE from 'three';
 import { Stage } from './stage.js';
 import { scramble } from './scramble.js';
+import { RUNS } from './fuel.js';
 import { EXPLODE, SUBSYSTEMS } from './content.js';
 
 const $ = (s) => document.querySelector(s);
 const body = document.body;
 const HOME_DIR = [-139, 25];
-const ANIMATED = ['intake', 'hopper', 'hood']; // subsystems with a clip in mechanism.js
+const ANIMATED = ['intake', 'hopper', 'hood', 'drive']; // subsystems with a clip in mechanism.js
 let exploded = false, current = -1, view = 'loading';
 
 // ---- build list + hotspots ---------------------------------------------------------------
@@ -31,14 +32,19 @@ const items = SUBSYSTEMS.map((s, i) => {
     d.append(a, b);
     li.querySelector('dl').append(d);
   }
-  if (ANIMATED.includes(s.id)) {
-    const play = document.createElement('button');
-    play.className = 'play';
-    play.type = 'button';
-    play.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15l12-7.5z" /></svg>Play animation';
-    play.onclick = () => playClip(s.id);
-    li.querySelector('dl').before(play);
-  }
+  const acts = document.createElement('div');
+  acts.className = 'acts';
+  const act = (icon, label, fn) => {
+    const b = document.createElement('button');
+    b.className = 'play';
+    b.type = 'button';
+    b.innerHTML = `<svg viewBox="0 0 24 24" aria-hidden="true">${icon}</svg>${label}`;
+    b.onclick = () => assembled(s.id, fn);
+    acts.append(b);
+  };
+  if (ANIMATED.includes(s.id)) act('<path d="M7 4.5v15l12-7.5z" />', 'Actuate', () => stage.play(s.id, true));
+  if (RUNS[s.id]) act('<circle cx="12" cy="12" r="8" />', 'Run subsystem', () => stage.run(s.id));
+  if (acts.children.length) li.querySelector('dl').before(acts);
   $('#list').append(li);
 
   const spot = document.createElement('button');
@@ -73,7 +79,7 @@ function setView(v, dur = 1500) {
   for (const el of [$('#panel'), $('#close'), $('.arrows'), $('.tools')]) el.inert = v !== 'view';
   $('.hero.front').inert = v === 'view';
   if (v === 'view') items.forEach((it, i) => scramble(it.title, it.s.title, { delay: 850 + i * 80 }));
-  else { mark(-1); stage.isolate(null); setExploded(false); }
+  else { mark(-1); stage.stopRun(); stage.isolate(null); setExploded(false); }
   frame(dur);
 }
 
@@ -89,10 +95,10 @@ function toggleExploded() {
 }
 
 // mechanisms only move on the assembled robot, so put it back together first
-function playClip(id) {
-  if (!exploded) return stage.play(id, true);
+function assembled(id, fn) {
+  if (!exploded) return fn();
   toggleExploded();
-  stage.afterAssembly = () => items[current]?.s.id === id && stage.play(id, true);
+  stage.afterAssembly = () => items[current]?.s.id === id && fn();
 }
 
 function mark(i) {
@@ -109,6 +115,7 @@ function mark(i) {
 
 function select(i) {
   if (view === 'loading') return;
+  stage.stopRun();
   if (ANIMATED.includes(items[i]?.s.id)) stage.play(items[i].s.id);
   mark(i);
   stage.isolate(i >= 0 ? items[i].s.id : null);

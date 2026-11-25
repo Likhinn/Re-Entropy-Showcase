@@ -47,7 +47,7 @@ export const SUBSYSTEMS = [
     specs: [['Drive', 'Kraken X44'], ['First stage', '12T to 36T, 143T belt'], ['Output', '10T pinions on twin hood plates']],
   },
   {
-    id: 'drive', title: 'Swerve Drivetrain', label: ['Swerve', 'drivetrain'], dir: [38, 32], anchor: [0.276, 0.09, 0.276],
+    id: 'drive', title: 'Swerve Drivetrain', label: ['Swerve', 'drivetrain'], dir: [38, 15], anchor: [0.276, 0.09, 0.276],
     text: 'Four independently steered modules on a 2 × 1 tube frame, braced by corner gussets.',
     specs: [['Modules', '4× SDS MK5n'], ['Drive', '4× Kraken X60'], ['Steer', '4× Kraken X44']],
   },

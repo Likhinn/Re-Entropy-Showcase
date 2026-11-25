@@ -19,8 +19,8 @@ function pulley(teeth, [cx, cy, cz], grooveAt) {
   return solid(out, i);
 }
 
-// big, small: pulley centres in CAD mm -> [{ name, pm }]
-export function flywheelDrive(big, small, T = 61, t = 15) {
+// toothed belt around two HTD 5M pulleys; tooth 0 sits at firstAt (angle on the big pulley, default mid-wrap)
+function belt(big, small, T, t, firstAt) {
   const R = (T * PITCH) / 2 / Math.PI, r = (t * PITCH) / 2 / Math.PI;
   const C = Math.hypot(small[1] - big[1], small[2] - big[2]), phi = Math.atan2(small[2] - big[2], small[1] - big[1]);
   const beta = Math.acos((R - r) / C), run = C * Math.sin(beta);
@@ -36,7 +36,8 @@ export function flywheelDrive(big, small, T = 61, t = 15) {
     z = d[2] + (q + o) * Math.sin(a) + along * Math.cos(a);
     return [y, z];
   };
-  const step = len / teeth, first = wrapR / 2; // one tooth sits mid-wrap on the big pulley
+  const turn = 2 * Math.PI, from = phi + beta, first = firstAt === undefined ? wrapR / 2 : ((((firstAt - from) % turn) + turn) % turn) * R;
+  const step = len / teeth;
   const shape = [[-1.65, 0], [-1.4, 0.5], [-0.95, 0.87], [-0.4, 1], [0.4, 1], [0.95, 0.87], [1.4, 0.5], [1.65, 0]];
   const p = [], idx = [], x = (big[0] + small[0]) / 2, n = teeth * shape.length;
   for (let k = 0; k < teeth; k++) for (const [ds, h] of shape) {
@@ -52,10 +53,19 @@ export function flywheelDrive(big, small, T = 61, t = 15) {
     idx.push(a, b + 2, a + 2, a, b, b + 2);
   }
   const mid = wrapR + run + wrapr / 2, near = first + Math.round((mid - first) / step) * step;
-  console.log(`flywheel belt: ${teeth}T, loop ${len.toFixed(1)} mm for ${teeth * PITCH} mm belt, ratio ${(T / t).toFixed(2)}:1`);
+  console.log(`belt ${T}T-${t}T: ${teeth}T, loop ${len.toFixed(1)} mm for ${teeth * PITCH} mm belt`);
+  return { name: `${teeth}T 5M 9mm Wide Belt`, pm: solid(p, idx), phi, grooveOnSmall: phi + (near - mid) / r };
+}
+
+// big, small: pulley centres in CAD mm -> [{ name, pm }]
+export function flywheelDrive(big, small, T = 61, t = 15) {
+  const b = belt(big, small, T, t);
   return [
-    { name: `${T}T Custom HTD 5mm Pulley`, pm: pulley(T, big, phi + Math.PI) },
-    { name: `${t}T Custom HTD 5mm Pulley`, pm: pulley(t, small, phi + (near - mid) / r) },
-    { name: `${teeth}T 5M 9mm Wide Belt`, pm: solid(p, idx) },
+    { name: `${T}T Custom HTD 5mm Pulley`, pm: pulley(T, big, b.phi + Math.PI) },
+    { name: `${t}T Custom HTD 5mm Pulley`, pm: pulley(t, small, b.grooveOnSmall) },
+    b,
   ];
 }
+
+// Intake roller drive, one side: 18T on the Kraken to 18T on the roller (called 28T in the CAD).
+export const intakeBelt = (side) => belt([side * 306.4, -574.84, 248.37], [side * 306.4, -583.75, 169.37], 18, 18);

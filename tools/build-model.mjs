@@ -5,10 +5,10 @@ import { EXTMeshoptCompression, KHRMeshQuantization } from '@gltf-transform/exte
 import { reorder, quantize } from '@gltf-transform/functions';
 import { MeshoptSimplifier, MeshoptEncoder } from 'meshoptimizer';
 import fs from 'node:fs';
-import { OLD, flywheelDrive } from './flywheel-drive.mjs';
+import { OLD, flywheelDrive, intakeBelt } from './flywheel-drive.mjs';
 import { elastic } from './elastic.mjs';
 import { weightedNormals } from './normals.mjs';
-import { classify, rig, finish, removed, recolor, DROP, REPOSE, MOVE, RIGID, POLY_GRAY } from './subsystems.mjs';
+import { classify, rig, spin, finish, removed, recolor, DROP, REPOSE, MOVE, RIGID, POLY_GRAY } from './subsystems.mjs';
 
 const SRC = process.argv[2] || 'Kentropy Main.glb';
 const OUT = 'public/model/robot.glb';
@@ -102,6 +102,10 @@ function part(mi) {
 
 // ---- walk the assembly and bake every part into a (subsystem, finish) bucket -------------
 const buckets = new Map(), stats = {}, listing = [];
+// corrected hopper triangle plate (CAD mm, centred on x), used in place of all four in the main CAD
+const PLATE = JSON.parse(fs.readFileSync(new URL('./hopper-plate.json', import.meta.url)));
+const trianglePlate = (x) => ({ solid: weightedNormals(
+  PLATE.p.map((v, k) => (k % 3 ? v : v + x) / 1000), Array.from({ length: PLATE.p.length / 3 }, () => [0.7, 0.7, 0.7, 1]).flat(), PLATE.i) });
 const slots = {}; // where the replaced flywheel pulleys sat
 function emit(source, M, path) {
   const move = MOVE.find((f) => f.test(path));
@@ -123,6 +127,10 @@ function emit(source, M, path) {
     slots[k] = centre;
     return console.log('replaced', path[path.length - 1], centre.map(Math.round).join());
   }
+  if (typeof source === 'number' && path[path.length - 1] === 'Mounting Plate' && path.some((n) => /^Hopper Complete/.test(n))) {
+    console.log('replaced Mounting Plate', centre.map(Math.round).join());
+    return emit(trianglePlate(centre[0]), I4, path);
+  }
   if (removed(path, centre)) return console.log('removed', path[path.length - 1], centre.map(Math.round).join());
   const fix = REPOSE.find((f) => f.name.test(path[path.length - 1]));
   if (fix) {
@@ -143,7 +151,7 @@ function emit(source, M, path) {
   const home = [hub[0], hub[2], -hub[1], 0].map((v) => Math.round(v / 2000 * 32767));
   const sub = classify(path, centre);
   listing.push([sub, path[path.length - 1], centre.map(Math.round).join()].join('\t'));
-  home[3] = rig(path, sub, centre) * 1000;
+  home[3] = (rig(path, sub, centre) + 10 * spin(path, sub, centre)) * 1000;
   const st = (stats[sub] ||= { parts: 0, tris: 0, ...bounds() });
   st.parts++;
   for (let d = 0; d < 3; d++) { st.mn[d] = Math.min(st.mn[d], mn[d]); st.mx[d] = Math.max(st.mx[d], mx[d]); }
@@ -178,6 +186,7 @@ function walk(ni, M, path) {
 }
 g.scenes[g.scene || 0].nodes.forEach((n) => walk(n, I4, []));
 for (const x of [-330, 330]) emit(elastic(x), I4, ['robot', 'Hopper Complete Assembly <1>', 'Static Hopper Assembly <1>', 'Lock Elastic']);
+for (const side of [-1, 1]) { const b = intakeBelt(side); emit(b.pm, I4, ['robot', 'Intake Master Assembly <1>', 'Intake Moving Assembly <1>', b.name]); }
 if (slots.big && slots.small) for (const { name, pm } of flywheelDrive(slots.big, slots.small)) emit(pm, I4, ['robot', 'Shootdexer Complete Assembly <1>', 'Static Shootdexer Assembly <1>', name]);
 
 // ---- write ------------------------------------------------------------------------------
