@@ -1,5 +1,7 @@
-// Kentropy Main.glb (raw Onshape export) -> public/model/robot.glb (web-ready).
-// Usage: npm run model  [-- path/to/export.glb]
+// Raw Onshape export -> web-ready model in public/model.
+// Usage: npm run model                          Re-Entropy: Kentropy Main.glb -> robot.glb
+//        npm run model -- entropy              Entropy:    Entropy.glb       -> entropy.glb
+//        npm run model -- <robot> path/to/export.glb
 import { NodeIO, Document } from '@gltf-transform/core';
 import { EXTMeshoptCompression, KHRMeshQuantization } from '@gltf-transform/extensions';
 import { reorder, quantize } from '@gltf-transform/functions';
@@ -7,11 +9,21 @@ import { MeshoptSimplifier, MeshoptEncoder } from 'meshoptimizer';
 import fs from 'node:fs';
 import { OLD, flywheelDrive, intakeBelt } from './flywheel-drive.mjs';
 import { elastic } from './elastic.mjs';
+import { roller } from './roller.mjs';
 import { weightedNormals } from './normals.mjs';
-import { classify, rig, spin, finish, removed, recolor, DROP, REPOSE, MOVE, PLACE, RIGID, POLY_GRAY } from './subsystems.mjs';
+import * as FIXES from './subsystems.mjs';
+import { classify, rig, spin, finish, removed, recolor, setRobot, hubOf, glass, DROP, POLY_GRAY } from './subsystems.mjs';
 
-const SRC = process.argv[2] || 'Kentropy Main.glb';
-const OUT = 'public/model/robot.glb';
+const ROBOTS = { 're-entropy': ['Kentropy Main.glb', 'robot.glb'], entropy: ['Entropy.glb', 'entropy.glb'] };
+const ROBOT = process.argv[2] && !process.argv[2].endsWith('.glb') ? process.argv[2] : 're-entropy';
+if (!ROBOTS[ROBOT]) throw new Error(`unknown robot ${ROBOT}; one of ${Object.keys(ROBOTS).join(', ')}`);
+const SRC = process.argv.slice(2).find((a) => a.endsWith('.glb')) || ROBOTS[ROBOT][0];
+const OUT = `public/model/${ROBOTS[ROBOT][1]}`;
+// hand fixes measured on Re-Entropy's CAD (see subsystems.mjs); other robots get none of them
+const RE = ROBOT === 're-entropy';
+setRobot(ROBOT);
+const { REPOSE, MOVE, PLACE, RIGID } = RE ? FIXES : { REPOSE: [], MOVE: [], PLACE: [], RIGID: [] };
+console.log(`${ROBOT}: ${SRC} -> ${OUT}`);
 await MeshoptSimplifier.ready;
 await MeshoptEncoder.ready;
 
@@ -110,8 +122,10 @@ const slots = {}; // where the replaced flywheel pulleys sat
 function emit(source, M, path) {
   const move = MOVE.find((f) => f.test(path));
   if (move) { M = [...M]; move.by.forEach((v, d) => { M[12 + d] += v / 1000; }); console.log('moved', path[path.length - 1]); }
-  const paint = recolor(path);
-  const pm = typeof source === 'number' ? part(source) : source, xf = {}, { mn, mx } = bounds();
+  const paint = recolor(path), clear = glass(path);
+  let pm = typeof source === 'number' ? part(source) : source;
+  if (clear) pm = { clear: pm.solid || pm.clear };
+  const xf = {}, { mn, mx } = bounds();
   for (const k in pm) {
     const { p, n } = pm[k], P = new Float32Array(p.length), Q = new Float32Array(n.length);
     for (let v = 0; v < p.length; v += 3) for (let r = 0; r < 3; r++) {
@@ -132,11 +146,11 @@ function emit(source, M, path) {
     for (let d = 0; d < 3; d++) { centre[d] += by[d]; mn[d] += by[d] / 1000; mx[d] += by[d] / 1000; }
     console.log('placed unnamed part at', centre.map(Math.round).join());
   }
-  for (const k in OLD) if (typeof source === 'number' && centre[0] < -300 && path.some((n) => /^Shootdexer/.test(n)) && OLD[k].test(path[path.length - 1])) {
+  if (RE) for (const k in OLD) if (typeof source === 'number' && centre[0] < -300 && path.some((n) => /^Shootdexer/.test(n)) && OLD[k].test(path[path.length - 1])) {
     slots[k] = centre;
     return console.log('replaced', path[path.length - 1], centre.map(Math.round).join());
   }
-  if (typeof source === 'number' && path[path.length - 1] === 'Mounting Plate' && path.some((n) => /^Hopper Complete/.test(n))) {
+  if (RE && typeof source === 'number' && path[path.length - 1] === 'Mounting Plate' && path.some((n) => /^Hopper Complete/.test(n))) {
     console.log('replaced Mounting Plate', centre.map(Math.round).join());
     return emit(trianglePlate(centre[0]), I4, path);
   }
@@ -156,11 +170,11 @@ function emit(source, M, path) {
     console.log('reposed', path[path.length - 1], (a * 180 / Math.PI).toFixed(1) + ' deg');
   }
   // part centre in viewer axes, stored per vertex (int16, +-1 = +-2 m) so the viewer can explode parts
-  const hub = RIGID.find((f) => f.test(path))?.centre || centre;
+  const hub = RIGID.find((f) => f.test(path))?.centre || hubOf(path, centre) || centre;
   const home = [hub[0], hub[2], -hub[1], 0].map((v) => Math.round(v / 2000 * 32767));
   const sub = classify(path, centre);
   listing.push([sub, path[path.length - 1], centre.map(Math.round).join()].join('\t'));
-  home[3] = (rig(path, sub, centre) + 10 * spin(path, sub, centre)) * 1000;
+  home[3] = (rig(path, sub, centre) + 10 * spin(path, sub, hub)) * 1000;
   const st = (stats[sub] ||= { parts: 0, tris: 0, ...bounds() });
   st.parts++;
   for (let d = 0; d < 3; d++) { st.mn[d] = Math.min(st.mn[d], mn[d]); st.mx[d] = Math.max(st.mx[d], mx[d]); }
@@ -175,7 +189,7 @@ function emit(source, M, path) {
       B.n.push(Q[v], Q[v + 2], -Q[v + 1]);
       B.o.push(...home);
     }
-    for (let v = 0; v < c.length; v += 4) B.c.push(...(paint || [c[v], c[v + 1], c[v + 2]]).map((x) => toLinear(k === 'clear' ? Math.max(x, POLY_GRAY) : x)), c[v + 3]);
+    for (let v = 0; v < c.length; v += 4) B.c.push(...(clear || paint || [c[v], c[v + 1], c[v + 2]]).slice(0, 3).map((x) => toLinear(k === 'clear' ? Math.max(x, POLY_GRAY) : x)), clear ? clear[3] : c[v + 3]);
     for (let q = 0; q < i.length; q += 3) {
       if (det < 0) B.i.push(off + i[q], off + i[q + 2], off + i[q + 1]);
       else B.i.push(off + i[q], off + i[q + 1], off + i[q + 2]);
@@ -194,8 +208,11 @@ function walk(ni, M, path) {
   (nd.children || []).forEach((c) => walk(c, W, np));
 }
 g.scenes[g.scene || 0].nodes.forEach((n) => walk(n, I4, []));
-for (const x of [-330, 330]) emit(elastic(x), I4, ['robot', 'Hopper Complete Assembly <1>', 'Static Hopper Assembly <1>', 'Lock Elastic']);
-for (const side of [-1, 1]) { const b = intakeBelt(side); emit(b.pm, I4, ['robot', 'Intake Master Assembly <1>', 'Intake Moving Assembly <1>', b.name]); }
+// Entropy's indexer floor rollers: black silicone over each 1.25" polycarbonate tube [x from, x to, y, z]
+if (ROBOT === 'entropy') for (const [x0, x1, y, z] of [[-147.5, 147.5, 8, 130], [-149.5, 145.5, -72, 134], [-149.5, 145.5, -152, 138], [-100, 106, -232, 142], [-98, 108, -311, 145]])
+  emit(roller(x0, x1, y, z, 17.6, 16), I4, ['robot', 'Indexer Assembly <1>', 'Silicone Sleeve']);
+if (RE) for (const x of [-330, 330]) emit(elastic(x), I4, ['robot', 'Hopper Complete Assembly <1>', 'Static Hopper Assembly <1>', 'Lock Elastic']);
+if (RE) for (const side of [-1, 1]) { const b = intakeBelt(side); emit(b.pm, I4, ['robot', 'Intake Master Assembly <1>', 'Intake Moving Assembly <1>', b.name]); }
 if (slots.big && slots.small) for (const { name, pm } of flywheelDrive(slots.big, slots.small)) emit(pm, I4, ['robot', 'Shootdexer Complete Assembly <1>', 'Static Shootdexer Assembly <1>', name]);
 
 // ---- write ------------------------------------------------------------------------------
@@ -220,7 +237,7 @@ doc.createExtension(EXTMeshoptCompression).setRequired(true).setEncoderOptions({
 const io = new NodeIO().registerExtensions([EXTMeshoptCompression, KHRMeshQuantization]).registerDependencies({ 'meshopt.encoder': MeshoptEncoder });
 fs.mkdirSync('public/model', { recursive: true });
 await io.write(OUT, doc);
-fs.writeFileSync('tools/parts.tsv', listing.sort().join('\n'));
+fs.writeFileSync(RE ? 'tools/parts.tsv' : `tools/parts-${ROBOT}.tsv`, listing.sort().join('\n'));
 console.log(`unique tris ${triIn} -> ${triOut}; ${(fs.statSync(OUT).size / 1e6).toFixed(2)} MB; ${buckets.size} draw calls`);
 for (const [k, s] of Object.entries(stats))
   console.log(k.padEnd(9), String(s.parts).padStart(5), 'parts', String(s.tris).padStart(8), 'tris', s.mn.map((x) => x.toFixed(2)).join(), '->', s.mx.map((x) => x.toFixed(2)).join());

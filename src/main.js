@@ -4,18 +4,46 @@ import './style.css';
 import * as THREE from 'three';
 import { Stage } from './stage.js';
 import { scramble } from './scramble.js';
-import { RUNS } from './fuel.js';
-import { EXPLODE, SUBSYSTEMS } from './content.js';
+import { RUNS as FUEL_RUNS } from './fuel.js';
+import { ROBOTS, robot, modelUrl, pageFor } from './robots/index.js';
 
 const $ = (s) => document.querySelector(s);
 const body = document.body;
-const HOME_DIR = [-139, 25];
+const { explode: EXPLODE, subsystems: SUBSYSTEMS } = robot;
+const RUNS = robot.runs ? robot.kit?.RUNS || FUEL_RUNS : {};
+const HOME_DIR = robot.home;
 const EGG_DIR = [-8, 9]; // front-left: the loose flywheel runs off into the distance behind the robot
-const ANIMATED = ['intake', 'hopper', 'hood', 'drive']; // subsystems with a clip in mechanism.js
+const ANIMATED = robot.animated; // subsystems with a clip in mechanism.js
 let exploded = false, current = -1, view = 'loading';
 
+// ---- which robot -------------------------------------------------------------------------
+document.title = `${robot.name} | Interactive 3D View`;
+$('.hero h1').textContent = robot.name.toUpperCase();
+$('.brand').textContent = robot.name;
+$('#pname').textContent = `${robot.name}:`;
+$('#prole').textContent = robot.role.replace(/\b\w/g, (c) => c.toUpperCase());
+$('#stage').ariaLabel = `3D model of the ${robot.name} robot. Drag to rotate.`;
+for (const r of ROBOTS) {
+  const b = document.createElement('button');
+  b.type = 'button';
+  b.className = 'pick';
+  b.setAttribute('aria-pressed', r === robot);
+  b.disabled = !r.ready;
+  b.innerHTML = '<b></b><span></span>';
+  b.querySelector('b').textContent = r.name;
+  b.querySelector('span').textContent = r.ready ? r.role : `${r.role} · coming soon`;
+  // the other robot is a page of its own: fade out, then load it
+  b.onclick = () => {
+    if (r === robot || view !== 'hero') return;
+    body.dataset.leaving = '';
+    setTimeout(() => { location.href = pageFor(r); }, 650);
+  };
+  $('#robots').append(b);
+}
+addEventListener('pageshow', (e) => { if (e.persisted) delete body.dataset.leaving; }); // back button
+
 // ---- build list + hotspots ---------------------------------------------------------------
-const items = SUBSYSTEMS.map((s, i) => {
+let items = SUBSYSTEMS.map((s, i) => {
   const li = document.createElement('li');
   li.style.setProperty('--i', i);
   li.innerHTML = `<button class="row" type="button" aria-expanded="false" aria-controls="b-${s.id}">
@@ -24,7 +52,7 @@ const items = SUBSYSTEMS.map((s, i) => {
   const btn = li.querySelector('button'), title = li.querySelector('.t');
   title.textContent = s.title;
   btn.ariaLabel = s.title;
-  btn.onclick = () => select(current === i ? -1 : i);
+  btn.onclick = () => { const k = items.indexOf(it); select(current === k ? -1 : k); };
   li.querySelector('p').textContent = s.text;
   for (const [k, val] of s.specs) {
     const d = document.createElement('div'), a = document.createElement('dt'), b = document.createElement('dd');
@@ -54,9 +82,10 @@ const items = SUBSYSTEMS.map((s, i) => {
   spot.ariaLabel = `Focus ${s.title}`;
   spot.innerHTML = '<svg viewBox="0 0 40 40" aria-hidden="true"><g><circle cx="20" cy="20" r="18.5" stroke-dasharray="25.06 4" stroke-dashoffset="-2"/></g><circle class="d" cx="20" cy="20" r="4.5"/></svg><b></b>';
   spot.querySelector('b').textContent = s.label.join('\n');
-  spot.onclick = () => select(i);
+  spot.onclick = () => select(items.indexOf(it));
   $('#spots').append(spot);
-  return { li, btn, title, spot, s, pos: null };
+  const it = { li, btn, title, spot, s, pos: null };
+  return it;
 });
 
 // ---- view state --------------------------------------------------------------------------
@@ -135,7 +164,7 @@ $('#prev').onclick = () => step(-1);
 $('#next').onclick = () => step(1);
 addEventListener('keydown', (e) => {
   // easter egg on the landing page and the shooter-side pages
-  if (e.key === ' ' && !exploded && (view === 'hero' || ['indexer', 'shooter', 'hood'].includes(items[current]?.s.id))) {
+  if (e.key === ' ' && robot.egg && !exploded && (view === 'hero' || ['indexer', 'shooter', 'hood'].includes(items[current]?.s.id))) {
     e.preventDefault();
     if (!e.repeat) stage.egg();
     return;
@@ -203,7 +232,7 @@ function wire() {
     const moved = Math.hypot(e.clientX - down[0], e.clientY - down[1]), t = performance.now() - down[2];
     down = null;
     if (moved > 5 || t > 400) return;
-    const id = stage.pick(e.clientX, e.clientY), i = SUBSYSTEMS.findIndex((s) => s.id === id);
+    const id = stage.pick(e.clientX, e.clientY), i = items.findIndex((it) => it.s.id === id);
     if (i >= 0 && i !== current) select(i);
     else if (i < 0 && current >= 0) select(-1);
   });
@@ -218,7 +247,7 @@ function wire() {
   stage.onFrame = () => {
     for (const it of items) {
       if (!it.pos) continue;
-      stage.displaced(it.s.id, it.pos, v).project(stage.camera);
+      stage.displaced(it.s.id, it.pos, v, robot.stillSpots).project(stage.camera);
       const x = (v.x * 0.5 + 0.5) * stage.w, y = (-v.y * 0.5 + 0.5) * stage.h;
       it.spot.style.transform = `translate(${x.toFixed(1)}px,${y.toFixed(1)}px)`;
       const covered = view === 'view' && (stacked() ? y > stage.h * 0.48 : x > stage.w * 0.59);
@@ -232,15 +261,28 @@ function wire() {
 try {
   stage = new Stage($('#stage'));
   window.__stage = stage;
-  await stage.load(`${import.meta.env.BASE_URL}model/robot.glb?v=${import.meta.env.VITE_MODEL_VERSION}`, EXPLODE, (e) => {
+  stage.withCone = robot.cone;
+  if (robot.kit) stage.kit = robot.kit;
+  await stage.load(modelUrl(robot), EXPLODE, (e) => {
     const total = e.lengthComputable ? e.total : 3.6e6;
     goal = Math.min(0.92, e.loaded / total);
   });
   $('#loader span').textContent = 'Preparing view';
+  // drop anything this robot's CAD doesn't have
+  items = items.filter((it) => {
+    if (stage.subs.has(it.s.id)) return true;
+    it.li.remove();
+    it.spot.remove();
+    return false;
+  });
+  items.forEach((it, i) => {
+    it.li.style.setProperty('--i', i);
+    it.li.querySelector('.row span').textContent = String(i + 1).padStart(2, '0');
+  });
   for (const it of items) it.pos = it.s.anchor ? new THREE.Vector3(...it.s.anchor) : stage.subs.get(it.s.id).box.getCenter(new THREE.Vector3());
-  const deep = SUBSYSTEMS.findIndex((s) => `#${s.id}` === location.hash);
+  const deep = items.findIndex((it) => `#${it.s.id}` === location.hash);
   wire();
-  stage.setMech(...(deep >= 0 ? [1, 1, 1] : [0, 0, 0]));
+  stage.setMech(...(deep >= 0 || !robot.mechanisms ? [1, 1, 1] : stage.stowed));
   stage.warmUp(new THREE.Vector3(-3.9, 2.6, -1.2));
   goal = 1;
   await filled;
@@ -250,7 +292,7 @@ try {
   setView('hero', 2800);
   stage.start();
   if (deep >= 0) select(deep);
-  else stage.play('boot');
+  else if (robot.mechanisms) stage.play('boot');
 } catch (err) {
   fail(err);
 }
