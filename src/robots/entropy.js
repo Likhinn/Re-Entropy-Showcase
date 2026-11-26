@@ -6,7 +6,7 @@ import * as kit from './entropy-mech.js';
 export const ROBOT = {
   id: 'entropy', name: 'Entropy', role: 'Main season robot', model: 'entropy.glb',
   home: [41, 25], // from the front: Entropy intakes and shoots over the same side
-  animated: ['intake', 'hopper', 'hood', 'drive'], runs: true, mechanisms: true, egg: false, cone: true, kit,
+  animated: ['intake', 'hopper', 'hood', 'drive'], runs: true, mechanisms: true, egg: false, crash: true, cone: true, kit,
   stillSpots: true, // hotspots stay put while a subsystem actuates (they sit where the parts rest)
 };
 

@@ -169,6 +169,12 @@ addEventListener('keydown', (e) => {
     if (!e.repeat) stage.egg();
     return;
   }
+  // Entropy's: the intake blows apart, on the landing page and the intake's page
+  if (e.key === ' ' && robot.crash && !exploded && (view === 'hero' || items[current]?.s.id === 'intake')) {
+    e.preventDefault();
+    if (!e.repeat) stage.crash();
+    return;
+  }
   if (view !== 'view') return;
   if (e.key === 'ArrowRight') step(1);
   else if (e.key === 'ArrowLeft') step(-1);

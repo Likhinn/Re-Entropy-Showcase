@@ -72,6 +72,8 @@ export function recolor(path) {
     // drum-end flywheels: light grey disc, dark grey bolt-on ring
     if (/^Part 29$/.test(name) && inPath(path, /^Static Shooter/)) return [0.78, 0.79, 0.8];
     if (/^Part 30$/.test(name) && inPath(path, /^Static Shooter/)) return [0.24, 0.245, 0.25];
+    // printed blocks on the intake cross bar that push the hopper out
+    if (/^Part 2$/.test(name) && inPath(path, /^test assembl/)) return [0.06, 0.06, 0.065];
     return;
   }
   if (/^Part 43$/.test(name)) return [0.25, 0.25, 0.25]; // hood bearing support, same as the other plates

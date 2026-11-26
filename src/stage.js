@@ -6,6 +6,7 @@ import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { PIVOT, CLIPS, CONE, ELASTIC, SWERVE_SECONDS, pose, swerve } from './mechanism.js';
 import { Fuel, RUNS } from './fuel.js';
 import { egg, spunInPlace, EGG_SECONDS, EGG_AREA } from './egg.js';
+import { Crash } from './crash.js';
 import { MeshBVH, acceleratedRaycast } from 'three-mesh-bvh';
 
 THREE.Mesh.prototype.raycast = acceleratedRaycast;
@@ -314,6 +315,7 @@ export class Stage {
     if (on) {
       this.stopRun();
       if (this.eggT !== undefined) this.eggT = EGG_SECONDS;
+      this.wreck?.stop();
       this.play('rest', true);
     }
     this.dirty = true;
@@ -323,6 +325,7 @@ export class Stage {
     const s = id ? this.subs.get(id) : this;
     if (this.exTo) return s.exBox;
     if (this.eggT !== undefined && (!id || id === 'shooter')) return s.box.clone().union(EGG_AREA);
+    if (this.wreck?.running && (!id || id === 'intake')) return s.box.clone().union(this.wreck.area);
     // leave headroom for the folded intake
     // and for the camera's view cone
     if (id === 'vision' && this.kit.CONES[0] === CONE) return s.box.clone().expandByPoint(new THREE.Vector3(-0.24, 0.55, -0.7));
@@ -402,7 +405,7 @@ export class Stage {
 
   // --- running a subsystem ------------------------------------------------------------------
   run(id) {
-    if (this.exTo) return;
+    if (this.exTo || this.wreck?.running) return;
     this.stopRun();
     this.fuel.clear();
     this.play('rest', true); // finish any folding first
@@ -421,6 +424,26 @@ export class Stage {
     this.play('rest', true);
     this.eggT = 0;
     this.onEgg?.(true);
+  }
+
+  // Entropy's easter egg: the intake blows apart and puts itself back together; see crash.js
+  crash() {
+    if (this.exTo || this.wreck?.running || this.crashPending || !this.subs.has('intake')) return;
+    this.stopRun();
+    this.play('rest', true);
+    this.crashPending = true; // once the intake is down
+    this.dirty = true;
+  }
+
+  stepCrash(dt) {
+    if (this.crashPending && !this.clip) {
+      this.crashPending = false;
+      (this.wreck ||= new Crash(this, this.subs.get('intake'))).start();
+      this.onEgg?.(true);
+    } else if (this.wreck?.running && !this.wreck.step(dt)) this.onEgg?.(false);
+    else if (!this.wreck?.running) return;
+    this.renderer.shadowMap.needsUpdate = true;
+    this.dirty = true;
   }
 
   // soft contact shadow so the loose flywheel reads as sitting on the floor
@@ -600,7 +623,7 @@ export class Stage {
     const ray = (this.ray ||= new THREE.Raycaster());
     ray.firstHitOnly = true;
     ray.setFromCamera(new THREE.Vector2((x / this.w) * 2 - 1, -(y / this.h) * 2 + 1), this.camera);
-    const hits = ray.intersectObjects((this.exTo ? this.exMeshes : this.meshes).filter((m) => m.geometry.boundsTree && m.userData.sub !== 'frame'), false);
+    const hits = ray.intersectObjects((this.exTo ? this.exMeshes : this.meshes).filter((m) => m.visible && m.geometry.boundsTree && m.userData.sub !== 'frame'), false);
     // what is in focus wins over ghosts drawn in front of it
     return (hits.find((h) => h.object.userData.sub === this.focusId) || hits[0])?.object.userData.sub || null;
   }
@@ -629,6 +652,7 @@ export class Stage {
       if (this.clip) this.stepMech(dt);
       this.stepRun(dt);
       this.stepEgg(dt);
+      this.stepCrash(dt);
       if (this.ex !== this.exTo) {
         const d = calm ? 1 : (dt * 1000) / EXPLODE_MS;
         this.ex = this.exTo ? Math.min(1, this.ex + d) : Math.max(0, this.ex - d);
