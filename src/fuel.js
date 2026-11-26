@@ -41,9 +41,9 @@ function shot(drop) {
 const HOOD_STEPS = [0, 12, 24, 34]; // hood drop for each volley
 
 // volleys of fuel across the robot's width
-const volleys = (path, n, gap) => Array.from({ length: n * LANES.length }, (_, k) => {
-  const row = Math.floor(k / LANES.length);
-  return { at: row * gap + ((k * 7) % 4) * 0.07, x: LANES[k % LANES.length], path: typeof path === 'function' ? path(row) : path };
+export const volleys = (path, n, gap, lanes = LANES) => Array.from({ length: n * lanes.length }, (_, k) => {
+  const row = Math.floor(k / lanes.length);
+  return { at: row * gap + ((k * 7) % 4) * 0.07, x: lanes[k % lanes.length], path: typeof path === 'function' ? path(row) : path };
 });
 
 // spin: rad/s of the rollers per subsystem. hood: where the hood should be at time t (0..1 raised)
@@ -89,9 +89,9 @@ export class Fuel {
     this.p = [0, 0, 0];
   }
 
-  start(id) {
+  start(run) {
     this.clear();
-    const run = RUNS[id], balls = run.balls();
+    const balls = run.balls();
     for (const b of balls) {
       b.mesh = new THREE.Mesh(this.geo, new THREE.MeshStandardMaterial({ color: COLOR, roughness: 0.82, metalness: 0, envMapIntensity: 0.7, transparent: true }));
       b.mesh.renderOrder = 11.5; // after the focused parts, before the ghosts (see Stage.applyAlpha)
@@ -100,7 +100,7 @@ export class Fuel {
       b.end = b.path[b.path.length - 1][0];
       this.group.add(b.mesh);
     }
-    this.active = { id, run, balls, t: 0, end: Math.max(...balls.map((b) => b.at + b.end)) + 0.3, gain: 1, stopping: false };
+    this.active = { run, balls, t: 0, end: Math.max(...balls.map((b) => b.at + b.end)) + 0.3, gain: 1, stopping: false };
   }
 
   // fade out early

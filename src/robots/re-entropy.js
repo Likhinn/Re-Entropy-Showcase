@@ -3,7 +3,15 @@
 //   dir     [azimuth, elevation] in degrees the camera looks from (0 = robot front, 90 = its +X side)
 //   anchor  optional [x, y, z] in metres for the hotspot (Y up, +Z = front); defaults to subsystem centre
 //   zoom    optional, >1 moves closer
-export const ROBOT = { name: 'Re-Entropy', lede: 'Explore subsystems. Isolate assemblies. See the full robot.' };
+// Re-Entropy: the off-season competition robot.
+//   model     file in public/model, built by `npm run model`
+//   home      [azimuth, elevation] of the landing-page camera
+//   animated  subsystems with an "Actuate" clip (src/mechanism.js); runs: "Run subsystem" fuel (src/fuel.js)
+//   egg       the flywheel easter egg (space bar); cone: the camera's field of view on the vision page
+export const ROBOT = {
+  id: 're-entropy', name: 'Re-Entropy', role: 'Off-season competition robot', model: 'robot.glb',
+  home: [-139, 25], animated: ['intake', 'hopper', 'hood', 'drive'], runs: true, mechanisms: true, egg: true, cone: true,
+};
 
 // Exploded view. shift moves a whole subsystem, spread pulls its parts apart from its centre
 // (0.5 = half again as far out). Both are [x, y, z] in metres / factors: Y up, +Z = robot front.

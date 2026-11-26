@@ -5,8 +5,15 @@ const inPath = (path, re) => path.some((n) => re.test(n));
 
 export const DROP = /^Origin Cube|^Text$/;
 
+// Which robot is being built. The part-by-part fixes, recolors by part number and moving-part
+// positions below were measured on Re-Entropy's CAD; for any other robot only the rules that go
+// by assembly and part names apply, and only the swerve modules move.
+let reEntropy = true;
+export function setRobot(id) { reEntropy = id === 're-entropy'; }
+
 // Parts in the CAD that do not exist on the real robot. Same arguments as classify().
 export function removed(path, [x, y, z]) {
+  if (!reEntropy) return false;
   const name = path[path.length - 1];
   // unattached roller adapter and screw floating next to the hood rack
   if (/^3D-Print Adapter/.test(name) && x > 300 && Math.abs(y - 87) < 3 && Math.abs(z - 504) < 3) return true;
@@ -48,6 +55,11 @@ export const PLACE = [
   { from: [-44.5, -29.7, 106.4], to: [-11, 269, 130.5], turn: 1 },
 ];
 
+// Parts to render as clear polycarbonate: their sRGB color and alpha, else undefined.
+export function glass(path) {
+  if (!reEntropy && /^220-002 \(Intake Side Plate\)/.test(path[path.length - 1])) return [0.3, 0.3, 0.3, 0.2]; // the hopper panels: CAD grey at 0.87 alpha under the 0.22 clear factor, here under the intake's 0.95
+}
+
 // Color overrides, sRGB 0..1. Anything not matched keeps its CAD color.
 export function recolor(path) {
   const name = path[path.length - 1];
@@ -56,11 +68,78 @@ export function recolor(path) {
   if (/^Battery Plate|^Gusset \d/.test(name)) return [0.75, 0.76, 0.78]; // bare aluminum
   if (/^LockingOpi5/.test(name)) return [0.06, 0.06, 0.065]; // Orange Pi case
   if (/^Mounting Plate$/.test(name) && inPath(path, /^Hopper Complete/)) return [0.72, 0.725, 0.73]; // hopper triangle plates
+  if (!reEntropy) {
+    // drum-end flywheels: light grey disc, dark grey bolt-on ring
+    if (/^Part 29$/.test(name) && inPath(path, /^Static Shooter/)) return [0.78, 0.79, 0.8];
+    if (/^Part 30$/.test(name) && inPath(path, /^Static Shooter/)) return [0.24, 0.245, 0.25];
+    return;
+  }
   if (/^Part 43$/.test(name)) return [0.25, 0.25, 0.25]; // hood bearing support, same as the other plates
   if (/^Part 11$/.test(name) && inPath(path, /^Intake Moving Assembly/)) return [0.13, 0.84, 0.3]; // printed motor mounts
 }
 
+// ---- Entropy ------------------------------------------------------------------------------
+// Its CAD: "test assembl" is the intake, "Shooter Complete Assembly" holds the shooter, its feed
+// rollers and the hood, the hopper walls and bumpers sit loose at the top level.
+function classifyEntropy(path, [x, y, z]) {
+  const name = path[path.length - 1];
+  if (inPath(path, /ThriftyCam|Camera|Orange ?Pi/i) || (name === '' && path.length === 2 && y > 280 && z > 280)) return 'vision';
+  if (inPath(path, /Robot Radio|RSL|Power Distribution|Robot Battery|Main Breaker/i)) return 'power';
+  if (/^Bumper/.test(name) && path.length === 2) return 'bumpers';
+  if (/^Swerve Corner/.test(name) && path.length === 2) return 'drive'; // printed module corner guards
+  if (/^40\d-\d{3} \(0\.25 in\. Thick Plate\)|^L Bracket$/.test(name) && path.length === 2) return 'hopper';
+  if (inPath(path, /^test assembl/)) return 'intake';
+  if (inPath(path, /^Indexer Assembly/)) return 'indexer';
+  if (inPath(path, /^Drivebase/)) return inPath(path, /^SDS MK4i/) ? 'drive' : name === '' ? 'power' : 'frame';
+  if (inPath(path, /^Dynamic Shooter/)) return 'hood';
+  if (inPath(path, /^Static Shooter/)) {
+    // the printed Top and Bottom Backing ramps fall through to the indexer
+    if (/Base Plate|Reinforcement Plate|^Gusset|^8in 2x1|^Tube |^Churro|Kicker Plate/.test(name)) return 'frame';
+    if (y > 290) return 'hood'; // hood motor, belt and pinion shaft at the back
+    if (z > 395) return 'shooter'; // flywheel shaft and its two Krakens
+    return 'indexer'; // feed rollers and kicker under the flywheel
+  }
+  return 'frame';
+}
+
+// MK4i swerve: parts that steer with the wheel fork, and the ones that also roll with the wheel
+const MK4I_STEER = /^Wheel Mount|^Wheel, SDS|^Tread,|^Bevel Gear|^MK4 Wheel Spacer|^Screw, Shoulder|^MK4 Intermediate Shaft|^Shim,|^E Clip|^Gear, 20DP, 16T|^MK3 Base Pulley/;
+const MK4I_ROLL = /^Wheel, SDS|^Tread,|^Bevel Gear, 4515|^MK4 Wheel Spacer/;
+const MK4I_AXIS = 277; // mm from the robot centre line to each module's steering axis, in x and y
+
+// Where a part turns about, when that's not its own centre (CAD mm), else undefined.
+export function hubOf(path, [x, y, z]) {
+  if (reEntropy) return;
+  const name = path[path.length - 1];
+  // the small rollers of the kicker's mecanum wheels turn with their hub
+  if (/Mechanum Wheel/.test(name) && Math.abs(y + 10) < 25 && Math.abs(z - 309) < 25) return [x, -10, 309];
+  // the screws that clamp the rings onto the drum-end flywheels turn with the drum
+  if (inPath(path, /^Static Shooter/) && /screw/i.test(name) && Math.hypot(y - 83, z - 451) < 70) return [x, 83, 451];
+  if (!inPath(path, /^SDS MK4i/) || !MK4I_STEER.test(name)) return;
+  return [Math.sign(x) * MK4I_AXIS, Math.sign(y) * MK4I_AXIS, MK4I_ROLL.test(name) ? 51 : z];
+}
+
+// Entropy's moving parts (see src/robots/entropy-mech.js for the pivots)
+function rigEntropy(path, sub, [x, y, z]) {
+  const name = path[path.length - 1];
+  if (sub === 'drive') return MK4I_STEER.test(name) ? (MK4I_ROLL.test(name) ? 5 : 4) : 0;
+  const at = (Y, Z, r = 3) => Math.abs(y - Y) < r && Math.abs(z - Z) < r;
+  if (sub === 'intake') {
+    if (y < -250) return 1; // everything ahead of the pivot sprocket swings
+    if (at(-112, 136) && !/Bearing|Spacer/.test(name)) return 2; // 12T chain sprocket and its shaft
+    return 0;
+  }
+  // the hopper's front wall, its corner brackets and the outer side walls slide back over the inner ones
+  if (sub === 'hopper') return /^400-00[23] |^L Bracket/.test(name) ? 1 : 0;
+  if (sub === 'hood') {
+    if (inPath(path, /^Dynamic Shooter/)) return 1;
+    if (at(322, 408) && !/Bushing|Kraken/.test(name)) return 2; // pinion shaft
+  }
+  return 0;
+}
+
 export function classify(path, c) {
+  if (!reEntropy) return classifyEntropy(path, c);
   const name = path[path.length - 1];
   const [x, y, z] = c;
 
@@ -119,6 +198,7 @@ export function classify(path, c) {
 export function rig(path, sub, [x, y, z]) {
   const name = path[path.length - 1];
   if (/^Neely Flywheely/.test(name)) return 6;
+  if (!reEntropy) return rigEntropy(path, sub, [x, y, z]);
   if (sub === 'drive') return /Turret Assembly/.test(name) ? 4 : /Molded Wheel/.test(name) ? 5 : 0;
   if (sub === 'intake') {
     if (inPath(path, /^Intake Moving Assembly/)) return 1;
@@ -151,10 +231,17 @@ const SPINNERS = {
   shooter: [[278, 443, 2], [253, 321, 3]],
   hood: [[107, 547, 1], [146, 593, 1], [130, 567, 2]],
 };
+// Entropy: intake roller; indexer floor, kicker wheels and compliant wheels; drum; hood rollers
+const SPINNERS_ENTROPY = {
+  intake: [[-591, 188, 1]],
+  indexer: [[-311, 145, 2], [-232, 142, 2], [-152, 138, 2], [-72, 134, 2], [8, 130, 2], [-10, 309, 1], [57, 309, 1], [85, 370, 1]],
+  shooter: [[83, 451, 1], [-6, 425, 1]],
+  hood: [[286, 456, 2], [274, 520, 2], [271, 490, 1]],
+};
 export function spin(path, sub, [x, y, z]) {
   const name = path[path.length - 1];
   if (/Plate|Kraken|ID Bearing|Belt$|Shoulder Bolt$|^Bearing Hat|^Neely Flywheely/.test(name)) return 0;
-  return SPINNERS[sub]?.find(([Y, Z]) => Math.abs(y - Y) < 2.5 && Math.abs(z - Z) < 2.5)?.[2] || 0;
+  return (reEntropy ? SPINNERS : SPINNERS_ENTROPY)[sub]?.find(([Y, Z]) => Math.abs(y - Y) < 2.5 && Math.abs(z - Z) < 2.5)?.[2] || 0;
 }
 
 // Coarse surface finish, used to pick PBR parameters in the viewer.

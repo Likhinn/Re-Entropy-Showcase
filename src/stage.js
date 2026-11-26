@@ -144,6 +144,8 @@ export class Stage {
     this.subs = new Map();
     this.shift = { x: 0, y: 0 }; // current view offset, fraction of the viewport
     this.mech = { d: 1, h: 1, l: 1, p: 1 }; // see pose() in mechanism.js
+    // how this robot moves: pivots, poses, clips and fuel runs (Re-Entropy's unless the robot brings its own)
+    this.kit = { PIVOT, CLIPS, pose, RUNS, CONES: [CONE] };
     this.fuel = new Fuel(this.scene);
     this.rate = {}; // roller speed per subsystem, rad/s
     this.ex = 0; // explode progress 0..1 and its goal
@@ -178,7 +180,7 @@ export class Stage {
       m.geometry.computeBoundingBox();
       const [id, fin] = m.name.split('__');
       const sub = this.subs.get(id) || { id, a: 1, to: 1, parts: [], box: new THREE.Box3(), exBox: new THREE.Box3(), shift: new THREE.Vector3(...(explode[id]?.shift || [0, 0, 0])), spread: new THREE.Vector3(...(explode[id]?.spread || [0, 0, 0])) };
-      sub.u ||= { uShift: { value: new THREE.Vector3() }, uSpread: { value: new THREE.Vector3() }, uOrigin: { value: new THREE.Vector3() }, uMove: { value: new THREE.Vector3() }, uSpin: { value: 0 }, uDrive: { value: new THREE.Vector4() }, uEgg: { value: new THREE.Matrix4() }, uEggA: { value: 1 }, uGear: { value: new THREE.Vector3(...(PIVOT[id]?.gear || [0, 0, 0])) }, uPivot: { value: new THREE.Vector4(...(PIVOT[id]?.main || [0, 0]), ...(PIVOT[id]?.spin || [0, 0])) } };
+      sub.u ||= { uShift: { value: new THREE.Vector3() }, uSpread: { value: new THREE.Vector3() }, uOrigin: { value: new THREE.Vector3() }, uMove: { value: new THREE.Vector3() }, uSpin: { value: 0 }, uDrive: { value: new THREE.Vector4() }, uEgg: { value: new THREE.Matrix4() }, uEggA: { value: 1 }, uGear: { value: new THREE.Vector3(...(this.kit.PIVOT[id]?.gear || [0, 0, 0])) }, uPivot: { value: new THREE.Vector4(...(this.kit.PIVOT[id]?.main || [0, 0]), ...(this.kit.PIVOT[id]?.spin || [0, 0])) } };
       const u = { ...sub.u, uUnit: { value: m.matrixWorld.getMaxScaleOnAxis() } };
       const displace = (mt) => { mt.onBeforeCompile = (s) => explodeVertex(s, u); return mt; };
       this.subs.set(id, sub);
@@ -228,7 +230,7 @@ export class Stage {
       sub.box.union(new THREE.Box3().setFromObject(m));
     }
     this.scene.add(gltf.scene);
-    this.addCone();
+    if (this.withCone !== false) this.addCone();
     this.meshes = meshes;
     this.box = new THREE.Box3();
     for (const s of this.subs.values()) this.box.union(s.box);
@@ -249,34 +251,44 @@ export class Stage {
     setTimeout(buildBvh, 600);
   }
 
-  // camera field of view, only shown while the vision system is in focus
+  // camera fields of view, only shown while the vision system is in focus
   addCone() {
+    this.cone = new THREE.Group();
+    this.cone.visible = false;
+    this.cone.a = 0;
+    for (const c of this.kit.CONES) this.cone.add(this.coneOf(c));
+    this.scene.add(this.cone);
+  }
+
+  coneOf(cone) {
     const pos = [0, 0, 0], col = [0.29, 0.87, 0.5, 0.26];
-    for (const r of CONE.rays) {
-      pos.push(...new THREE.Vector3(...r).setLength(CONE.length).toArray());
+    for (const r of cone.rays) {
+      pos.push(...new THREE.Vector3(...r).setLength(cone.length).toArray());
       col.push(0.29, 0.87, 0.5, 0);
     }
     const attr = (g) => g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)).setAttribute('color', new THREE.Float32BufferAttribute(col, 4));
     const look = { vertexColors: true, transparent: true, depthWrite: false, toneMapped: false };
     const faces = new THREE.Mesh(attr(new THREE.BufferGeometry()).setIndex([0, 1, 2, 0, 2, 3, 0, 3, 4, 0, 4, 1]), new THREE.MeshBasicMaterial({ ...look, side: THREE.DoubleSide }));
     const edges = new THREE.LineSegments(attr(new THREE.BufferGeometry()).setIndex([0, 1, 0, 2, 0, 3, 0, 4]), new THREE.LineBasicMaterial(look));
-    this.cone = new THREE.Group().add(faces, edges);
-    this.cone.visible = false;
-    this.cone.a = 0;
     for (const m of [faces, edges]) { m.renderOrder = 900; m.frustumCulled = false; }
-    this.scene.add(this.cone);
+    const g = new THREE.Group().add(faces, edges);
+    g.userData.lens = new THREE.Vector3(...cone.lens);
+    return g;
   }
 
   stepCone(dt) {
+    if (!this.cone) return;
     const c = this.cone, to = this.focusId === 'vision' ? 1 : 0;
     if (c.a !== to) {
       c.a = calm || Math.abs(to - c.a) < 0.004 ? to : THREE.MathUtils.damp(c.a, to, 4, dt);
       c.visible = c.a > 0;
-      c.scale.setScalar(0.35 + 0.65 * c.a);
-      for (const m of c.children) m.material.opacity = c.a;
+      for (const g of c.children) {
+        g.scale.setScalar(0.35 + 0.65 * c.a);
+        for (const m of g.children) m.material.opacity = c.a;
+      }
       this.dirty = true;
     }
-    if (c.visible) this.displaced('vision', this.lens ||= new THREE.Vector3(...CONE.lens), c.position);
+    if (c.visible) for (const g of c.children) this.displaced('vision', g.userData.lens, g.position);
   }
 
   // --- exploded view -----------------------------------------------------------------------
@@ -313,16 +325,21 @@ export class Stage {
     if (this.eggT !== undefined && (!id || id === 'shooter')) return s.box.clone().union(EGG_AREA);
     // leave headroom for the folded intake
     // and for the camera's view cone
-    if (id === 'vision') return s.box.clone().expandByPoint(new THREE.Vector3(-0.24, 0.55, -0.7));
+    if (id === 'vision' && this.kit.CONES[0] === CONE) return s.box.clone().expandByPoint(new THREE.Vector3(-0.24, 0.55, -0.7));
+    if (id === 'vision') {
+      const b = s.box.clone(), p = new THREE.Vector3();
+      for (const c of this.kit.CONES) for (const r of c.rays) b.expandByPoint(p.fromArray(r).setLength(c.length * 0.8).add(new THREE.Vector3(...c.lens)));
+      return b;
+    }
     if (id === 'intake') return s.box.clone().expandByPoint(new THREE.Vector3(0, 0.5, 0.2));
     return s.box;
   }
 
-  // where a point on a subsystem currently sits
-  displaced(id, p, out) {
+  // where a point on a subsystem currently sits; still: leave out the mechanism's motion (exploding only)
+  displaced(id, p, out, still) {
     const { u } = this.subs.get(id), m = u.uMove.value, pv = u.uPivot.value;
     out.copy(p).sub(u.uOrigin.value).multiply(u.uSpread.value).add(u.uShift.value);
-    if (!PIVOT[id]) return out.add(p);
+    if (still || !this.kit.PIVOT[id]) return out.add(p);
     const y = p.y - pv.x, z = p.z - pv.y, c = Math.cos(m.x), s = Math.sin(m.x);
     out.x += p.x;
     out.y += pv.x + y * c - z * s;
@@ -347,9 +364,15 @@ export class Stage {
   }
 
   // --- mechanism --------------------------------------------------------------------------
+  // [d, h, l] before the boot clip: everything folded in, unless the robot says otherwise
+  get stowed() {
+    const s = this.kit.STOWED || {};
+    return ['d', 'h', 'l'].map((v) => s[v] ?? 0);
+  }
+
   setMech(d, h, l, p = 1) {
     this.mech = { d, h, l, p };
-    const at = pose(d, h, l, p);
+    const at = this.kit.pose(d, h, l, p);
     for (const id in at) this.subs.get(id)?.u.uMove.value.fromArray(at[id]);
     this.renderer.shadowMap.needsUpdate = true;
     this.dirty = true;
@@ -361,7 +384,7 @@ export class Stage {
     if (clip !== 'rest') this.stopRun();
     if (clip !== 'rest' && this.exTo) return; // stays in its CAD pose while exploded
     if (clip === 'drive') { this.driveT = 0; return; }
-    this.clip = { keys: CLIPS[clip](this.mech), t: 0, from: { ...this.mech } };
+    this.clip = { keys: this.kit.CLIPS[clip](this.mech), t: 0, from: { ...this.mech } };
     this.dirty = true;
   }
 
@@ -416,6 +439,7 @@ export class Stage {
   }
 
   stepEgg(dt) {
+    if (!this.subs.has('shooter')) return;
     const u = this.subs.get('shooter').u;
     const blob = (this.blob ||= this.eggShadow());
     blob.visible = this.eggT !== undefined;
@@ -441,7 +465,7 @@ export class Stage {
 
   stepRun(dt) {
     if (this.pending && !this.clip) {
-      this.fuel.start(this.pending);
+      this.fuel.start(this.kit.RUNS[this.pending]);
       this.pending = null;
     }
     const a = this.fuel.active;
