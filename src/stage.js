@@ -27,19 +27,21 @@ const explodeVertex = (s, u) => {
       uniform float uUnit, uSpin;
       uniform vec4 uDrive;
       uniform mat4 uEgg;
+      uniform vec3 uGear;
       varying float vEgg;
       vec2 swing(vec2 p, float a) { return vec2(p.x * cos(a) - p.y * sin(a), p.x * sin(a) + p.y * cos(a)); }
       vec3 about(vec3 p, vec3 k, float a) { return p * cos(a) + cross(k, p) * sin(a) + k * dot(k, p) * (1.0 - cos(a)); }
       void main() {
       float code = floor(_center.w * 32.767 + 0.5), spinId = floor(code / 10.0), rigId = code - spinId * 10.0;
-      vEgg = rigId > 5.5 ? 1.0 : 0.0;
+      vEgg = rigId > 5.5 && rigId < 6.5 ? 1.0 : 0.0;
       float spinBy = uSpin * (spinId < 0.5 ? 0.0 : spinId < 1.5 ? 1.0 : spinId < 2.5 ? -1.0 : -4.07);
       // swerve: the axle points out from the robot's centre in the rest pose
       vec2 side = sign(_center.xz);
       vec3 axle = normalize(vec3(side.x, 0.0, side.y));
       float steerBy = uDrive.x * 0.785398 * side.x * side.y, rollBy = rigId > 4.5 ? uDrive.y * side.x + uDrive.z * side.y + uDrive.w : 0.0;`)
     .replace('#include <beginnormal_vertex>', `#include <beginnormal_vertex>
-      if (rigId > 5.5) objectNormal = mat3(uEgg) * objectNormal;
+      if (rigId > 6.5) objectNormal.yz = swing(objectNormal.yz, uMove.z * uGear.z);
+      else if (rigId > 5.5) objectNormal = mat3(uEgg) * objectNormal;
       else if (rigId > 3.5) {
         objectNormal = about(objectNormal, axle, rollBy);
         objectNormal.xz = swing(objectNormal.xz, steerBy);
@@ -52,7 +54,11 @@ const explodeVertex = (s, u) => {
         sp.yz = swing(sp.yz, spinBy);
         transformed = (sp + hub - modelMatrix[3].xyz) / uUnit;
       }
-      if (rigId > 5.5) {
+      if (rigId > 6.5) {
+        vec3 wp = transformed * uUnit + modelMatrix[3].xyz;
+        wp.yz = uGear.xy + swing(wp.yz - uGear.xy, uMove.z * uGear.z);
+        transformed = (wp - modelMatrix[3].xyz) / uUnit;
+      } else if (rigId > 5.5) {
         vec3 wp = (uEgg * vec4(transformed * uUnit + modelMatrix[3].xyz, 1.0)).xyz;
         transformed = (wp - modelMatrix[3].xyz) / uUnit;
       } else if (rigId > 3.5) {
@@ -172,7 +178,7 @@ export class Stage {
       m.geometry.computeBoundingBox();
       const [id, fin] = m.name.split('__');
       const sub = this.subs.get(id) || { id, a: 1, to: 1, parts: [], box: new THREE.Box3(), exBox: new THREE.Box3(), shift: new THREE.Vector3(...(explode[id]?.shift || [0, 0, 0])), spread: new THREE.Vector3(...(explode[id]?.spread || [0, 0, 0])) };
-      sub.u ||= { uShift: { value: new THREE.Vector3() }, uSpread: { value: new THREE.Vector3() }, uOrigin: { value: new THREE.Vector3() }, uMove: { value: new THREE.Vector3() }, uSpin: { value: 0 }, uDrive: { value: new THREE.Vector4() }, uEgg: { value: new THREE.Matrix4() }, uEggA: { value: 1 }, uPivot: { value: new THREE.Vector4(...(PIVOT[id]?.main || [0, 0]), ...(PIVOT[id]?.spin || [0, 0])) } };
+      sub.u ||= { uShift: { value: new THREE.Vector3() }, uSpread: { value: new THREE.Vector3() }, uOrigin: { value: new THREE.Vector3() }, uMove: { value: new THREE.Vector3() }, uSpin: { value: 0 }, uDrive: { value: new THREE.Vector4() }, uEgg: { value: new THREE.Matrix4() }, uEggA: { value: 1 }, uGear: { value: new THREE.Vector3(...(PIVOT[id]?.gear || [0, 0, 0])) }, uPivot: { value: new THREE.Vector4(...(PIVOT[id]?.main || [0, 0]), ...(PIVOT[id]?.spin || [0, 0])) } };
       const u = { ...sub.u, uUnit: { value: m.matrixWorld.getMaxScaleOnAxis() } };
       const displace = (mt) => { mt.onBeforeCompile = (s) => explodeVertex(s, u); return mt; };
       this.subs.set(id, sub);

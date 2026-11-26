@@ -113,7 +113,8 @@ export function classify(path, c) {
 }
 
 // Moving parts. 1 = moves with the mechanism, 2 = turns on a second pivot, 3 = elastic,
-// 4 = swerve turret, 5 = swerve wheel, 6 = the flywheel (moved as one piece by the viewer), 0 = fixed.
+// 4 = swerve turret, 5 = swerve wheel, 6 = the flywheel (moved as one piece by the viewer),
+// 7 = a gear meshed with the second-pivot one (mechanism.js PIVOT gear), 0 = fixed.
 // Pivots and travel live in src/mechanism.js.
 export function rig(path, sub, [x, y, z]) {
   const name = path[path.length - 1];
@@ -123,6 +124,8 @@ export function rig(path, sub, [x, y, z]) {
     if (inPath(path, /^Intake Moving Assembly/)) return 1;
     // 12T sprocket shaft that drives the pivot chains
     if (/12t Steel Sprocket|36t Aluminum Spur|^210-004|Clamping Shaft Collar/.test(name)) return 2;
+    // the 24T on the gearbox output that drives that 36T, and its shaft stack
+    if (Math.abs(y + 146) < 3 && Math.abs(z - 77) < 3 && /24t Aluminum Spur|Rounded Hex \(1\.25|0\.314" L|Shaft End Screw/.test(name)) return 7;
   }
   if (sub === 'hopper') {
     if (inPath(path, /^Dynamic Hopper/)) return 1;

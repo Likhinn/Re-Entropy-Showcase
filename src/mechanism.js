@@ -18,7 +18,8 @@ export const ELASTIC = { post: [0.3795, 0.005], pin: [0.2525, -0.0205] };
 const HOPPER_PUSH = [0, 6, 21, 45, 63, 68, 83, 111, 152, 182, 206, 229, 262, 304];
 
 export const PIVOT = {
-  intake: { main: [0.194, 0.286], spin: [0.1095, 0.1255] }, // [y, z]
+  // [y, z]; gear: [y, z, turns per turn of the spin pivot]
+  intake: { main: [0.194, 0.286], spin: [0.1095, 0.1255], gear: [0.077, 0.146, -1.5] }, // 24T driving the 36T
   hopper: { main: [0, 0], spin: [0.252, 0.005] },
   hood: { main: [0.443, -0.278], spin: [0.403, -0.066] },
 };
