@@ -10,6 +10,7 @@ import { EXPLODE, SUBSYSTEMS } from './content.js';
 const $ = (s) => document.querySelector(s);
 const body = document.body;
 const HOME_DIR = [-139, 25];
+const EGG_DIR = [-8, 9]; // front-left: the loose flywheel runs off into the distance behind the robot
 const ANIMATED = ['intake', 'hopper', 'hood', 'drive']; // subsystems with a clip in mechanism.js
 let exploded = false, current = -1, view = 'loading';
 
@@ -69,8 +70,8 @@ function frame(dur) {
     ? (stacked() ? { x: 0, y: 0.24 } : { x: 0.195, y: 0 })
     : { x: 0, y: stacked() ? 0 : -0.075 };
   stage.controls.enableZoom = view === 'view';
-  if (s) stage.fly({ box: stage.boxOf(s.id), dir: s.dir, zoom: s.zoom, shift, dur });
-  else stage.fly({ box: stage.boxOf(), dir: HOME_DIR, zoom: exploded ? 1.25 : view === 'hero' && !stacked() ? 1.2 : 1, shift, dur });
+  if (s) stage.fly({ box: stage.boxOf(s.id), dir: stage.eggT !== undefined ? EGG_DIR : s.dir, zoom: s.zoom, shift, dur });
+  else stage.fly({ box: stage.boxOf(), dir: stage.eggT !== undefined ? EGG_DIR : HOME_DIR, zoom: exploded ? 1.25 : stage.eggT !== undefined ? 1.1 : view === 'hero' && !stacked() ? 1.2 : 1, shift, dur });
 }
 
 function setView(v, dur = 1500) {
@@ -133,6 +134,12 @@ $('#explode').onclick = toggleExploded;
 $('#prev').onclick = () => step(-1);
 $('#next').onclick = () => step(1);
 addEventListener('keydown', (e) => {
+  // easter egg on the landing page and the shooter-side pages
+  if (e.key === ' ' && !exploded && (view === 'hero' || ['indexer', 'shooter', 'hood'].includes(items[current]?.s.id))) {
+    e.preventDefault();
+    if (!e.repeat) stage.egg();
+    return;
+  }
   if (view !== 'view') return;
   if (e.key === 'ArrowRight') step(1);
   else if (e.key === 'ArrowLeft') step(-1);
@@ -183,6 +190,8 @@ function fail(err) {
 
 function wire() {
   let rz;
+  // widen the shot while the flywheel easter egg runs, then settle back
+  stage.onEgg = (on) => { if (!stage.tween || !on) frame(on ? 1100 : 1600); };
   stage.onResize = () => { clearTimeout(rz); rz = setTimeout(() => frame(300), 120); };
 
   // clicking the model itself

@@ -39,7 +39,7 @@ export const SUBSYSTEMS = [
   {
     id: 'shooter', title: 'Flywheel Shooter', label: ['Flywheel', 'shooter'], dir: [-150, 22], anchor: [0.02, 0.443, -0.278],
     text: 'The shooter is a 4-inch-diameter aluminum drum covered with grip tape to ensure the fuel is accelerated instantly. The flywheel has a rotational inertia of 7 lb·in² and is geared up at about 4:1 from the drum to maximize rotational energy.',
-    specs: [['Drive', '4× Kraken X60'], ['Reduction', '20T to 30T, HTD 5 mm'], ['Flywheel', 'Geared up 61T to 15T']],
+    specs: [['Drive', '4× Kraken X60'], ['Reduction', '20T to 30T, HTD 5 mm'], ['Flywheel', 'Geared up 61T to 15T'], ['Flywheel speed', '6,500 rpm']],
   },
   {
     id: 'hood', title: 'Adjustable Hood', label: ['Adjustable', 'hood'], dir: [142, 30], anchor: [0, 0.593, -0.146],

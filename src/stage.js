@@ -5,6 +5,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { PIVOT, CLIPS, CONE, ELASTIC, SWERVE_SECONDS, pose, swerve } from './mechanism.js';
 import { Fuel, RUNS } from './fuel.js';
+import { egg, spunInPlace, EGG_SECONDS, EGG_AREA } from './egg.js';
 import { MeshBVH, acceleratedRaycast } from 'three-mesh-bvh';
 
 THREE.Mesh.prototype.raycast = acceleratedRaycast;
@@ -25,17 +26,21 @@ const explodeVertex = (s, u) => {
       uniform vec3 uMove;
       uniform float uUnit, uSpin;
       uniform vec4 uDrive;
+      uniform mat4 uEgg;
+      varying float vEgg;
       vec2 swing(vec2 p, float a) { return vec2(p.x * cos(a) - p.y * sin(a), p.x * sin(a) + p.y * cos(a)); }
       vec3 about(vec3 p, vec3 k, float a) { return p * cos(a) + cross(k, p) * sin(a) + k * dot(k, p) * (1.0 - cos(a)); }
       void main() {
       float code = floor(_center.w * 32.767 + 0.5), spinId = floor(code / 10.0), rigId = code - spinId * 10.0;
+      vEgg = rigId > 5.5 ? 1.0 : 0.0;
       float spinBy = uSpin * (spinId < 0.5 ? 0.0 : spinId < 1.5 ? 1.0 : spinId < 2.5 ? -1.0 : -4.07);
       // swerve: the axle points out from the robot's centre in the rest pose
       vec2 side = sign(_center.xz);
       vec3 axle = normalize(vec3(side.x, 0.0, side.y));
       float steerBy = uDrive.x * 0.785398 * side.x * side.y, rollBy = rigId > 4.5 ? uDrive.y * side.x + uDrive.z * side.y + uDrive.w : 0.0;`)
     .replace('#include <beginnormal_vertex>', `#include <beginnormal_vertex>
-      if (rigId > 3.5) {
+      if (rigId > 5.5) objectNormal = mat3(uEgg) * objectNormal;
+      else if (rigId > 3.5) {
         objectNormal = about(objectNormal, axle, rollBy);
         objectNormal.xz = swing(objectNormal.xz, steerBy);
       }
@@ -47,7 +52,10 @@ const explodeVertex = (s, u) => {
         sp.yz = swing(sp.yz, spinBy);
         transformed = (sp + hub - modelMatrix[3].xyz) / uUnit;
       }
-      if (rigId > 3.5) {
+      if (rigId > 5.5) {
+        vec3 wp = (uEgg * vec4(transformed * uUnit + modelMatrix[3].xyz, 1.0)).xyz;
+        transformed = (wp - modelMatrix[3].xyz) / uUnit;
+      } else if (rigId > 3.5) {
         vec3 hub = _center.xyz * 2.0, sp = about(transformed * uUnit + modelMatrix[3].xyz - hub, axle, rollBy);
         sp.xz = swing(sp.xz, steerBy);
         transformed = (sp + hub - modelMatrix[3].xyz) / uUnit;
@@ -164,7 +172,7 @@ export class Stage {
       m.geometry.computeBoundingBox();
       const [id, fin] = m.name.split('__');
       const sub = this.subs.get(id) || { id, a: 1, to: 1, parts: [], box: new THREE.Box3(), exBox: new THREE.Box3(), shift: new THREE.Vector3(...(explode[id]?.shift || [0, 0, 0])), spread: new THREE.Vector3(...(explode[id]?.spread || [0, 0, 0])) };
-      sub.u ||= { uShift: { value: new THREE.Vector3() }, uSpread: { value: new THREE.Vector3() }, uOrigin: { value: new THREE.Vector3() }, uMove: { value: new THREE.Vector3() }, uSpin: { value: 0 }, uDrive: { value: new THREE.Vector4() }, uPivot: { value: new THREE.Vector4(...(PIVOT[id]?.main || [0, 0]), ...(PIVOT[id]?.spin || [0, 0])) } };
+      sub.u ||= { uShift: { value: new THREE.Vector3() }, uSpread: { value: new THREE.Vector3() }, uOrigin: { value: new THREE.Vector3() }, uMove: { value: new THREE.Vector3() }, uSpin: { value: 0 }, uDrive: { value: new THREE.Vector4() }, uEgg: { value: new THREE.Matrix4() }, uEggA: { value: 1 }, uPivot: { value: new THREE.Vector4(...(PIVOT[id]?.main || [0, 0]), ...(PIVOT[id]?.spin || [0, 0])) } };
       const u = { ...sub.u, uUnit: { value: m.matrixWorld.getMaxScaleOnAxis() } };
       const displace = (mt) => { mt.onBeforeCompile = (s) => explodeVertex(s, u); return mt; };
       this.subs.set(id, sub);
@@ -180,7 +188,7 @@ export class Stage {
         }
         s.uniforms.uGhost = ghost;
         s.fragmentShader = s.fragmentShader
-          .replace('void main() {', 'uniform float uGhost;\nvoid main() {')
+          .replace('void main() {', 'uniform float uGhost, uEggA;\nvarying float vEgg;\nvoid main() {')
           .replace('#include <color_fragment>', `#include <color_fragment>
             float lum = dot(diffuseColor.rgb, vec3(0.2126, 0.7152, 0.0722));
             diffuseColor.rgb = clamp(mix(vec3(lum), diffuseColor.rgb, ${fin === 'brass' ? '1.0' : SATURATION.toFixed(2)}), 0.0, 1.0);`)
@@ -190,7 +198,7 @@ export class Stage {
           .replace('#include <opaque_fragment>', `
             float gf = 1.0 - abs(dot(normalize(normal), normalize(vViewPosition)));
             ${fin === 'clear' ? `diffuseColor.a *= ${clear} * (1.0 + 2.5 * gf * gf * gf);` : ''}
-            diffuseColor.a *= mix(1.0, 0.45 + 1.7 * gf * gf, uGhost);
+            diffuseColor.a *= mix(1.0, 0.45 + 1.7 * gf * gf, uGhost) * mix(1.0, uEggA, vEgg);
             outgoingLight = mix(outgoingLight, vec3(0.55, 0.57, 0.6), uGhost * 0.75);
             #include <opaque_fragment>`);
       };
@@ -287,6 +295,7 @@ export class Stage {
     this.afterAssembly = null;
     if (on) {
       this.stopRun();
+      if (this.eggT !== undefined) this.eggT = EGG_SECONDS;
       this.play('rest', true);
     }
     this.dirty = true;
@@ -295,6 +304,7 @@ export class Stage {
   boxOf(id) {
     const s = id ? this.subs.get(id) : this;
     if (this.exTo) return s.exBox;
+    if (this.eggT !== undefined && (!id || id === 'shooter')) return s.box.clone().union(EGG_AREA);
     // leave headroom for the folded intake
     // and for the camera's view cone
     if (id === 'vision') return s.box.clone().expandByPoint(new THREE.Vector3(-0.24, 0.55, -0.7));
@@ -375,6 +385,54 @@ export class Stage {
     this.fuel.stop();
   }
 
+  // the flywheel easter egg; see egg.js
+  egg() {
+    if (this.exTo || this.eggT !== undefined) return;
+    this.stopRun();
+    this.play('rest', true);
+    this.eggT = 0;
+    this.onEgg?.(true);
+  }
+
+  // soft contact shadow so the loose flywheel reads as sitting on the floor
+  eggShadow() {
+    const c = document.createElement('canvas');
+    c.width = c.height = 64;
+    const x = c.getContext('2d'), g = x.createRadialGradient(32, 32, 0, 32, 32, 32);
+    g.addColorStop(0, 'rgba(0,0,0,0.55)');
+    g.addColorStop(1, 'rgba(0,0,0,0)');
+    x.fillStyle = g;
+    x.fillRect(0, 0, 64, 64);
+    const m = new THREE.Mesh(new THREE.PlaneGeometry(0.22, 0.22).rotateX(-Math.PI / 2), new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(c), transparent: true, depthWrite: false }));
+    m.renderOrder = 4;
+    this.scene.add(m);
+    return m;
+  }
+
+  stepEgg(dt) {
+    const u = this.subs.get('shooter').u;
+    const blob = (this.blob ||= this.eggShadow());
+    blob.visible = this.eggT !== undefined;
+    if (this.eggT === undefined) {
+      // otherwise it just turns with the drum, 4.07 times faster
+      if (u.uSpin.value !== this.eggSeen) spunInPlace(-4.07 * u.uSpin.value, u.uEgg.value);
+      this.eggSeen = u.uSpin.value;
+      return;
+    }
+    this.eggT += dt;
+    const done = this.eggT >= EGG_SECONDS, at = egg(done ? EGG_SECONDS : this.eggT, u.uEgg.value);
+    u.uEggA.value = at.alpha;
+    const high = Math.min(1, at.pos.y / 0.35);
+    blob.position.set(at.pos.x, 0.001, at.pos.z);
+    blob.scale.setScalar(0.7 + 0.8 * high);
+    blob.material.opacity = at.alpha * (1 - high) * (at.pos.x < -0.43 ? 1 : 0);
+    if (done) blob.visible = false;
+    this.eggSpin = at.rollers;
+    if (done) { this.eggT = undefined; this.eggSeen = null; this.onEgg?.(false); }
+    this.renderer.shadowMap.needsUpdate = true;
+    this.dirty = true;
+  }
+
   stepRun(dt) {
     if (this.pending && !this.clip) {
       this.fuel.start(this.pending);
@@ -391,7 +449,8 @@ export class Stage {
     }
     // rollers spin up and coast down
     for (const s of this.subs.values()) {
-      const want = this.fuel.active && !this.fuel.active.stopping ? this.fuel.active.run.spin[s.id] || 0 : 0;
+      let want = this.fuel.active && !this.fuel.active.stopping ? this.fuel.active.run.spin[s.id] || 0 : 0;
+      if (this.eggSpin && { shooter: 24, hood: 30 }[s.id]) want = { shooter: 24, hood: 30 }[s.id] * this.eggSpin;
       let r = this.rate[s.id] || 0;
       if (!want && !r) continue;
       r = Math.abs(want - r) < 0.05 ? want : THREE.MathUtils.damp(r, want, 4, dt);
@@ -539,6 +598,7 @@ export class Stage {
       if (fading) { this.applyAlpha(); this.dirty = true; }
       if (this.clip) this.stepMech(dt);
       this.stepRun(dt);
+      this.stepEgg(dt);
       if (this.ex !== this.exTo) {
         const d = calm ? 1 : (dt * 1000) / EXPLODE_MS;
         this.ex = this.exTo ? Math.min(1, this.ex + d) : Math.max(0, this.ex - d);

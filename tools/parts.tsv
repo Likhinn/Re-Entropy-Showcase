@@ -566,10 +566,8 @@ indexer	#10-32 x 3" L SHCS (Steel, Black Oxide)	310,0,83
 indexer	#10-32 x 3" L SHCS (Steel, Black Oxide)	310,165,57
 indexer	#10-32 x 3/8" L BHCS (Steel, Black Oxide)	-296,-229,182
 indexer	#10-32 x 3/8" L BHCS (Steel, Black Oxide)	-296,-229,207
-indexer	#10-32 x 3/8" L BHCS (Steel, Black Oxide)	-302,307,249
 indexer	#10-32 x 3/8" L BHCS (Steel, Black Oxide)	-309,134,78
 indexer	#10-32 x 3/8" L BHCS (Steel, Black Oxide)	-309,44,78
-indexer	#10-32 x 3/8" L BHCS (Steel, Black Oxide)	302,307,249
 indexer	#10-32 x 3/8" L BHCS (Steel, Black Oxide)	309,134,78
 indexer	#10-32 x 3/8" L BHCS (Steel, Black Oxide)	309,44,78
 indexer	#10-32 x 5/16" L BHCS (Steel, Black Oxide)	-318,-140,171
@@ -626,13 +624,9 @@ indexer	1.25x1.125in PolyTube	-6,225,192
 indexer	1/2" Hex Bore Custom Spacer (0.376" OD,0.095" L)	-311,134,78
 indexer	1/2" Hex Bore Custom Spacer (0.376" OD,0.157" L)	-282,134,78
 indexer	1/2" Hex Bore Custom Spacer (0.376" OD,0.157" L)	-282,44,78
-indexer	1/2" Hex Bore Custom Spacer (0.376" OD,0.252" L)	-277,307,249
-indexer	1/2" Hex Bore Custom Spacer (0.376" OD,0.252" L)	277,307,249
 indexer	1/2" Hex Bore Custom Spacer (0.376" OD,0.252" L)	309,134,78
 indexer	1/2" Hex Bore Custom Spacer (0.376" OD,0.252" L)	309,44,78
-indexer	1/2" Hex Bore Custom Spacer (0.376" OD,0.5" L)	-299,307,249
 indexer	1/2" Hex Bore Custom Spacer (0.376" OD,0.5" L)	287,44,78
-indexer	1/2" Hex Bore Custom Spacer (0.376" OD,0.5" L)	299,307,249
 indexer	1/2" Hex Bore Custom Spacer (0.376" OD,0.595" L)	-304,44,78
 indexer	1/2" Hex Bore Custom Spacer (0.75" OD,0.031" L)	319,78,305
 indexer	1/2" Hex Bore Custom Spacer (0.75" OD,0.031" L)	319,85,270
@@ -680,8 +674,6 @@ indexer	2.25" Compliant Wheel (35A, 1" Wide, 1/2" Hex Bore)	188,78,305
 indexer	2.25" Compliant Wheel (35A, 1" Wide, 1/2" Hex Bore)	241,78,305
 indexer	2.25" Compliant Wheel (35A, 1" Wide, 1/2" Hex Bore)	27,78,305
 indexer	2.25" Compliant Wheel (35A, 1" Wide, 1/2" Hex Bore)	80,78,305
-indexer	20t Custom HTD 5mm Pulley (0.375" Wide, SplineXS Insert)	-287,307,249
-indexer	20t Custom HTD 5mm Pulley (0.375" Wide, SplineXS Insert)	287,307,249
 indexer	22t Custom HTD 5mm Pulley (0.375" Wide,‎ *0.5" Hex Bore)	339,225,192
 indexer	24t Aluminum Spur Gear (20 DP, 1/2" Hex Bore)	326,85,270
 indexer	24t Custom HTD 5mm Pulley (0.375" Wide, SplineXS Insert)	-291,44,78
@@ -693,9 +685,7 @@ indexer	25t Custom HTD 5mm Pulley (0.375" Wide,‎ *0.5" Hex Bore)	-327,156,137
 indexer	25t Custom HTD 5mm Pulley (0.375" Wide,‎ *0.5" Hex Bore)	-327,225,192
 indexer	30t Custom HTD 5mm Pulley (0.375" Wide,‎ *0.5" Hex Bore)	339,85,270
 indexer	32t Aluminum Spur Gear (20 DP, 1/2" Hex Bore)	326,78,305
-indexer	3D-Print Adapter (8mm SplineXS Bore)	-283,307,249
 indexer	3D-Print Adapter (8mm SplineXS Bore)	-287,44,78
-indexer	3D-Print Adapter (8mm SplineXS Bore)	283,307,249
 indexer	3D-Print Adapter (8mm SplineXS Bore)	293,134,78
 indexer	3D-Print Adapter (8mm SplineXS Bore)	296,44,78
 indexer	50T 5M 9mm Wide Belt	-304,146,108
@@ -705,8 +695,6 @@ indexer	50T 5M 9mm Wide Belt	290,-80,155
 indexer	50T 5M 9mm Wide Belt	290,40,126
 indexer	50T 5M 9mm Wide Belt	303,-139,171
 indexer	50T 5M 9mm Wide Belt	303,-21,139
-indexer	51T 5M 9mm Wide Belt	-287,307,288
-indexer	51T 5M 9mm Wide Belt	287,307,288
 indexer	53T 5M 9mm Wide Belt	290,258,316
 indexer	53T 5M 9mm Wide Belt	302,242,232
 indexer	55T 5M 6mm Wide Belt	302,-299,210
@@ -1005,15 +993,21 @@ shooter	#10-32 x 2-1/4" L SHCS (Steel, Black Oxide)	291,307,275
 shooter	#10-32 x 2-1/4" L SHCS (Steel, Black Oxide)	291,307,352
 shooter	#10-32 x 2-1/4" L SHCS (Steel, Black Oxide)	291,329,236
 shooter	#10-32 x 2-1/4" L SHCS (Steel, Black Oxide)	291,332,327
+shooter	#10-32 x 3/8" L BHCS (Steel, Black Oxide)	-302,307,249
 shooter	#10-32 x 3/8" L BHCS (Steel, Black Oxide)	-302,307,327
+shooter	#10-32 x 3/8" L BHCS (Steel, Black Oxide)	302,307,249
 shooter	#10-32 x 3/8" L BHCS (Steel, Black Oxide)	302,307,327
 shooter	0.196" ID Custom Spacer (0.375" OD,1.125" L)	-332,164,354
 shooter	0.196" ID Custom Spacer (0.375" OD,1.125" L)	-332,270,227
 shooter	0.196" ID Custom Spacer (0.375" OD,1.125" L)	-332,326,382
 shooter	0.25" ID Bearing (0.625" OD, 0.196" WD, Shielded, Flanged)	-348,253,321
 shooter	1.125" OD Bearing Retention Plate (Centered, 2" C-C)	-319,253,321
+shooter	1/2" Hex Bore Custom Spacer (0.376" OD,0.252" L)	-277,307,249
 shooter	1/2" Hex Bore Custom Spacer (0.376" OD,0.252" L)	-277,307,327
+shooter	1/2" Hex Bore Custom Spacer (0.376" OD,0.252" L)	277,307,249
 shooter	1/2" Hex Bore Custom Spacer (0.376" OD,0.252" L)	277,307,327
+shooter	1/2" Hex Bore Custom Spacer (0.376" OD,0.5" L)	-299,307,249
+shooter	1/2" Hex Bore Custom Spacer (0.376" OD,0.5" L)	299,307,249
 shooter	1/2" Hex Bore Custom Spacer (0.75" OD,0.054" L)	-344,253,321
 shooter	1/2" Hex Bore Custom Spacer (0.75" OD,0.062" L)	-320,278,443
 shooter	1/2" Hex Bore Custom Spacer (0.75" OD,0.071" L)	-343,253,321
@@ -1031,14 +1025,20 @@ shooter	1/2" Rounded Hex (13.75mm) ID Bearing (1.125" OD, 0.313" WD, Shielded, F
 shooter	1/2" Rounded Hex (13.75mm) ID Bearing (1.125" OD, 0.313" WD, Shielded, Flanged)	315,278,443
 shooter	1/2" Rounded Hex (27.031" L, 13.75mm OD)	1,278,443
 shooter	15T Custom HTD 5mm Pulley	-327,253,321
+shooter	20t Custom HTD 5mm Pulley (0.375" Wide, SplineXS Insert)	-287,307,249
 shooter	20t Custom HTD 5mm Pulley (0.375" Wide, SplineXS Insert)	-293,307,327
+shooter	20t Custom HTD 5mm Pulley (0.375" Wide, SplineXS Insert)	287,307,249
 shooter	20t Custom HTD 5mm Pulley (0.375" Wide, SplineXS Insert)	293,307,327
 shooter	30t Aluminum Pulley (HTD 5mm, 9mm Wide, 1/2" Hex Bore)-Mirrored	300,278,443
 shooter	30t Aluminum Pulley (HTD 5mm, 9mm Wide, 1/2" Hex Bore)-Mirrored-Mirrored	-300,278,443
+shooter	3D-Print Adapter (8mm SplineXS Bore)	-283,307,249
 shooter	3D-Print Adapter (8mm SplineXS Bore)	-283,307,327
 shooter	3D-Print Adapter (8mm SplineXS Bore)	-302,307,327
+shooter	3D-Print Adapter (8mm SplineXS Bore)	283,307,249
 shooter	3D-Print Adapter (8mm SplineXS Bore)	283,307,327
 shooter	3D-Print Adapter (8mm SplineXS Bore)	302,307,327
+shooter	51T 5M 9mm Wide Belt	-287,307,288
+shooter	51T 5M 9mm Wide Belt	287,307,288
 shooter	61T Custom HTD 5mm Pulley	-327,278,443
 shooter	73T 5M 9mm Wide Belt	-298,288,389
 shooter	73T 5M 9mm Wide Belt	298,288,389

@@ -86,6 +86,8 @@ export function classify(path, c) {
     // hood pinion shaft with its gears and drive
     if (y < 110 && z > 380 && /Spur Gear|27\.094|36t Custom|Bronze Bushing|Shaft End/.test(name)) return 'hood';
     if (inPath(path, /Kraken X44/) || /143T|^12t Aluminum Pulley/.test(name)) return 'hood';
+    // belt tying each pair of shooter Krakens together, and the pulley stack on the lower motor
+    if (Math.abs(y - 307) < 3 && (/^51T 5M/.test(name) || Math.abs(z - 249) < 3)) return 'shooter';
     // feeder rollers + kicker wheels sit above the floor rollers but belong to the indexer
     if (/PolyCarbTube|SILICONE|^NB Plug|53T|51T|^18tDouble|Compliant Wheel|25\.654|30t Custom|32t Aluminum Spur|24t Aluminum Spur/.test(name)) return 'indexer';
     if (inPath(path, /Kraken/) && z < 200) return 'indexer';
@@ -98,8 +100,6 @@ export function classify(path, c) {
     // third standoff of the side-flywheel plate
     if (x < -330 && Math.abs(y - 270) < 2 && Math.abs(z - 227) < 2) return 'shooter';
     if (/^Little ?Spacer/.test(name)) return 'indexer';
-    // drive train of the upper motors: pulley stacks belong with the feeder belts
-    if (/Hex Bore Custom Spacer \(0\.376|3\/8" L BHCS/.test(name) && Math.abs(z - 249) < 2) return 'indexer';
     if (/^Washer/.test(name) && y < 110 && z > 380) return 'hood';
     if (name === '' && Math.abs(x) > 300) return 'frame'; // encoders
     // feeder roller ends, and the pulleys of its own motors
@@ -113,10 +113,11 @@ export function classify(path, c) {
 }
 
 // Moving parts. 1 = moves with the mechanism, 2 = turns on a second pivot, 3 = elastic,
-// 4 = swerve turret, 5 = swerve wheel, 0 = fixed.
+// 4 = swerve turret, 5 = swerve wheel, 6 = the flywheel (moved as one piece by the viewer), 0 = fixed.
 // Pivots and travel live in src/mechanism.js.
 export function rig(path, sub, [x, y, z]) {
   const name = path[path.length - 1];
+  if (/^Neely Flywheely/.test(name)) return 6;
   if (sub === 'drive') return /Turret Assembly/.test(name) ? 4 : /Molded Wheel/.test(name) ? 5 : 0;
   if (sub === 'intake') {
     if (inPath(path, /^Intake Moving Assembly/)) return 1;
@@ -149,7 +150,7 @@ const SPINNERS = {
 };
 export function spin(path, sub, [x, y, z]) {
   const name = path[path.length - 1];
-  if (/Plate|Kraken|ID Bearing|Belt$|Shoulder Bolt$|^Bearing Hat/.test(name)) return 0;
+  if (/Plate|Kraken|ID Bearing|Belt$|Shoulder Bolt$|^Bearing Hat|^Neely Flywheely/.test(name)) return 0;
   return SPINNERS[sub]?.find(([Y, Z]) => Math.abs(y - Y) < 2.5 && Math.abs(z - Z) < 2.5)?.[2] || 0;
 }
 
