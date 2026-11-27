@@ -7,7 +7,9 @@ const G = 9.8, DT = 1 / 240, SAMPLE = 4; // physics step; keep every 4th step (6
 const SHAKE = 0.35; // s of rattling before it goes
 const LIE = 1.6; // s the parts lie still before flying home
 const HOME = 1.3, STAGGER = 0.7; // s each part takes to fly back, spread of their start times
-const BOUNCE = 0.3, SLIDE = 0.55, SPIN_KEPT = 0.6; // kept at each floor contact: upward speed, sliding, spin
+const RESTITUTION = 0.3, FRICTION = 0.6; // floor: share of the hit speed it bounces back with, grip
+const MAX_SPIN = 45; // rad/s
+const BUMPER = 0.45; // m from the robot's centre to the front of its bumper
 
 const smooth = (k) => k * k * (3 - 2 * k);
 const ramp = (t, a, b) => Math.min(1, Math.max(0, (t - a) / (b - a)));
@@ -46,7 +48,9 @@ function split(parts) {
   return out;
 }
 
-// throw the parts and record where they go; returns the area they cover
+// throw the parts and record where they go; returns the area they cover.
+// Each part is a rigid box (its rest-pose bounds) with a box's inertia; any corner below the floor gets a
+// bounce-and-friction impulse at that corner, so parts catch an edge, flip, and topple onto a face by themselves.
 function simulate(pieces, floor, seed) {
   const rand = rng(seed);
   const origin = new THREE.Vector3(), all = new THREE.Box3();
@@ -55,73 +59,79 @@ function simulate(pieces, floor, seed) {
   origin.y = all.min.y + 0.25 * (all.max.y - all.min.y);
   origin.z -= 0.12;
   const area = all.clone();
-  const q = new THREE.Quaternion(), dq = new THREE.Quaternion(), axis = new THREE.Vector3(), corner = new THREE.Vector3();
-  const down = new THREE.Vector3(0, -1, 0), flat = new THREE.Quaternion(), local = new THREE.Vector3();
+  const q = new THREE.Quaternion(), dq = new THREE.Quaternion(), axis = new THREE.Vector3();
+  const R = new THREE.Matrix3(), Rt = new THREE.Matrix3(), invI = new THREE.Matrix3(), m4 = new THREE.Matrix4();
+  const r = new THREE.Vector3(), vp = new THREE.Vector3(), t = new THREE.Vector3(), a = new THREE.Vector3(), b = new THREE.Vector3();
+  const UP = new THREE.Vector3(0, 1, 0);
   let longest = 0;
   for (const p of pieces) {
-    const c = p.box.getCenter(new THREE.Vector3()), h = p.box.getSize(new THREE.Vector3()).multiplyScalar(0.5);
+    const c = p.box.getCenter(new THREE.Vector3()), h = p.box.getSize(new THREE.Vector3()).multiplyScalar(0.5).max(new THREE.Vector3(0.002, 0.002, 0.002));
     const size = h.length();
+    // inverse inertia of a solid box, per unit mass, in its own axes
+    const inv = [3 / (h.y * h.y + h.z * h.z), 3 / (h.x * h.x + h.z * h.z), 3 / (h.x * h.x + h.y * h.y)];
     const out = c.clone().sub(origin).setY(0);
     if (out.lengthSq() < 1e-6) out.set(rand() - 0.5, 0, 1);
     out.normalize();
-    const v = out.multiplyScalar(0.35 + rand() * 0.55);
-    v.y = 1.3 + rand() * 0.9;
-    v.z = Math.max(v.z, 0) + 0.45 + rand() * 0.35; // out the front, clear of the bumper
-    const w = new THREE.Vector3(rand() - 0.5, rand() - 0.5, rand() - 0.5).normalize().multiplyScalar((5 + rand() * 9) / (1 + size * 6));
+    const v = out.multiplyScalar(0.4 + rand() * 0.6);
+    v.y = 1.6 + rand() * 1.0;
+    // out the front, clear of the bumper: the further back it starts, the harder it's thrown
+    v.z = Math.max(v.z, 0) + 0.5 + rand() * 0.4 + Math.max(0, BUMPER - c.z) * 2.5;
+    const w = new THREE.Vector3(rand() - 0.5, rand() - 0.5, rand() - 0.5).normalize().multiplyScalar((10 + rand() * 18) / (1 + size * 4));
     const x = c.clone();
     q.identity();
     const track = [];
+    // an impulse J at r from the centre
+    const push = (J) => { v.add(J); w.add(a.copy(r).cross(J).applyMatrix3(invI)); };
+    // how hard the corner at r resists being pushed along d
+    const stiff = (d) => 1 + d.dot(b.copy(r).cross(d).applyMatrix3(invI).cross(r));
     let still = 0;
-    for (let i = 0, t = 0; t < 6; i++, t += DT) {
+    for (let i = 0, time = 0; time < 5; i++, time += DT) {
       v.y -= G * DT;
       x.addScaledVector(v, DT);
-      const a = w.length();
-      if (a > 1e-6) q.premultiply(dq.setFromAxisAngle(axis.copy(w).divideScalar(a), a * DT));
-      // lowest corner of the part's box against the floor
-      let low = Infinity;
-      for (let k = 0; k < 8; k++) {
-        corner.set(k & 1 ? h.x : -h.x, k & 2 ? h.y : -h.y, k & 4 ? h.z : -h.z).applyQuaternion(q);
-        low = Math.min(low, corner.y);
-      }
-      const ground = floor - low;
-      if (x.y < ground) {
-        x.y = ground;
-        if (v.y < 0) v.y = v.y < -0.6 ? -v.y * BOUNCE : 0;
-        v.x *= SLIDE;
-        v.z *= SLIDE;
-        w.multiplyScalar(SPIN_KEPT);
-        // nearly stopped: tip over onto its flattest side
-        if (Math.hypot(v.x, v.y, v.z) < 0.25 && w.length() < 2) {
-          v.set(0, 0, 0);
-          w.set(0, 0, 0);
-          // lie on its biggest face: the axis through its thinnest side points down
-          const ax = h.x <= h.y && h.x <= h.z ? 0 : h.y <= h.z ? 1 : 2;
-          local.set(0, 0, 0).setComponent(ax, 1).applyQuaternion(q);
-          if (local.dot(down) < 0) local.negate();
-          flat.setFromUnitVectors(local, down);
-          q.slerp(flat.multiply(q), Math.min(1, DT * 8));
-          still += DT;
+      const spin = w.length();
+      if (spin > 1e-6) q.premultiply(dq.setFromAxisAngle(axis.copy(w).divideScalar(spin), spin * DT)).normalize();
+      R.setFromMatrix4(m4.makeRotationFromQuaternion(q));
+      invI.copy(R).multiply(new THREE.Matrix3().set(inv[0], 0, 0, 0, inv[1], 0, 0, 0, inv[2])).multiply(Rt.copy(R).transpose());
+      // floor contacts, a few passes so a face landing on four corners comes out even
+      let sink = 0;
+      for (let pass = 0; pass < 3; pass++) {
+        for (let k = 0; k < 8; k++) {
+          r.set(k & 1 ? h.x : -h.x, k & 2 ? h.y : -h.y, k & 4 ? h.z : -h.z).applyQuaternion(q);
+          const depth = floor - (x.y + r.y);
+          if (depth <= 0) continue;
+          sink = Math.max(sink, depth);
+          vp.copy(w).cross(r).add(v);
+          if (vp.y >= 0) continue;
+          const jn = (-(1 + (vp.y < -0.6 ? RESTITUTION : 0)) * vp.y) / stiff(UP);
+          push(t.set(0, jn, 0));
+          // friction against the sliding of that corner, at most FRICTION times the push
+          vp.copy(w).cross(r).add(v).setY(0);
+          const slip = vp.length();
+          if (slip > 1e-6) {
+            t.copy(vp).divideScalar(-slip);
+            push(t.multiplyScalar(Math.min(slip / stiff(t.clone()), FRICTION * jn)));
+          }
         }
       }
+      if (sink > 0) {
+        x.y += sink;
+        w.multiplyScalar(1 - 1.5 * DT); // a little rolling resistance
+      }
+      if (w.lengthSq() > MAX_SPIN * MAX_SPIN) w.setLength(MAX_SPIN);
+      // barely moving on the floor: let it come to rest instead of jittering on its corners
+      let fastest = 0;
+      if (sink > 0) for (let k = 0; k < 8; k++) {
+        r.set(k & 1 ? h.x : -h.x, k & 2 ? h.y : -h.y, k & 4 ? h.z : -h.z).applyQuaternion(q);
+        fastest = Math.max(fastest, vp.copy(w).cross(r).add(v).length());
+      }
+      const slow = sink > 0 && fastest < 0.08;
+      if (slow) { v.multiplyScalar(0.9); w.multiplyScalar(0.9); }
+      still = slow ? still + DT : 0;
       if (i % SAMPLE === 0) {
         track.push(x.x, x.y, x.z, q.x, q.y, q.z, q.w);
-        area.expandByPoint(corner.copy(x).addScaledVector(h, 1)).expandByPoint(corner.copy(x).addScaledVector(h, -1));
+        area.expandByPoint(r.copy(x).add(h)).expandByPoint(r.copy(x).sub(h));
       }
-      if (still > 0.4) break;
-    }
-    // finish lying exactly flat on the floor, whatever it was still doing
-    const ax = h.x <= h.y && h.x <= h.z ? 0 : h.y <= h.z ? 1 : 2;
-    local.set(0, 0, 0).setComponent(ax, 1).applyQuaternion(q);
-    if (local.dot(down) < 0) local.negate();
-    const rest = flat.setFromUnitVectors(local, down).multiply(q).clone();
-    let low = Infinity;
-    for (let k = 0; k < 8; k++) low = Math.min(low, corner.set(k & 1 ? h.x : -h.x, k & 2 ? h.y : -h.y, k & 4 ? h.z : -h.z).applyQuaternion(rest).y);
-    const from = x.clone(), q0 = q.clone();
-    for (let k = 1; k <= 15; k++) {
-      const s = smooth(k / 15);
-      x.copy(from).setY(from.y + (floor - low - from.y) * s);
-      q.copy(q0).slerp(rest, s);
-      track.push(x.x, x.y, x.z, q.x, q.y, q.z, q.w);
+      if (still > 0.3) break;
     }
     longest = Math.max(longest, track.length / 7);
     Object.assign(p, { centre: c, half: h, track });

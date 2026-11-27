@@ -8,13 +8,28 @@ export const DROP = /^Origin Cube|^Text$/;
 // Which robot is being built. The part-by-part fixes, recolors by part number and moving-part
 // positions below were measured on Re-Entropy's CAD; for any other robot only the rules that go
 // by assembly and part names apply, and only the swerve modules move.
-let reEntropy = true;
-export function setRobot(id) { reEntropy = id === 're-entropy'; }
+let reEntropy = true, numbered = false, robotId = 're-entropy';
+export function setRobot(id) {
+  robotId = id;
+  reEntropy = id === 're-entropy';
+  numbered = /^entropy-/.test(id); // Entropy's earlier CADs, laid out in numbered assemblies (100-000 Drivebase, ...)
+}
+
+// Albany's hopper assembly, which replaces every other Entropy's (build-model.mjs)
+const ALBANY_HOPPER = /^400-000 \(Hopper\)/;
 
 // Parts in the CAD that do not exist on the real robot. Same arguments as classify().
 export function removed(path, [x, y, z]) {
-  if (!reEntropy) return false;
   const name = path[path.length - 1];
+  // a copy of a drivebase tube filed under Albany's hopper
+  if (inPath(path, ALBANY_HOPPER) && /^110-/.test(name)) return true;
+  // Dalton's thin intake reinforcement plates: only the 1/4 in polycarbonate side plates stay
+  if (robotId === 'entropy-dalton' && /^220-001 /.test(name)) return true;
+  // and a small polycarbonate plate on the outside of its right frame rail
+  if (robotId === 'entropy-dalton' && name === 'Part 34' && inPath(path, /^100-000/)) return true;
+  // and its old hopper push block on the intake cross bar, replaced by the drawn ones (push-block.mjs)
+  if (robotId === 'entropy-dalton' && name === 'that one plastic part') return true;
+  if (!reEntropy) return false;
   // unattached roller adapter and screw floating next to the hood rack
   if (/^3D-Print Adapter/.test(name) && x > 300 && Math.abs(y - 87) < 3 && Math.abs(z - 504) < 3) return true;
   if (/9\/16" L BHCS/.test(name) && x > 300 && Math.abs(y - 67) < 3 && Math.abs(z - 483) < 3) return true;
@@ -61,6 +76,8 @@ export function glass(path) {
 }
 
 // Color overrides, sRGB 0..1. Anything not matched keeps its CAD color.
+// the printed green of the hopper push blocks, on every Entropy (push-block.mjs draws Dalton's and Albany's)
+export const PUSH_GREEN = [0.28, 0.55, 0.16];
 export function recolor(path) {
   const name = path[path.length - 1];
   if (/^Neely Flywheely/.test(name)) return [0.84, 0.69, 0.4]; // brass
@@ -72,8 +89,10 @@ export function recolor(path) {
     // drum-end flywheels: light grey disc, dark grey bolt-on ring
     if (/^Part 29$/.test(name) && inPath(path, /^Static Shooter/)) return [0.78, 0.79, 0.8];
     if (/^Part 30$/.test(name) && inPath(path, /^Static Shooter/)) return [0.24, 0.245, 0.25];
+    // Dalton's star wheels in the dark gray of Albany's intake wheels
+    if (robotId === 'entropy-dalton' && /^4" Compliant Star/.test(name)) return [0.22, 0.22, 0.22];
     // printed blocks on the intake cross bar that push the hopper out
-    if (/^Part 2$/.test(name) && inPath(path, /^test assembl/)) return [0.06, 0.06, 0.065];
+    if (/^Part 2$/.test(name) && inPath(path, /^test assembl/)) return PUSH_GREEN;
     return;
   }
   if (/^Part 43$/.test(name)) return [0.25, 0.25, 0.25]; // hood bearing support, same as the other plates
@@ -85,6 +104,7 @@ export function recolor(path) {
 // rollers and the hood, the hopper walls and bumpers sit loose at the top level.
 function classifyEntropy(path, [x, y, z]) {
   const name = path[path.length - 1];
+  if (inPath(path, ALBANY_HOPPER)) return /^110-/.test(name) ? 'frame' : 'hopper';
   if (inPath(path, /ThriftyCam|Camera|Orange ?Pi/i) || (name === '' && path.length === 2 && y > 280 && z > 280)) return 'vision';
   if (inPath(path, /Robot Radio|RSL|Power Distribution|Robot Battery|Main Breaker/i)) return 'power';
   if (/^Bumper/.test(name) && path.length === 2) return 'bumpers';
@@ -101,6 +121,22 @@ function classifyEntropy(path, [x, y, z]) {
     if (z > 395) return 'shooter'; // flywheel shaft and its two Krakens
     return 'indexer'; // feed rollers and kicker under the flywheel
   }
+  return 'frame';
+}
+
+// Entropy's earlier CADs: one numbered assembly per subsystem
+function classifyNumbered(path, [x, y, z]) {
+  const name = path[path.length - 1];
+  if (inPath(path, /ThriftyCam|Camera|Orange ?Pi|Opi5/i)) return 'vision';
+  if (inPath(path, /Power Distribution|Main Breaker|Robot Battery|Robot Radio|RSL|Polulu|Battery containment|Mini Power/i)) return 'power';
+  if (/^Bumper/.test(name)) return 'bumpers';
+  if (/^Swerve Corner/.test(name) || inPath(path, /^SDS MK4i/)) return 'drive';
+  if (inPath(path, ALBANY_HOPPER)) return /^110-/.test(name) ? 'frame' : 'hopper'; // a frame tube is filed under it
+  if (inPath(path, /^200-000/)) return 'intake';
+  if (inPath(path, /^600-000/)) return 'indexer';
+  if (inPath(path, /^500-000/)) return 'climber';
+  if (inPath(path, /^300-000|^Drum shooter/)) return inPath(path, /^Moving Drum|^moving/) ? 'hood' : 'shooter';
+  if (inPath(path, /^100-000/)) return name === '' ? 'power' : 'frame';
   return 'frame';
 }
 
@@ -132,7 +168,7 @@ function rigEntropy(path, sub, [x, y, z]) {
     return 0;
   }
   // the hopper's front wall, its corner brackets and the outer side walls slide back over the inner ones
-  if (sub === 'hopper') return /^400-00[23] |^L Bracket/.test(name) ? 1 : 0;
+  if (sub === 'hopper') return inPath(path, /^Moving +hopper/) || /^400-00[23] |^L Bracket/.test(name) ? 1 : 0;
   if (sub === 'hood') {
     if (inPath(path, /^Dynamic Shooter/)) return 1;
     if (at(322, 408) && !/Bushing|Kraken/.test(name)) return 2; // pinion shaft
@@ -141,6 +177,7 @@ function rigEntropy(path, sub, [x, y, z]) {
 }
 
 export function classify(path, c) {
+  if (numbered) return classifyNumbered(path, c);
   if (!reEntropy) return classifyEntropy(path, c);
   const name = path[path.length - 1];
   const [x, y, z] = c;

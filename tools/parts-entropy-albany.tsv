@@ -1,0 +1,742 @@
+bumpers	Bumper	0,-214,89	851,422,127	0,1461,3511
+bumpers	Bumper	0,214,89	851,422,127	0,1461,-3511
+bumpers	Bumper Back	0,-359,89	737,19,127	0,1461,5878
+bumpers	Bumper Back A	359,-176,89	19,346,127	5878,1461,2887
+bumpers	Bumper Back B	-359,-176,89	19,346,127	-5878,1461,2887
+bumpers	Bumper Front A	359,233,89	19,232,127	5878,1461,-3824
+bumpers	Bumper Front B	-359,176,89	19,346,127	-5878,1461,-2887
+bumpers	Bumper Front Wood	0,359,89	737,19,127	0,1461,-5878
+drive		-272,276,157	28,24,6	-4462,2579,-4523
+drive		-272,276,164	28,23,7	-4461,2686,-4523
+drive		-276,-272,157	24,28,6	-4522,2579,4462
+drive		-276,-272,164	23,28,7	-4522,2686,4461
+drive		272,-276,157	28,24,6	4463,2579,4522
+drive		272,-276,164	28,23,7	4462,2686,4522
+drive		276,272,157	24,28,6	4523,2579,-4463
+drive		276,272,164	23,28,7	4523,2686,-4462
+drive	Belt, 320-5M-15	-267,-276,110	115,98,15	-4382,1800,4525
+drive	Belt, 320-5M-15	-276,268,110	98,115,15	-4525,1800,-4383
+drive	Belt, 320-5M-15	268,276,110	115,98,15	4383,1800,-4526
+drive	Belt, 320-5M-15	276,-267,110	98,115,15	4526,1800,4382
+drive	Bevel Gear, 1545	-296,-296,82	25,25,14	-4538,1344,4538
+drive	Bevel Gear, 1545	-296,296,82	25,25,14	-4538,1344,-4538
+drive	Bevel Gear, 1545	296,-296,82	25,25,14	4538,1344,4538
+drive	Bevel Gear, 1545	296,296,82	25,25,14	4538,1344,-4538
+drive	Bevel Gear, 4515	-288,-288,51	51,51,69	-4538,836,4538
+drive	Bevel Gear, 4515	-288,288,51	51,51,69	-4538,836,-4538
+drive	Bevel Gear, 4515	288,-288,51	51,51,69	4538,836,4538
+drive	Bevel Gear, 4515	288,288,51	51,51,69	4538,836,-4538
+drive	Double Gear, 20DP, 25T, 50T	-276,-276,128	66,66,34	-4525,2091,4525
+drive	Double Gear, 20DP, 25T, 50T	-276,276,128	66,66,34	-4525,2091,-4526
+drive	Double Gear, 20DP, 25T, 50T	276,-276,128	66,66,34	4526,2091,4525
+drive	Double Gear, 20DP, 25T, 50T	276,276,128	66,66,34	4526,2091,-4526
+drive	E Clip, .03125, 97431A310_97431A310	-296,-296,122	12,13,1	-4538,2002,4538
+drive	E Clip, .03125, 97431A310_97431A310	-296,296,122	13,12,1	-4538,2002,-4538
+drive	E Clip, .03125, 97431A310_97431A310	296,-296,122	13,12,1	4538,2002,4538
+drive	E Clip, .03125, 97431A310_97431A310	296,296,122	12,13,1	4538,2002,-4538
+drive	Gear, 20DP, 16T, .375Hex, 217-5451	-296,-296,116	23,23,13	-4538,1893,4538
+drive	Gear, 20DP, 16T, .375Hex, 217-5451	-296,296,116	23,23,13	-4538,1893,-4538
+drive	Gear, 20DP, 16T, .375Hex, 217-5451	296,-296,116	23,23,13	4538,1893,4538
+drive	Gear, 20DP, 16T, .375Hex, 217-5451	296,296,116	23,23,13	4538,1893,-4538
+drive	Gear, 50T, 20DP, .375Hex	-215,260,140	66,66,13	-3519,2296,-4254
+drive	Gear, 50T, 20DP, .375Hex	-260,-215,140	66,66,13	-4253,2296,3519
+drive	Gear, 50T, 20DP, .375Hex	215,-260,140	66,66,13	3520,2296,4253
+drive	Gear, 50T, 20DP, .375Hex	260,215,140	66,66,13	4254,2296,-3520
+drive	Gear, 50T, 20DP, .375Hex_1	-219,-265,129	66,66,13	-3587,2109,4346
+drive	Gear, 50T, 20DP, .375Hex_1	-265,219,129	66,66,13	-4346,2109,-3588
+drive	Gear, 50T, 20DP, .375Hex_1	219,265,129	66,66,13	3588,2109,-4346
+drive	Gear, 50T, 20DP, .375Hex_1	265,-219,129	66,66,13	4346,2109,3587
+drive	MK3 Base Pulley V3	-276,-276,106	98,98,27	-4538,1735,4538
+drive	MK3 Base Pulley V3	-276,276,106	98,98,27	-4538,1735,-4538
+drive	MK3 Base Pulley V3	276,-276,106	98,98,27	4538,1735,4538
+drive	MK3 Base Pulley V3	276,276,106	98,98,27	4538,1735,-4538
+drive	MK3 Center Column	-276,-276,135	17,17,38	-4526,2208,4525
+drive	MK3 Center Column	-276,276,135	17,17,38	-4525,2208,-4527
+drive	MK3 Center Column	276,-276,135	17,17,38	4526,2208,4526
+drive	MK3 Center Column	276,276,135	17,17,38	4527,2208,-4526
+drive	MK4 Intermediate Shaft V3	-296,-296,96	16,16,55	-4538,1579,4538
+drive	MK4 Intermediate Shaft V3	-296,296,96	16,16,55	-4538,1579,-4538
+drive	MK4 Intermediate Shaft V3	296,-296,96	16,16,55	4538,1579,4538
+drive	MK4 Intermediate Shaft V3	296,296,96	16,16,55	4538,1579,-4538
+drive	MK4 Wheel Spacer	-279,-279,51	35,35,15	-4538,836,4538
+drive	MK4 Wheel Spacer	-279,279,51	35,35,15	-4538,836,-4538
+drive	MK4 Wheel Spacer	279,-279,51	35,35,15	4538,836,4538
+drive	MK4 Wheel Spacer	279,279,51	35,35,15	4538,836,-4538
+drive	MK4i Master Part V2_Default Falcon 500 Config	-235,-235,127	164,164,54	-3855,2085,3854
+drive	MK4i Master Part V2_Default Falcon 500 Config	-235,235,127	164,164,54	-3854,2085,-3856
+drive	MK4i Master Part V2_Default Falcon 500 Config	-258,-258,65	170,170,56	-4226,1058,4226
+drive	MK4i Master Part V2_Default Falcon 500 Config	-258,-258,96	170,170,8	-4226,1578,4226
+drive	MK4i Master Part V2_Default Falcon 500 Config	-258,258,65	170,170,56	-4226,1058,-4227
+drive	MK4i Master Part V2_Default Falcon 500 Config	-258,258,96	170,170,8	-4226,1578,-4227
+drive	MK4i Master Part V2_Default Falcon 500 Config	-273,-273,164	37,37,19	-4467,2682,4466
+drive	MK4i Master Part V2_Default Falcon 500 Config	-273,273,164	37,37,19	-4466,2682,-4468
+drive	MK4i Master Part V2_Default Falcon 500 Config	235,-235,127	164,164,54	3855,2085,3855
+drive	MK4i Master Part V2_Default Falcon 500 Config	235,235,127	164,164,54	3856,2085,-3855
+drive	MK4i Master Part V2_Default Falcon 500 Config	258,-258,65	170,170,56	4227,1058,4226
+drive	MK4i Master Part V2_Default Falcon 500 Config	258,-258,96	170,170,8	4227,1578,4226
+drive	MK4i Master Part V2_Default Falcon 500 Config	258,258,65	170,170,56	4227,1058,-4227
+drive	MK4i Master Part V2_Default Falcon 500 Config	258,258,96	170,170,8	4227,1578,-4227
+drive	MK4i Master Part V2_Default Falcon 500 Config	273,-273,164	37,37,19	4467,2682,4467
+drive	MK4i Master Part V2_Default Falcon 500 Config	273,273,164	37,37,19	4468,2682,-4467
+drive	MK4i Shaft, Drive Idler	-215,260,123	13,13,56	-3520,2021,-4254
+drive	MK4i Shaft, Drive Idler	-260,-215,123	13,13,56	-4253,2021,3520
+drive	MK4i Shaft, Drive Idler	215,-260,123	13,13,56	3520,2021,4253
+drive	MK4i Shaft, Drive Idler	260,215,123	13,13,56	4254,2021,-3520
+drive	MK4i Steering Shaft Tall	-219,-265,124	18,18,57	-3587,2036,4346
+drive	MK4i Steering Shaft Tall	-265,219,124	18,18,57	-4346,2036,-3588
+drive	MK4i Steering Shaft Tall	219,265,124	18,18,57	3588,2036,-4346
+drive	MK4i Steering Shaft Tall	265,-219,124	18,18,57	4346,2036,3587
+drive	Screw, Shoulder, .375 X 2.5, 5_16-18, 91259A634_91259A634	-272,-272,51	65,65,14	-4538,836,4538
+drive	Screw, Shoulder, .375 X 2.5, 5_16-18, 91259A634_91259A634	-272,272,51	65,65,14	-4538,836,-4538
+drive	Screw, Shoulder, .375 X 2.5, 5_16-18, 91259A634_91259A634	272,-272,51	65,65,14	4538,836,4538
+drive	Screw, Shoulder, .375 X 2.5, 5_16-18, 91259A634_91259A634	272,272,51	65,65,14	4538,836,-4538
+drive	Semicircle Spacer	-178,-288,119	46,55,2	-2913,1942,4718
+drive	Semicircle Spacer	-178,288,119	46,55,2	-2913,1942,-4719
+drive	Semicircle Spacer	-288,-178,119	55,46,2	-4718,1942,2913
+drive	Semicircle Spacer	-288,178,119	55,46,2	-4718,1942,-2913
+drive	Semicircle Spacer	178,-288,119	46,55,2	2914,1942,4718
+drive	Semicircle Spacer	178,288,119	46,55,2	2913,1942,-4719
+drive	Semicircle Spacer	288,-178,119	55,46,2	4719,1942,2913
+drive	Semicircle Spacer	288,178,119	55,46,2	4719,1942,-2914
+drive	Shim, 8mm ID X 14mm OD X .5mm Thick, 98055A115_98055A115	-296,-296,75	14,14,1	-4538,1225,4538
+drive	Shim, 8mm ID X 14mm OD X .5mm Thick, 98055A115_98055A115	-296,296,75	14,14,1	-4538,1225,-4538
+drive	Shim, 8mm ID X 14mm OD X .5mm Thick, 98055A115_98055A115	296,-296,75	14,14,1	4538,1225,4538
+drive	Shim, 8mm ID X 14mm OD X .5mm Thick, 98055A115_98055A115	296,296,75	14,14,1	4538,1225,-4538
+drive	Swerve Corner 1	-324,321,69	51,44,48	-5305,1123,-5254
+drive	Swerve Corner 2	324,321,69	51,44,48	5306,1123,-5254
+drive	Tread, Black Nitrile 4in X 1.5in	-276,-276,51	98,98,100	-4538,836,4538
+drive	Tread, Black Nitrile 4in X 1.5in	-276,276,51	98,98,100	-4538,836,-4538
+drive	Tread, Black Nitrile 4in X 1.5in	276,-276,51	98,98,100	4538,836,4538
+drive	Tread, Black Nitrile 4in X 1.5in	276,276,51	98,98,100	4538,836,-4538
+drive	WCP-0940	-184,-285,99	60,63,112	-3017,1624,4664
+drive	WCP-0940	-184,285,99	60,63,112	-3016,1624,-4665
+drive	WCP-0940	-285,-184,99	63,60,112	-4664,1624,3016
+drive	WCP-0940	-285,184,99	63,60,112	-4664,1624,-3018
+drive	WCP-0940	184,-285,99	60,63,112	3017,1624,4664
+drive	WCP-0940	184,285,99	60,63,112	3018,1624,-4665
+drive	WCP-0940	285,-184,99	63,60,112	4665,1624,3017
+drive	WCP-0940	285,184,99	63,60,112	4665,1624,-3017
+drive	Wheel Mount A	-255,-255,67	50,50,50	-4538,1106,4538
+drive	Wheel Mount A	-255,255,67	50,50,50	-4538,1106,-4538
+drive	Wheel Mount A	255,-255,67	50,50,50	4538,1106,4538
+drive	Wheel Mount A	255,255,67	50,50,50	4538,1106,-4538
+drive	Wheel Mount B Gen2	-298,-298,68	50,50,49	-4538,1110,4538
+drive	Wheel Mount B Gen2	-298,298,68	50,50,49	-4538,1110,-4538
+drive	Wheel Mount B Gen2	298,-298,68	50,50,49	4538,1110,4538
+drive	Wheel Mount B Gen2	298,298,68	50,50,49	4538,1110,-4538
+drive	Wheel, SDS, Nitrile Tread, 4in X 1.5in, Bearing Bore	-276,-276,51	92,92,89	-4538,836,4538
+drive	Wheel, SDS, Nitrile Tread, 4in X 1.5in, Bearing Bore	-276,276,51	92,92,89	-4538,836,-4538
+drive	Wheel, SDS, Nitrile Tread, 4in X 1.5in, Bearing Bore	276,-276,51	92,92,89	4538,836,4538
+drive	Wheel, SDS, Nitrile Tread, 4in X 1.5in, Bearing Bore	276,276,51	92,92,89	4538,836,-4538
+drive	cancoder_1_2	-272,275,158	24,18,1	-4457,2587,-4509
+drive	cancoder_1_2	-275,-272,158	18,24,1	-4508,2587,4457
+drive	cancoder_1_2	272,-275,158	24,18,1	4457,2587,4508
+drive	cancoder_1_2	275,272,158	18,24,1	4509,2587,-4457
+frame	0.125 in. Thick Plate	-235,99,43	165,313,3	-3849,707,-1628
+frame	0.125 in. Thick Plate	0,-213,43	234,210,3	0,707,3485
+frame	0.125 in. Thick Plate	0,58,43	324,329,3	0,707,-950
+frame	0.125 in. Thick Plate	235,99,43	162,310,3	3850,707,-1628
+frame	110-001 (18" Drivebase Tube)	-330,0,70	25,457,51	-5409,1149,0
+frame	110-001 (18" Drivebase Tube)	0,-330,70	457,25,51	0,1149,5409
+frame	110-001 (18" Drivebase Tube)	0,330,70	457,25,51	0,1149,-5410
+frame	110-001 (18" Drivebase Tube)	330,0,70	25,457,51	5410,1149,0
+frame	110-002 (4" Drivebase Tube)	-140,-6,70	25,102,51	-2288,1149,104
+frame	110-002 (4" Drivebase Tube)	-140,267,70	25,102,51	-2288,1149,-4370
+frame	110-002 (4" Drivebase Tube)	140,-6,70	25,102,51	2289,1149,104
+frame	110-002 (4" Drivebase Tube)	140,267,70	25,102,51	2289,1149,-4370
+frame	110-003 (8.25" Drivebase Tube)	-130,-213,70	25,210,51	-2127,1149,3485
+frame	110-003 (8.25" Drivebase Tube)	130,-213,70	25,210,51	2128,1149,3485
+frame	110-004 (25" Drivebase Cross Tube)	-216,-83,70	203,51,51	-3537,1149,1352
+frame	110-005 (Bellypan)	0,0,97	686,686,3	0,1591,0
+frame	2x2 grommet	-125,-82,71	25,44,44	-2053,1160,1350
+frame	CAN Slot grommet	205,-185,98	54,54,6	3359,1608,3027
+frame	Part 18	0,279,43	305,127,3	0,707,-4578
+frame	Part 19	0,-298,43	330,89,3	0,707,4889
+frame	Part 20	140,-82,43	51,152,3	2289,707,1352
+frame	Part 21	305,-83,43	76,102,3	4994,707,1352
+frame	Part 26	-140,-83,43	51,152,3	-2288,707,1352
+frame	Part 27	-305,-83,43	76,102,3	-4993,707,1352
+frame	Tube 2"x2"x8"	216,-83,70	203,51,51	3538,1149,1352
+hood	#10 Aluminum Spacer (1-1/4" L, 3/8" OD)	204,253,511	32,10,9	3340,8372,-4139
+hood	#10 Aluminum Spacer (1-1/4" L, 3/8" OD)	204,283,541	32,10,9	3340,8857,-4639
+hood	#10 Aluminum Spacer (1-1/4" L, 3/8" OD)	204,295,504	32,10,9	3340,8260,-4841
+hood	#10 Aluminum Spacer (1-1/4" L, 3/8" OD)	204,298,479	32,10,9	3340,7847,-4882
+hood	1.125" OD Bearing Retention Plate (Centered, 2" C-C)	-190,83,451	3,35,62	-3105,7391,-1356
+hood	1.125" OD Bearing Retention Plate (Centered, 2" C-C)	190,83,451	3,35,62	3106,7391,-1356
+hood	1/2" Hex Bore Custom Spacer (0.306" OD,0.5" L)	-175,83,426	13,8,8	-2871,6974,-1357
+hood	1/2" Hex Bore Custom Spacer (0.306" OD,0.5" L)	-175,83,476	13,8,8	-2871,7806,-1357
+hood	1/2" Hex Bore Custom Spacer (0.306" OD,0.5" L)	175,83,426	13,8,8	2872,6976,-1357
+hood	1/2" Hex Bore Custom Spacer (0.306" OD,0.5" L)	175,83,477	13,8,8	2872,7808,-1357
+hood	1/2" Hex Bore Custom Spacer (0.75" OD,0.056" L)	-51,274,520	1,19,19	-844,8526,-4489
+hood	1/2" Hex Bore Custom Spacer (0.75" OD,0.056" L)	-51,286,457	1,19,19	-844,7480,-4687
+hood	1/2" Hex Bore Custom Spacer (0.75" OD,0.056" L)	52,274,520	1,19,19	844,8526,-4489
+hood	1/2" Hex Bore Custom Spacer (0.75" OD,0.056" L)	52,286,457	1,19,19	844,7480,-4687
+hood	1/2" Hex Bore Custom Spacer (0.75" OD,0.062" L)	189,271,490	2,19,19	3093,8029,-4446
+hood	1/2" Hex Bore Custom Spacer (0.75" OD,0.565" L)	197,274,520	14,19,19	3223,8526,-4487
+hood	1/2" Hex Bore Custom Spacer (0.75" OD,2.094" L)	-155,274,520	53,19,19	-2539,8525,-4487
+hood	1/2" Hex Bore Custom Spacer (0.75" OD,2.094" L)	-155,286,457	53,19,19	-2539,7480,-4685
+hood	1/2" Hex Bore Custom Spacer (0.75" OD,2.094" L)	155,274,520	53,19,19	2540,8526,-4487
+hood	1/2" Hex Bore Custom Spacer (0.75" OD,2.094" L)	155,286,457	53,19,19	2540,7481,-4685
+hood	1/2" Rounded Hex (13.75mm) ID Bearing (1.125" OD, 0.313" WD, Shielded, Flanged)	-186,274,520	8,31,31	-3040,8525,-4487
+hood	1/2" Rounded Hex (13.75mm) ID Bearing (1.125" OD, 0.313" WD, Shielded, Flanged)	-186,286,457	8,31,31	-3040,7480,-4685
+hood	1/2" Rounded Hex (13.75mm) ID Bearing (1.125" OD, 0.313" WD, Shielded, Flanged)	-186,83,451	8,31,31	-3040,7392,-1357
+hood	1/2" Rounded Hex (13.75mm) ID Bearing (1.125" OD, 0.313" WD, Shielded, Flanged)	184,271,490	8,31,31	3015,8027,-4446
+hood	1/2" Rounded Hex (13.75mm) ID Bearing (1.125" OD, 0.313" WD, Shielded, Flanged)	186,274,520	8,31,31	3041,8527,-4487
+hood	1/2" Rounded Hex (13.75mm) ID Bearing (1.125" OD, 0.313" WD, Shielded, Flanged)	186,286,457	8,31,31	3041,7481,-4685
+hood	1/2" Rounded Hex (13.75mm) ID Bearing (1.125" OD, 0.313" WD, Shielded, Flanged)	186,83,451	8,31,31	3041,7392,-1357
+hood	1/2" Rounded Hex (13.75mm) ID Bearing (1.125" OD, 0.313" WD, Shielded, Flanged)	221,271,490	8,31,31	3613,8029,-4446
+hood	1/2" Rounded Hex (13.75mm) ID Bearing (1.125" OD, 0.313" WD, Shielded, Flanged)	221,274,520	8,31,31	3613,8527,-4487
+hood	18t Aluminum Pulley (HTD 5mm, 9mm Wide, 1/2" Hex Bore)	197,271,490	14,32,32	3223,8028,-4446
+hood	18t Aluminum Pulley (HTD 5mm, 9mm Wide, 1/2" Hex Bore)	197,83,451	14,32,32	3223,7391,-1357
+hood	24t Aluminum Pulley (HTD 5mm, 9mm Wide, 1/2" Hex Bore)	-197,274,520	14,42,42	-3222,8526,-4487
+hood	24t Aluminum Pulley (HTD 5mm, 9mm Wide, 1/2" Hex Bore)	-197,286,457	14,42,42	-3222,7480,-4685
+hood	24t Steel Spur Gear (20 DP, 1/2" Hex Bore)	210,271,490	13,33,33	3444,8028,-4446
+hood	24t Steel Spur Gear (20 DP, 1/2" Hex Bore)	210,274,520	13,33,33	3444,8526,-4487
+hood	2in Tread	-116,274,520	25,51,51	-1896,8526,-4487
+hood	2in Tread	-116,286,457	25,51,51	-1896,7480,-4685
+hood	2in Tread	-13,274,520	25,51,51	-208,8526,-4487
+hood	2in Tread	-13,286,457	25,51,51	-208,7480,-4685
+hood	2in Tread	-38,274,520	25,51,51	-624,8526,-4487
+hood	2in Tread	-38,286,457	25,51,51	-624,7480,-4685
+hood	2in Tread	-65,274,520	25,51,51	-1063,8526,-4487
+hood	2in Tread	-65,286,457	25,51,51	-1063,7480,-4685
+hood	2in Tread	-90,274,520	25,51,51	-1479,8526,-4487
+hood	2in Tread	-90,286,457	25,51,51	-1479,7480,-4685
+hood	2in Tread	116,274,520	25,51,51	1896,8526,-4487
+hood	2in Tread	116,286,457	25,51,51	1896,7480,-4685
+hood	2in Tread	13,274,520	25,51,51	208,8526,-4487
+hood	2in Tread	13,286,457	25,51,51	208,7480,-4685
+hood	2in Tread	38,274,520	25,51,51	625,8526,-4487
+hood	2in Tread	38,286,457	25,51,51	625,7480,-4685
+hood	2in Tread	65,274,520	25,51,51	1064,8526,-4487
+hood	2in Tread	65,286,457	25,51,51	1064,7480,-4685
+hood	2in Tread	90,274,520	25,51,51	1480,8526,-4487
+hood	2in Tread	90,286,457	25,51,51	1480,7480,-4685
+hood	2in Wheel Intergrated 0500 HEX Hub	-116,274,520	25,42,42	-1896,8525,-4487
+hood	2in Wheel Intergrated 0500 HEX Hub	-116,286,457	25,42,42	-1896,7479,-4685
+hood	2in Wheel Intergrated 0500 HEX Hub	-13,274,520	25,42,42	-208,8525,-4487
+hood	2in Wheel Intergrated 0500 HEX Hub	-13,286,457	25,42,42	-208,7479,-4685
+hood	2in Wheel Intergrated 0500 HEX Hub	-38,274,520	25,42,42	-624,8525,-4487
+hood	2in Wheel Intergrated 0500 HEX Hub	-38,286,457	25,42,42	-624,7479,-4685
+hood	2in Wheel Intergrated 0500 HEX Hub	-65,274,520	25,42,42	-1063,8525,-4487
+hood	2in Wheel Intergrated 0500 HEX Hub	-65,286,457	25,42,42	-1063,7479,-4685
+hood	2in Wheel Intergrated 0500 HEX Hub	-90,286,457	25,42,42	-1479,7479,-4685
+hood	2in Wheel Intergrated 0500 HEX Hub	116,274,520	25,42,42	1896,8525,-4487
+hood	2in Wheel Intergrated 0500 HEX Hub	116,286,457	25,42,42	1896,7479,-4685
+hood	2in Wheel Intergrated 0500 HEX Hub	13,274,520	25,42,42	208,8525,-4487
+hood	2in Wheel Intergrated 0500 HEX Hub	13,286,457	25,42,42	208,7479,-4685
+hood	2in Wheel Intergrated 0500 HEX Hub	38,274,520	25,42,42	625,8525,-4487
+hood	2in Wheel Intergrated 0500 HEX Hub	38,286,457	25,42,42	625,7479,-4685
+hood	2in Wheel Intergrated 0500 HEX Hub	65,274,520	25,42,42	1064,8525,-4487
+hood	2in Wheel Intergrated 0500 HEX Hub	65,286,457	25,42,42	1064,7479,-4685
+hood	2in Wheel Intergrated 0500 HEX Hub	90,286,457	25,42,42	1480,7479,-4685
+hood	3/8" Hex Bore Custom Spacer (0.5" OD,1.4" L)	-164,296,399	36,13,13	-2684,6542,-4855
+hood	3/8" Hex Bore Custom Spacer (0.5" OD,1.4" L)	-164,300,419	36,13,13	-2684,6869,-4918
+hood	3/8" Hex Bore Custom Spacer (0.5" OD,1.4" L)	164,296,399	36,13,13	2685,6541,-4855
+hood	3/8" Hex Bore Custom Spacer (0.5" OD,1.4" L)	164,300,419	36,13,13	2685,6868,-4918
+hood	3/8" Hex Bore Custom Spacer (0.5" OD,3" L)	0,296,399	76,13,13	0,6541,-4855
+hood	3/8" Hex Bore Custom Spacer (0.5" OD,3" L)	0,300,419	76,13,13	0,6868,-4919
+hood	310-003 (Right Pivoting Plate)	-185,190,469	6,258,159	-3027,7680,-3121
+hood	310-003 (Right Pivoting Plate)	185,190,469	6,258,159	3028,7680,-3121
+hood	310-006 (Left Small Plate)	221,274,502	3,74,93	3626,8225,-4486
+hood	310-011 (Upper Backroller)	10,274,520	428,13,14	169,8526,-4487
+hood	310-012 (Lower Backroller)	-7,286,457	393,14,13	-117,7480,-4685
+hood	310-013 (Rear Hood Gear Support)	0,296,399	363,10,10	0,6541,-4855
+hood	310-031 (1/2" ThunderHex (1.875 in))	202,271,490	44,13,14	3314,8028,-4446
+hood	310-032 (3/8" ThunderHex (14.3 in))	0,300,419	363,10,10	0,6868,-4919
+hood	310-036 (95T 5M 9mm Wide Belt)	196,177,471	9,219,70	3212,7710,-2902
+hood	310-037 (50T 5M 9mm Wide Belt)	-197,280,488	9,53,104	-3233,8003,-4586
+hood	310-041 (Custom Bearing Retention)	224,279,510	3,53,78	3678,8349,-4564
+hood	Hex thin lock nut with nylon insert #10-32	-166,83,426	6,10,11	-2717,6975,-1357
+hood	Hex thin lock nut with nylon insert #10-32	-166,83,477	6,10,11	-2717,7807,-1357
+hood	Hex thin lock nut with nylon insert #10-32	166,83,426	6,10,11	2718,6975,-1357
+hood	Hex thin lock nut with nylon insert #10-32	166,83,477	6,10,11	2718,7807,-1357
+hood	Socket head cap screw #10-32 x 1.125	-179,83,426	33,8,8	-2936,6975,-1357
+hood	Socket head cap screw #10-32 x 1.125	-179,83,477	33,8,8	-2936,7807,-1357
+hood	Socket head cap screw #10-32 x 1.125	179,83,426	33,8,8	2937,6975,-1357
+hood	Socket head cap screw #10-32 x 1.125	179,83,477	33,8,8	2937,7807,-1357
+hood	Spur gear (181 teeth)	-92,286,373	108,56,120	-1508,6113,-4691
+hood	Spur gear (181 teeth)	92,286,373	108,56,120	1509,6113,-4691
+hopper	#10-32 Thin Nylon-Insert Locknut	-334,-102,287	4,10,11	-5478,4707,1664
+hopper	#10-32 Thin Nylon-Insert Locknut	-334,-102,363	4,10,11	-5478,5955,1664
+hopper	#10-32 Thin Nylon-Insert Locknut	-334,-305,287	4,10,11	-5478,4707,4993
+hopper	#10-32 Thin Nylon-Insert Locknut	-334,-305,363	4,10,11	-5478,5955,4993
+hopper	#10-32 Thin Nylon-Insert Locknut	334,-102,287	4,10,11	5479,4707,1664
+hopper	#10-32 Thin Nylon-Insert Locknut	334,-102,363	4,10,11	5479,5955,1664
+hopper	#10-32 Thin Nylon-Insert Locknut	334,-305,287	4,10,11	5479,4707,4993
+hopper	#10-32 Thin Nylon-Insert Locknut	334,-305,363	4,10,11	5479,5955,4993
+hopper	1/4" Round x 1/2" L Shoulder (#10-32 x 0.75" L, Standard Profile, Steel, Black Oxide)	-342,-102,287	24,9,9	-5604,4707,1664
+hopper	1/4" Round x 1/2" L Shoulder (#10-32 x 0.75" L, Standard Profile, Steel, Black Oxide)	-342,-102,364	24,9,9	-5604,5956,1664
+hopper	1/4" Round x 1/2" L Shoulder (#10-32 x 0.75" L, Standard Profile, Steel, Black Oxide)	-342,-305,287	24,9,9	-5604,4707,4993
+hopper	1/4" Round x 1/2" L Shoulder (#10-32 x 0.75" L, Standard Profile, Steel, Black Oxide)	-342,-305,364	24,9,9	-5604,5956,4993
+hopper	1/4" Round x 1/2" L Shoulder (#10-32 x 0.75" L, Standard Profile, Steel, Black Oxide)	342,-102,287	24,9,9	5605,4706,1664
+hopper	1/4" Round x 1/2" L Shoulder (#10-32 x 0.75" L, Standard Profile, Steel, Black Oxide)	342,-102,363	24,9,9	5605,5955,1664
+hopper	1/4" Round x 1/2" L Shoulder (#10-32 x 0.75" L, Standard Profile, Steel, Black Oxide)	342,-305,287	24,9,9	5605,4706,4993
+hopper	1/4" Round x 1/2" L Shoulder (#10-32 x 0.75" L, Standard Profile, Steel, Black Oxide)	342,-305,363	24,9,9	5605,5955,4993
+hopper	400-001 (0.25 in. Thick Plate)	-340,-51,300	6,553,178	-5565,4915,834
+hopper	400-001 (0.25 in. Thick Plate)	340,-51,300	6,553,178	5566,4915,834
+hopper	400-002 (0.25 in. Thick Plate)	-346,-365,402	6,552,279	-5670,6579,5982
+hopper	400-002 (0.25 in. Thick Plate)	346,-365,402	6,552,279	5670,6579,5982
+hopper	400-003 (0.25 in. Thick Plate)	0,-644,400	698,6,273	0,6548,10559
+hopper	Part 26	330,-629,440	25,25,203	5410,7204,10299
+hopper	Part 31	-330,-629,440	25,25,203	-5409,7204,10299
+indexer	#10-32 Hex Nut	-87,-232,148	11,10,3	-1425,2418,3795
+indexer	#10-32 Hex Nut	133,-152,145	11,10,3	2185,2368,2485
+indexer	#10-32 Hex Nut	133,-72,141	11,10,3	2185,2317,1176
+indexer	#10-32 Hex Nut	135,8,138	11,10,3	2211,2267,-134
+indexer	#10-32 Hex Nut	95,-312,151	11,10,3	1564,2468,5105
+indexer	#10-32 x 0.375" L BHCS (Steel, Black Oxide)	-135,8,118	9,9,12	-2210,1934,-134
+indexer	#10-32 x 0.375" L BHCS (Steel, Black Oxide)	-135,8,143	9,9,12	-2210,2340,-134
+indexer	#10-32 x 0.375" L BHCS (Steel, Black Oxide)	-136,-152,124	9,9,12	-2236,2035,2485
+indexer	#10-32 x 0.375" L BHCS (Steel, Black Oxide)	-136,-152,149	9,9,12	-2236,2441,2485
+indexer	#10-32 x 0.375" L BHCS (Steel, Black Oxide)	-136,-72,121	9,9,12	-2236,1984,1176
+indexer	#10-32 x 0.375" L BHCS (Steel, Black Oxide)	-136,-72,146	9,9,12	-2236,2391,1176
+indexer	#10-32 x 0.375" L BHCS (Steel, Black Oxide)	-85,-312,130	9,9,12	-1399,2135,5105
+indexer	#10-32 x 0.375" L BHCS (Steel, Black Oxide)	-85,-312,155	9,9,12	-1399,2541,5105
+indexer	#10-32 x 0.375" L BHCS (Steel, Black Oxide)	-87,-232,127	9,9,12	-1425,2085,3795
+indexer	#10-32 x 0.375" L BHCS (Steel, Black Oxide)	-87,-232,152	9,9,12	-1425,2491,3795
+indexer	#10-32 x 0.375" L BHCS (Steel, Black Oxide)	133,-152,124	9,9,12	2185,2035,2485
+indexer	#10-32 x 0.375" L BHCS (Steel, Black Oxide)	133,-152,149	9,9,12	2185,2441,2485
+indexer	#10-32 x 0.375" L BHCS (Steel, Black Oxide)	133,-72,121	9,9,12	2185,1984,1176
+indexer	#10-32 x 0.375" L BHCS (Steel, Black Oxide)	133,-72,146	9,9,12	2185,2391,1176
+indexer	#10-32 x 0.375" L BHCS (Steel, Black Oxide)	135,8,118	9,9,12	2211,1934,-134
+indexer	#10-32 x 0.375" L BHCS (Steel, Black Oxide)	135,8,143	9,9,12	2211,2340,-134
+indexer	#10-32 x 0.375" L BHCS (Steel, Black Oxide)	94,-232,127	9,9,12	1538,2085,3795
+indexer	#10-32 x 0.375" L BHCS (Steel, Black Oxide)	94,-232,152	9,9,12	1538,2491,3795
+indexer	#10-32 x 0.375" L BHCS (Steel, Black Oxide)	95,-312,130	9,9,12	1564,2135,5105
+indexer	#10-32 x 0.375" L BHCS (Steel, Black Oxide)	95,-312,155	9,9,12	1564,2541,5105
+indexer	((610-003) 1/8 in small plate	-123,-272,129	3,113,61	-2023,2113,4450
+indexer	(610-001) 0.125 in. Thick Plate	-316,83,153	3,204,216	-5175,2503,-1360
+indexer	(610-002) 1/8 in big plate	-173,-108,127	3,281,57	-2835,2088,1763
+indexer	(610-002) 1/8 in big plate	173,-108,127	3,281,57	2835,2088,1763
+indexer	(610-003) 1/8 in small plate	124,-272,129	3,113,61	2024,2113,4450
+indexer	(610-005) 1/2" Rounded Hex (20+5/8 in)	-52,-72,134	524,13,14	-858,2187,1176
+indexer	(610-006) 1/2" Rounded Hex (18+3/4 in)	0,-152,137	476,13,14	0,2238,2485
+indexer	(610-007) 1/2" Rounded Hex (14 in)	0,-232,140	356,13,14	0,2288,3795
+indexer	(610-008) 1/2" Rounded Hex  (10.1 in)	0,-312,143	257,13,14	0,2338,5105
+indexer	(610-009) Churro (13.5 in)	0,-152,111	343,13,15	0,1825,2485
+indexer	0.196" ID Custom PLA Spacer (0.75" OD, 1" L)	-248,8,130	25,19,19	-4057,2137,-135
+indexer	0.196" ID Custom PLA Spacer (0.75" OD, 1" L)	-298,8,130	25,19,19	-4889,2137,-135
+indexer	0.196" ID Custom PLA Spacer (0.75" OD, 1" L)	248,8,130	25,19,19	4058,2137,-134
+indexer	0.196" ID Custom PLA Spacer (0.75" OD, 1" L)	298,8,130	25,19,19	4890,2137,-134
+indexer	0.196" ID Custom PLA Spacer (0.75" OD, 1.25" L)	-194,8,130	32,19,19	-3173,2138,-134
+indexer	0.196" ID Custom PLA Spacer (0.75" OD, 1.25" L)	194,8,130	32,19,19	3173,2137,-134
+indexer	0.208 in. Hex Spacer	167,-232,140	5,19,19	2740,2289,3795
+indexer	0.25 in. Hex Spacer	181,-72,134	6,19,19	2965,2188,1177
+indexer	0.5 in. Hex Spacer	-184,-72,134	13,19,19	-3017,2187,1176
+indexer	0.577" ID Custom Spacer (0.75" OD,0.25" L)	-117,-312,143	6,19,19	-1919,2339,5106
+indexer	0.577" ID Custom Spacer (0.75" OD,0.25" L)	-119,-232,140	6,19,19	-1945,2288,3794
+indexer	0.577" ID Custom Spacer (0.75" OD,0.25" L)	-167,8,130	6,19,19	-2730,2138,-133
+indexer	0.577" ID Custom Spacer (0.75" OD,0.25" L)	-168,-152,137	6,19,19	-2757,2238,2486
+indexer	0.577" ID Custom Spacer (0.75" OD,0.25" L)	-168,-72,134	6,19,19	-2757,2188,1177
+indexer	0.577" ID Custom Spacer (0.75" OD,0.25" L)	116,-232,140	6,19,19	1902,2289,3794
+indexer	0.577" ID Custom Spacer (0.75" OD,0.25" L)	118,-312,143	6,19,19	1928,2338,5106
+indexer	0.577" ID Custom Spacer (0.75" OD,0.25" L)	165,-152,137	6,19,19	2705,2237,2486
+indexer	0.577" ID Custom Spacer (0.75" OD,0.25" L)	165,-72,133	6,19,19	2705,2187,1177
+indexer	0.577" ID Custom Spacer (0.75" OD,0.25" L)	167,8,130	6,19,19	2731,2137,-133
+indexer	0.625 in. Hex Spacer	-186,-152,137	16,19,19	-3043,2238,2486
+indexer	0.625 in. Hex Spacer	-224,-72,134	16,19,19	-3667,2187,1177
+indexer	0.625 in. Hex Spacer	-265,-72,134	16,19,19	-4343,2187,1177
+indexer	0.625 in. Hex Spacer	-306,-72,134	16,19,19	-5019,2187,1177
+indexer	0.625 in. Hex Spacer	186,-152,137	16,19,19	3043,2238,2485
+indexer	0.75 in. Hex Spacer	-229,-152,137	19,19,19	-3745,2237,2485
+indexer	0.75 in. Hex Spacer	229,-152,137	19,19,19	3746,2237,2486
+indexer	0.866 in. Hex Spacer	139,-232,140	22,19,19	2282,2289,3796
+indexer	1.125" OD Bearing Retention Plate (1.5" C-C)	-170,8,130	3,51,35	-2784,2137,-134
+indexer	1.125" OD Bearing Retention Plate (1.5" C-C)	170,8,131	3,51,35	2785,2149,-134
+indexer	1.637 in. Hex Spacer	-149,-232,140	42,19,19	-2442,2288,3795
+indexer	1/2" Rounded Hex (13.374" L, 13.75mm OD)	-2,-152,137	340,13,14	-26,2238,2485
+indexer	1/2" Rounded Hex (13.374" L, 13.75mm OD)	-2,-72,134	340,13,14	-26,2187,1176
+indexer	1/2" Rounded Hex (13.374" L, 13.75mm OD)	0,8,130	340,13,14	0,2137,-134
+indexer	1/2" Rounded Hex (9.494" L, 13.75mm OD)	-1,-232,140	241,13,14	-22,2288,3795
+indexer	1/2" Rounded Hex (9.494" L, 13.75mm OD)	0,-312,143	241,13,14	5,2338,5105
+indexer	100T 5M 9mm Wide Belt	-326,76,175	9,195,149	-5349,2869,-1246
+indexer	12T HTD Pulley	-335,163,239	21,22,22	-5494,3914,-2671
+indexer	18t Aluminum Pulley (HTD 5mm, 9mm Wide, 1/2" Hex Bore)	157,-232,140	14,32,32	2580,2288,3795
+indexer	2" Stealth Wheel (60A, 1/2" Hex Bore)	-222,8,130	25,51,51	-3641,2137,-134
+indexer	2" Stealth Wheel (60A, 1/2" Hex Bore)	-273,8,130	25,51,51	-4473,2137,-134
+indexer	2" Stealth Wheel (60A, 1/2" Hex Bore)	222,8,130	25,51,51	3642,2137,-134
+indexer	2" Stealth Wheel (60A, 1/2" Hex Bore)	273,8,130	25,51,51	4474,2137,-134
+indexer	2in Tread	-203,-72,134	25,51,51	-3329,2187,1176
+indexer	2in Tread	-206,-152,137	25,51,51	-3381,2238,2485
+indexer	2in Tread	-244,-72,134	25,51,51	-4005,2187,1176
+indexer	2in Tread	-286,-72,134	25,51,51	-4681,2187,1176
+indexer	2in Tread	197,-72,134	25,51,51	3226,2187,1176
+indexer	2in Tread	206,-152,137	25,51,51	3382,2238,2485
+indexer	2in Wheel Intergrated 0500 HEX Hub	-203,-72,133	25,42,42	-3329,2186,1176
+indexer	2in Wheel Intergrated 0500 HEX Hub	-206,-152,137	25,42,42	-3381,2237,2485
+indexer	2in Wheel Intergrated 0500 HEX Hub	-244,-72,133	25,42,42	-4005,2186,1176
+indexer	2in Wheel Intergrated 0500 HEX Hub	-286,-72,133	25,42,42	-4681,2186,1176
+indexer	2in Wheel Intergrated 0500 HEX Hub	197,-72,133	25,42,42	3226,2186,1176
+indexer	2in Wheel Intergrated 0500 HEX Hub	206,-152,137	25,42,42	3382,2237,2485
+indexer	30t Aluminum Pulley (HTD 5mm, 9mm Wide, 1/2" Hex Bore)	-326,8,130	14,51,51	-5345,2137,-134
+indexer	3DP Kraken Spacer	-316,163,239	18,10,9	-5176,3914,-2671
+indexer	50T 5M 9mm Wide Belt	-108,-272,141	9,111,34	-1767,2314,4450
+indexer	50T 5M 9mm Wide Belt	-157,-112,135	9,111,34	-2579,2213,1831
+indexer	50T 5M 9mm Wide Belt	157,-192,138	9,111,34	2580,2263,3140
+indexer	50T 5M 9mm Wide Belt	157,-32,132	9,111,34	2580,2162,521
+indexer	610-004 (25.376” Indexer Shaft)	-11,8,130	645,14,13	-182,2137,-134
+indexer	Bearing Hat 2	-170,-112,135	3,126,36	-2783,2213,1832
+indexer	Bearing Hat 2	170,-112,135	3,127,36	2783,2212,1831
+indexer	Deadaxle Tube_11.624_in	-2,-152,137	295,32,32	-26,2238,2485
+indexer	Deadaxle Tube_11.624_in	-2,-72,134	295,32,32	-26,2187,1176
+indexer	Deadaxle Tube_11.624_in	0,8,130	295,32,32	0,2137,-134
+indexer	Deadaxle Tube_8.119_in	3,-232,140	206,32,32	56,2288,3795
+indexer	Deadaxle Tube_8.119_in	5,-312,143	206,32,32	83,2338,5105
+indexer	Flanged 1/2" ID - 1 1/8" OD ThunderHex Bearing	-124,-232,140	8,31,31	-2036,2289,3795
+indexer	Flanged 1/2" ID - 1 1/8" OD ThunderHex Bearing	-124,-312,143	8,31,31	-2036,2338,5106
+indexer	Flanged 1/2" ID - 1 1/8" OD ThunderHex Bearing	-174,-112,135	8,31,31	-2847,2213,1831
+indexer	Flanged 1/2" ID - 1 1/8" OD ThunderHex Bearing	-174,-152,137	8,31,31	-2847,2238,2485
+indexer	Flanged 1/2" ID - 1 1/8" OD ThunderHex Bearing	-174,-232,140	8,31,31	-2847,2288,3794
+indexer	Flanged 1/2" ID - 1 1/8" OD ThunderHex Bearing	-174,-72,134	8,31,31	-2847,2188,1176
+indexer	Flanged 1/2" ID - 1 1/8" OD ThunderHex Bearing	-174,8,130	8,31,31	-2847,2138,-134
+indexer	Flanged 1/2" ID - 1 1/8" OD ThunderHex Bearing	-315,8,130	8,31,31	-5162,2137,-133
+indexer	Flanged 1/2" ID - 1 1/8" OD ThunderHex Bearing	124,-232,140	8,31,31	2037,2288,3794
+indexer	Flanged 1/2" ID - 1 1/8" OD ThunderHex Bearing	124,-312,143	8,31,31	2037,2338,5105
+indexer	Flanged 1/2" ID - 1 1/8" OD ThunderHex Bearing	174,-112,135	8,31,31	2848,2212,1831
+indexer	Flanged 1/2" ID - 1 1/8" OD ThunderHex Bearing	174,-152,137	8,31,31	2848,2238,2484
+indexer	Flanged 1/2" ID - 1 1/8" OD ThunderHex Bearing	174,-232,140	8,31,31	2848,2288,3795
+indexer	Flanged 1/2" ID - 1 1/8" OD ThunderHex Bearing	174,-72,134	8,31,31	2848,2187,1176
+indexer	Flanged 1/2" ID - 1 1/8" OD ThunderHex Bearing	174,8,130	8,31,31	2848,2137,-134
+indexer	Kraken X44 Brushless Motor	-283,163,237	112,44,47	-4636,3886,-2671
+indexer	Nut Strip (3/8" Square, 5 Positions, #10-32 Holes, Aligned .5" Hole Spacing)	-117,-276,103	10,63,10	-1919,1695,4525
+indexer	Nut Strip (3/8" Square, 5 Positions, #10-32 Holes, Aligned .5" Hole Spacing)	-167,-200,103	10,63,10	-2731,1695,3277
+indexer	Nut Strip (3/8" Square, 5 Positions, #10-32 Holes, Aligned .5" Hole Spacing)	-167,6,103	10,63,10	-2731,1695,-104
+indexer	Nut Strip (3/8" Square, 5 Positions, #10-32 Holes, Aligned .5" Hole Spacing)	117,-276,103	10,63,10	1920,1695,4525
+indexer	Nut Strip (3/8" Square, 5 Positions, #10-32 Holes, Aligned .5" Hole Spacing)	167,-200,103	10,63,10	2731,1695,3277
+indexer	Nut Strip (3/8" Square, 5 Positions, #10-32 Holes, Aligned .5" Hole Spacing)	167,6,103	10,63,10	2731,1695,-104
+indexer	ROUND Spacer 0.5 in	-308,154,254	13,9,9	-5045,4161,-2528
+indexer	ROUND Spacer 0.5 in	-308,172,224	13,9,9	-5045,3666,-2814
+indexer	ROUND Spacer 0.5 in	-308,172,254	13,9,10	-5045,4161,-2814
+indexer	ROUND Spacer 0.5 in	-308,180,239	13,10,10	-5045,3914,-2957
+indexer	Roller Endcap_HTD_18_Tooth_Hex Nut	-143,8,130	41,33,33	-2340,2137,-134
+indexer	Roller Endcap_HTD_18_Tooth_Hex Nut	-144,-152,137	41,33,33	-2366,2238,2485
+indexer	Roller Endcap_HTD_18_Tooth_Hex Nut	-144,-72,134	41,33,33	-2366,2187,1176
+indexer	Roller Endcap_HTD_18_Tooth_Hex Nut	-93,-312,143	41,33,33	-1529,2338,5105
+indexer	Roller Endcap_HTD_18_Tooth_Hex Nut	-95,-232,140	41,33,33	-1555,2288,3795
+indexer	Roller Endcap_HTD_18_Tooth_Hex Nut	141,-152,137	41,33,33	2315,2238,2485
+indexer	Roller Endcap_HTD_18_Tooth_Hex Nut	141,-72,134	41,33,33	2315,2187,1176
+indexer	Roller Endcap_HTD_18_Tooth_Hex Nut	143,8,130	41,33,33	2341,2137,-134
+indexer	Roller Endcap_None_18_Tooth_Hex Nut	97,-232,140	32,32,32	1590,2288,3795
+indexer	Roller Endcap_None_24_Tooth_Hex Nut	99,-312,143	32,32,32	1616,2338,5105
+intake	0.196" ID Custom PLA Spacer (0.75" OD, 0.3125" L)	-280,-590,188	8,19,19	-4590,3079,9674
+intake	0.196" ID Custom PLA Spacer (0.75" OD, 0.3125" L)	287,-591,188	8,19,19	4695,3080,9675
+intake	0.196" ID Custom PLA Spacer (0.75" OD, 0.3375" L)	-280,-494,263	9,19,19	-4585,4306,8088
+intake	0.196" ID Custom PLA Spacer (0.75" OD, 0.7875" L)	281,-494,263	20,19,19	4596,4305,8088
+intake	0.196" ID Custom PLA Spacer (0.75" OD, 1" L)	-136,-494,263	25,19,19	-2226,4305,8088
+intake	0.196" ID Custom PLA Spacer (0.75" OD, 1" L)	-174,-494,263	25,19,19	-2850,4305,8088
+intake	0.196" ID Custom PLA Spacer (0.75" OD, 1" L)	-212,-494,263	25,19,19	-3474,4305,8088
+intake	0.196" ID Custom PLA Spacer (0.75" OD, 1" L)	-22,-494,263	25,19,19	-353,4305,8088
+intake	0.196" ID Custom PLA Spacer (0.75" OD, 1" L)	-250,-494,263	25,19,19	-4099,4305,8088
+intake	0.196" ID Custom PLA Spacer (0.75" OD, 1" L)	-60,-494,263	25,19,19	-978,4305,8088
+intake	0.196" ID Custom PLA Spacer (0.75" OD, 1" L)	-98,-494,263	25,19,19	-1602,4305,8088
+intake	0.196" ID Custom PLA Spacer (0.75" OD, 1" L)	131,-494,263	25,19,19	2144,4305,8088
+intake	0.196" ID Custom PLA Spacer (0.75" OD, 1" L)	169,-494,263	25,19,19	2768,4305,8088
+intake	0.196" ID Custom PLA Spacer (0.75" OD, 1" L)	17,-494,263	25,19,19	271,4305,8088
+intake	0.196" ID Custom PLA Spacer (0.75" OD, 1" L)	207,-494,263	25,19,19	3392,4305,8088
+intake	0.196" ID Custom PLA Spacer (0.75" OD, 1" L)	245,-494,263	25,19,19	4016,4305,8088
+intake	0.196" ID Custom PLA Spacer (0.75" OD, 1" L)	55,-494,263	25,19,19	895,4305,8088
+intake	0.196" ID Custom PLA Spacer (0.75" OD, 1" L)	93,-494,263	25,19,19	1519,4305,8088
+intake	0.196" ID Custom PLA Spacer (0.75" OD, 1.5" L)	-232,-591,188	38,19,19	-3797,3081,9675
+intake	0.196" ID Custom PLA Spacer (0.75" OD, 1.5" L)	238,-591,188	38,19,19	3902,3080,9675
+intake	0.196" ID Custom PLA Spacer (0.75" OD, 3" L)	-149,-590,188	76,19,19	-2444,3080,9674
+intake	0.196" ID Custom PLA Spacer (0.75" OD, 3" L)	-48,-590,188	76,19,19	-780,3080,9674
+intake	0.196" ID Custom PLA Spacer (0.75" OD, 3" L)	156,-590,188	76,19,19	2549,3080,9674
+intake	0.196" ID Custom PLA Spacer (0.75" OD, 3" L)	54,-590,188	76,19,19	885,3080,9674
+intake	1/2" Hex Shaft Spacer (1/8" L, 3/4" OD, Acetal)	-308,-591,188	3,19,19	-5045,3080,9675
+intake	1/2" Hex Shaft Spacer (1/8" L, 3/4" OD, Acetal)	314,-591,188	3,19,19	5150,3080,9675
+intake	1/2" Rounded Hex (13.75mm) ID Bearing (1.125" OD, 0.313" WD, Shielded, Flanged)	-301,-305,191	8,31,31	-4928,3125,4993
+intake	1/2" Rounded Hex (13.75mm) ID Bearing (1.125" OD, 0.313" WD, Shielded, Flanged)	-301,-305,191	8,31,31	-4928,3126,4993
+intake	1/2" Rounded Hex (13.75mm) ID Bearing (1.125" OD, 0.313" WD, Shielded, Flanged)	-302,-494,263	8,31,31	-4954,4306,8088
+intake	1/2" Rounded Hex (13.75mm) ID Bearing (1.125" OD, 0.313" WD, Shielded, Flanged)	-302,-591,188	8,31,31	-4954,3079,9675
+intake	1/2" Rounded Hex (13.75mm) ID Bearing (1.125" OD, 0.313" WD, Shielded, Flanged)	-302,-591,188	8,31,31	-4954,3080,9675
+intake	1/2" Rounded Hex (13.75mm) ID Bearing (1.125" OD, 0.313" WD, Shielded, Flanged)	-327,-305,191	8,31,31	-5350,3125,4993
+intake	1/2" Rounded Hex (13.75mm) ID Bearing (1.125" OD, 0.313" WD, Shielded, Flanged)	-347,-112,136	8,31,31	-5683,2230,1830
+intake	1/2" Rounded Hex (13.75mm) ID Bearing (1.125" OD, 0.313" WD, Shielded, Flanged)	307,-305,191	8,31,31	5033,3125,4993
+intake	1/2" Rounded Hex (13.75mm) ID Bearing (1.125" OD, 0.313" WD, Shielded, Flanged)	307,-305,191	8,31,31	5033,3126,4993
+intake	1/2" Rounded Hex (13.75mm) ID Bearing (1.125" OD, 0.313" WD, Shielded, Flanged)	309,-494,263	8,31,31	5059,4305,8088
+intake	1/2" Rounded Hex (13.75mm) ID Bearing (1.125" OD, 0.313" WD, Shielded, Flanged)	309,-591,188	8,31,31	5059,3079,9675
+intake	1/2" Rounded Hex (13.75mm) ID Bearing (1.125" OD, 0.313" WD, Shielded, Flanged)	333,-305,191	8,31,31	5454,3126,4993
+intake	1/2" Rounded Hex (13.75mm) ID Bearing (1.125" OD, 0.313" WD, Shielded, Flanged)	347,-112,136	8,31,31	5683,2230,1830
+intake	1/2" Rounded Hex (23.75" L, 13.75mm OD, 7075)	3,-435,70	603,13,14	52,1149,7126
+intake	1/2" Rounded Hex (23.75" L, 13.75mm OD, 7075)	3,-470,45	603,13,14	52,733,7701
+intake	10t Steel Spur Gear (20 DP, 12T Center Distance, SplineXS Bore)	332,-72,127	19,17,17	5436,2085,1180
+intake	12t Steel Sprocket (#25, 1/2" Rounded Hex Bore, Double Hub)	-323,-112,136	10,27,27	-5299,2231,1830
+intake	12t Steel Sprocket (#25, 1/2" Rounded Hex Bore, Double Hub)	325,-112,136	10,27,27	5332,2231,1830
+intake	18t Aluminum Pulley (HTD 5mm, 9mm Wide, 1/2" Hex Bore)	-291,-494,263	14,32,32	-4772,4305,8088
+intake	18t Aluminum Pulley (HTD 5mm, 9mm Wide, 1/2" Hex Bore)-Mirrored	298,-494,263	14,32,32	4877,4305,8088
+intake	18t Aluminum Pulley (HTD 5mm, 9mm Wide, 8mm SplineXS Bore)	322,-548,303	14,32,32	5281,4963,8986
+intake	18t Aluminum Pulley (HTD 5mm, 9mm Wide, 8mm SplineXS Bore)-Mirrored	-316,-548,303	14,32,32	-5176,4963,8986
+intake	2" Compliant Wheel (60A, 3/4" Wide, 3/8" Hex Stretch Bore)	-117,-494,263	13,50,51	-1914,4305,8088
+intake	2" Compliant Wheel (60A, 3/4" Wide, 3/8" Hex Stretch Bore)	-155,-494,263	13,50,51	-2538,4305,8088
+intake	2" Compliant Wheel (60A, 3/4" Wide, 3/8" Hex Stretch Bore)	-193,-494,263	13,50,51	-3162,4305,8088
+intake	2" Compliant Wheel (60A, 3/4" Wide, 3/8" Hex Stretch Bore)	-231,-494,263	13,50,51	-3786,4305,8088
+intake	2" Compliant Wheel (60A, 3/4" Wide, 3/8" Hex Stretch Bore)	-269,-494,263	13,50,51	-4411,4305,8088
+intake	2" Compliant Wheel (60A, 3/4" Wide, 3/8" Hex Stretch Bore)	-3,-494,263	13,50,51	-41,4305,8088
+intake	2" Compliant Wheel (60A, 3/4" Wide, 3/8" Hex Stretch Bore)	-41,-494,263	13,50,51	-665,4305,8088
+intake	2" Compliant Wheel (60A, 3/4" Wide, 3/8" Hex Stretch Bore)	-79,-494,263	13,50,51	-1290,4305,8088
+intake	2" Compliant Wheel (60A, 3/4" Wide, 3/8" Hex Stretch Bore)	112,-494,263	13,50,51	1831,4305,8088
+intake	2" Compliant Wheel (60A, 3/4" Wide, 3/8" Hex Stretch Bore)	150,-494,263	13,50,51	2456,4305,8088
+intake	2" Compliant Wheel (60A, 3/4" Wide, 3/8" Hex Stretch Bore)	188,-494,263	13,50,51	3080,4305,8088
+intake	2" Compliant Wheel (60A, 3/4" Wide, 3/8" Hex Stretch Bore)	226,-494,263	13,50,51	3704,4305,8088
+intake	2" Compliant Wheel (60A, 3/4" Wide, 3/8" Hex Stretch Bore)	264,-494,263	13,50,51	4328,4305,8088
+intake	2" Compliant Wheel (60A, 3/4" Wide, 3/8" Hex Stretch Bore)	36,-494,263	13,50,51	583,4305,8088
+intake	2" Compliant Wheel (60A, 3/4" Wide, 3/8" Hex Stretch Bore)	74,-494,263	13,50,51	1207,4305,8088
+intake	210-001 (Intake Pivot Drive Plate)	-346,-152,153	6,381,217	-5670,2512,2496
+intake	210-001 (Intake Pivot Drive Plate)	346,-152,153	6,381,217	5670,2512,2496
+intake	210-002 (27.5" Intake Drive Shaft)	0,-112,136	698,13,14	0,2231,1830
+intake	220-002 (Intake Side Plate)	-302,-451,188	6,356,306	-4941,3082,7386
+intake	220-002 (Intake Side Plate)	308,-451,188	6,356,306	5046,3082,7386
+intake	220-003 (Intake Cross Bar)	3,-585,267	603,25,25	52,4382,9579
+intake	220-004 (25.5” Intake Shaft)	3,-591,188	654,13,14	52,3080,9675
+intake	220-004 (25.5” Intake Shaft)	6,-494,263	648,14,13	104,4305,8088
+intake	220-006 (1.75” Intake Shaft)	-321,-305,191	44,13,14	-5253,3125,4993
+intake	220-006 (1.75” Intake Shaft)	321,-305,191	44,13,14	5254,3125,4993
+intake	24t Aluminum Pulley (HTD 5mm, 9mm Wide, 1/2" Hex Bore)	-291,-591,188	14,42,42	-4772,3080,9675
+intake	24t Aluminum Pulley (HTD 5mm, 9mm Wide, 1/2" Hex Bore)	323,-591,188	14,42,42	5297,3080,9675
+intake	24t Aluminum Pulley (HTD 5mm, 9mm Wide, 1/2" Hex Bore)-Mirrored	-317,-591,188	14,42,42	-5192,3080,9675
+intake	24t Aluminum Pulley (HTD 5mm, 9mm Wide, 1/2" Hex Bore)-Mirrored	298,-591,188	14,42,42	4877,3080,9675
+intake	4" Compliant Wheel (35A, 1" Wide, 1/2" Hex Bore)	-263,-591,188	25,102,101	-4317,3080,9675
+intake	4" Compliant Wheel (35A, 1" Wide, 1/2" Hex Bore)-Mirrored	270,-591,188	25,102,101	4422,3080,9675
+intake	4" Compliant Wheel (60A, 1" Wide, 1/2" Hex Bore)	-200,-591,188	25,101,102	-3277,3080,9675
+intake	4" Compliant Wheel (60A, 1" Wide, 1/2" Hex Bore)	-98,-591,188	25,101,102	-1612,3080,9675
+intake	4" Compliant Wheel (60A, 1" Wide, 1/2" Hex Bore)	105,-591,188	25,101,102	1717,3080,9675
+intake	4" Compliant Wheel (60A, 1" Wide, 1/2" Hex Bore)	206,-591,188	25,101,102	3382,3080,9675
+intake	4" Compliant Wheel (60A, 1" Wide, 1/2" Hex Bore)	3,-591,188	25,101,102	52,3080,9675
+intake	52t Pocketed Steel Spur Gear (20 DP, 1/2" Hex Bore)	337,-112,136	13,69,69	5514,2231,1830
+intake	70T HTD Belt	-291,-544,223	9,133,111	-4772,3654,8921
+intake	70T HTD Belt	-316,-572,243	9,78,151	-5176,3982,9370
+intake	70T HTD Belt	298,-544,223	9,133,111	4877,3654,8921
+intake	70T HTD Belt	322,-572,243	9,78,151	5281,3982,9370
+intake	88 links #25 chain	-323,-220,176	8,248,109	-5299,2876,3609
+intake	88 links #25 chain	324,-220,176	8,248,109	5300,2876,3609
+intake	Bearing Retention Plate	-306,-494,263	3,66,38	-5019,4305,8088
+intake	Bearing Retention Plate	-306,-591,188	3,66,38	-5019,3080,9675
+intake	Bearing Retention Plate	313,-591,188	3,66,38	5124,3080,9675
+intake	Hopper Push Block	-13,-609,277	25,66,38	-208,4539,9976
+intake	Hopper Push Block	-64,-609,277	25,66,38	-1040,4539,9976
+intake	Hopper Push Block	-89,-609,277	25,66,38	-1456,4539,9976
+intake	Hopper Push Block	13,-609,277	25,66,38	208,4539,9976
+intake	Hopper Push Block	64,-609,277	25,66,38	1040,4539,9976
+intake	Hopper Push Block	89,-609,277	25,66,38	1456,4539,9976
+intake	Kraken X60 Back Cap (WCP)	247,-89,125	21,33,54	4050,2051,1455
+intake	Kraken X60 Brushless Motor	273,-548,301	112,60,63	4481,4936,8986
+intake	Kraken X60 Brushless Motor	293,-74,127	112,64,60	4793,2085,1214
+intake	Kraken X60 Brushless Motor-Mirrored	-267,-548,301	112,60,63	-4376,4936,8986
+intake	Part 17	-311,-305,191	13,63,64	-5097,3125,4993
+intake	Part 30	327,-48,134	32,8,8	5358,2193,779
+intake	Part 31	327,-65,152	32,8,8	5358,2487,1073
+intake	Part 32	327,-54,109	32,8,7	5358,1792,886
+intake	Part 33	327,-79,103	32,7,8	5358,1683,1289
+intake	Part 34	-292,-548,303	13,63,63	-4785,4963,8986
+intake	Part 34	298,-548,303	13,63,63	4890,4963,8986
+intake	Part 40	-298,-548,303	25,14,14	-4889,4963,8986
+intake	Part 40	305,-548,303	25,14,14	4994,4963,8986
+intake	Part 41	338,-305,191	10,19,19	5535,3127,4993
+intake	Part 41	342,-305,191	10,19,19	5603,3127,4993
+intake	Part 42	271,-112,136	143,19,19	4446,2231,1830
+intake	Spacer	318,-305,191	13,63,64	5202,3125,4993
+intake	TTB-0248	-323,-305,191	11,76,76	-5295,3125,4993
+intake	TTB-0248	330,-305,191	11,76,76	5400,3125,4993
+power		-165,157,86	39,57,19	-2704,1409,-2574
+power		-225,19,78	146,143,35	-3687,1281,-312
+power		0,-1,89	45,47,13	0,1461,16
+power	120A Main Breaker	140,203,121	73,48,44	2289,1979,-3319
+power	Battery containment	0,272,70	229,91,51	0,1149,-4456
+power	La Polulu Base	88,-139,88	38,60,15	1447,1443,2269
+power	La Polulu Lid	88,-139,82	38,32,3	1447,1342,2270
+power	Robot Battery	0,273,135	180,76,167	0,2206,-4474
+power	Robot Signal Light (RSL) (Allen Bradley)	-182,312,351	74,45,45	-2984,5753,-5108
+power	Simplified PDH	-1,127,76	227,114,40	-12,1240,-2081
+shooter	#10-32 x 0.5" L Shaft End Screw (Steel, Black Oxide)	-145,-6,426	16,16,16	-2380,6975,100
+shooter	#10-32 x 0.5" L Shaft End Screw (Steel, Black Oxide)	-145,16,362	16,16,16	-2380,5934,-264
+shooter	#10-32 x 0.5" L Shaft End Screw (Steel, Black Oxide)	-175,322,409	16,16,16	-2859,6696,-5273
+shooter	#10-32 x 0.5" L Shaft End Screw (Steel, Black Oxide)	-175,57,309	16,16,16	-2859,5061,-942
+shooter	#10-32 x 0.5" L Shaft End Screw (Steel, Black Oxide)	-175,85,371	16,16,16	-2859,6070,-1392
+shooter	#10-32 x 0.5" L Shaft End Screw (Steel, Black Oxide)	-185,83,451	16,16,16	-3026,7391,-1357
+shooter	#10-32 x 0.5" L Shaft End Screw (Steel, Black Oxide)	145,-6,426	16,16,16	2381,6975,100
+shooter	#10-32 x 0.5" L Shaft End Screw (Steel, Black Oxide)	175,57,309	16,16,16	2860,5061,-942
+shooter	#10-32 x 0.5" L Shaft End Screw (Steel, Black Oxide)	175,85,371	16,16,16	2860,6070,-1392
+shooter	#10-32 x 0.5" L Shaft End Screw (Steel, Black Oxide)	199,83,451	16,16,16	3260,7391,-1358
+shooter	#10-32 x 0.5" L Shaft End Screw (Steel, Black Oxide)	203,322,409	16,16,16	3333,6696,-5273
+shooter	#10-32 x 0.5" L Shaft End Screw (Steel, Black Oxide)	207,302,297	16,16,16	3394,4866,-4953
+shooter	1.125" OD Bearing Retention Plate (Centered, 2" C-C)	-179,57,309	3,35,59	-2938,5061,-942
+shooter	1.125" OD Bearing Retention Plate (Centered, 2" C-C)	-179,85,371	3,58,35	-2938,6070,-1392
+shooter	1.125" OD Bearing Retention Plate (Centered, 2" C-C)	179,57,309	3,35,57	2938,5062,-942
+shooter	1.125" OD Bearing Retention Plate (Centered, 2" C-C)	179,85,371	3,57,35	2938,6070,-1391
+shooter	1/2" Hex Bore Custom Spacer (0.45" OD,0.502" L)	187,302,297	13,11,11	3057,4866,-4952
+shooter	1/2" Hex Bore Custom Spacer (0.45" OD,0.689" L)	-149,-6,426	18,11,11	-2444,6976,100
+shooter	1/2" Hex Bore Custom Spacer (0.45" OD,0.689" L)	-149,16,362	18,11,11	-2444,5933,-264
+shooter	1/2" Hex Bore Custom Spacer (0.45" OD,0.689" L)	149,-6,426	18,11,11	2445,6974,100
+shooter	1/2" Hex Bore Custom Spacer (0.75" OD,0.088" L)	-180,83,451	2,19,19	-2957,7391,-1356
+shooter	1/2" Hex Bore Custom Spacer (0.75" OD,0.088" L)	181,83,451	2,19,19	2958,7391,-1357
+shooter	1/2" Hex Bore Custom Spacer (0.75" OD,0.469" L)	-12,57,309	12,19,19	-201,5062,-941
+shooter	1/2" Hex Bore Custom Spacer (0.75" OD,0.469" L)	-12,85,371	12,19,19	-201,6072,-1391
+shooter	1/2" Hex Bore Custom Spacer (0.75" OD,0.469" L)	12,57,309	12,19,19	202,5062,-941
+shooter	1/2" Hex Bore Custom Spacer (0.75" OD,0.469" L)	12,85,371	12,19,19	202,6072,-1391
+shooter	1/2" Hex Bore Custom Spacer (0.75" OD,0.5" L)	-113,57,309	13,19,19	-1855,5061,-940
+shooter	1/2" Hex Bore Custom Spacer (0.75" OD,0.5" L)	-113,85,371	13,19,19	-1855,6070,-1391
+shooter	1/2" Hex Bore Custom Spacer (0.75" OD,0.5" L)	-37,57,309	13,19,19	-611,5060,-942
+shooter	1/2" Hex Bore Custom Spacer (0.75" OD,0.5" L)	-37,85,371	13,19,19	-611,6070,-1392
+shooter	1/2" Hex Bore Custom Spacer (0.75" OD,0.5" L)	-62,57,309	13,19,19	-1023,5061,-940
+shooter	1/2" Hex Bore Custom Spacer (0.75" OD,0.5" L)	-62,85,371	13,19,19	-1023,6070,-1391
+shooter	1/2" Hex Bore Custom Spacer (0.75" OD,0.5" L)	-88,57,309	13,19,19	-1439,5061,-940
+shooter	1/2" Hex Bore Custom Spacer (0.75" OD,0.5" L)	-88,85,371	13,19,19	-1439,6070,-1391
+shooter	1/2" Hex Bore Custom Spacer (0.75" OD,0.5" L)	114,57,309	13,19,19	1860,5062,-941
+shooter	1/2" Hex Bore Custom Spacer (0.75" OD,0.5" L)	114,85,371	13,19,19	1860,6072,-1391
+shooter	1/2" Hex Bore Custom Spacer (0.75" OD,0.5" L)	37,57,309	13,19,19	612,5062,-941
+shooter	1/2" Hex Bore Custom Spacer (0.75" OD,0.5" L)	37,85,371	13,19,19	612,6072,-1391
+shooter	1/2" Hex Bore Custom Spacer (0.75" OD,0.5" L)	63,58,309	13,19,19	1028,5059,-942
+shooter	1/2" Hex Bore Custom Spacer (0.75" OD,0.5" L)	63,85,371	13,19,19	1028,6072,-1393
+shooter	1/2" Hex Bore Custom Spacer (0.75" OD,0.5" L)	88,58,309	13,19,19	1444,5061,-943
+shooter	1/2" Hex Bore Custom Spacer (0.75" OD,0.5" L)	88,85,371	13,19,19	1444,6072,-1391
+shooter	1/2" Hex Bore Custom Spacer (0.75" OD,0.513" L)	186,322,409	13,19,19	3046,6695,-5273
+shooter	1/2" Hex Bore Custom Spacer (0.75" OD,0.875" L)	-160,322,409	22,19,19	-2626,6696,-5271
+shooter	1/2" Hex Bore Custom Spacer (0.75" OD,0.875" L)	160,322,409	22,19,19	2627,6696,-5274
+shooter	1/2" Hex Bore Custom Spacer (0.75" OD,0.969" L)	-145,57,309	25,19,19	-2373,5061,-942
+shooter	1/2" Hex Bore Custom Spacer (0.75" OD,0.969" L)	145,57,309	25,19,19	2374,5061,-942
+shooter	1/2" Hex Bore Custom Spacer (0.75" OD,0.969" L)	145,85,371	25,19,19	2374,6070,-1392
+shooter	1/2" Hex Bore Custom Spacer (0.75" OD,1.438" L)	-139,83,451	37,19,19	-2275,7390,-1357
+shooter	1/2" Hex Bore Custom Spacer (0.75" OD,1.438" L)	139,83,451	37,19,19	2276,7391,-1357
+shooter	1/2" Hex Bore Custom Spacer (0.75" OD,1.521" L)	-152,85,371	39,19,19	-2492,6070,-1392
+shooter	1/2" Hex Bore Custom Spacer (0.75" OD,2.75" L)	0,322,409	70,19,19	0,6695,-5273
+shooter	1/2" Rounded Hex (13.75mm) ID Bearing (1.125" OD, 0.313" WD, Shielded, Flanged)	-175,57,309	8,31,31	-2874,5061,-942
+shooter	1/2" Rounded Hex (13.75mm) ID Bearing (1.125" OD, 0.313" WD, Shielded, Flanged)	-175,83,451	8,31,31	-2874,7390,-1357
+shooter	1/2" Rounded Hex (13.75mm) ID Bearing (1.125" OD, 0.313" WD, Shielded, Flanged)	-175,85,371	8,31,31	-2874,6071,-1392
+shooter	1/2" Rounded Hex (13.75mm) ID Bearing (1.125" OD, 0.313" WD, Shielded, Flanged)	175,57,309	8,31,31	2874,5060,-942
+shooter	1/2" Rounded Hex (13.75mm) ID Bearing (1.125" OD, 0.313" WD, Shielded, Flanged)	175,83,451	8,31,31	2874,7390,-1357
+shooter	1/2" Rounded Hex (13.75mm) ID Bearing (1.125" OD, 0.313" WD, Shielded, Flanged)	175,85,370	8,31,31	2874,6070,-1392
+shooter	12t Aluminum Pulley (HTD 5mm, 9mm Wide, Falcon Spline Bore)	202,302,297	19,23,23	3317,4868,-4951
+shooter	13.75mm ID Flanged Bronze Bushing (0.75" OD, 0.313" WD)	-175,322,409	8,22,22	-2874,6694,-5273
+shooter	13.75mm ID Flanged Bronze Bushing (0.75" OD, 0.313" WD)	175,322,409	8,22,22	2874,6698,-5273
+shooter	18t Aluminum Pulley (HTD 5mm, 9mm Wide, 1/2" Hex Bore)	-164,57,309	14,32,32	-2691,5061,-942
+shooter	18t Aluminum Pulley (HTD 5mm, 9mm Wide, 1/2" Hex Bore)	164,57,309	14,32,32	2692,5061,-942
+shooter	18t Aluminum Pulley (HTD 5mm, 9mm Wide, 1/2" Hex Bore)	164,83,451	14,32,32	2692,7391,-1357
+shooter	18t Aluminum Pulley (HTD 5mm, 9mm Wide, 1/2" Hex Bore)	164,85,371	14,32,32	2692,6070,-1392
+shooter	18t Aluminum Pulley (HTD 5mm, 9mm Wide, 1/2" Hex Bore)-Mirrored	-164,83,451	14,32,32	-2691,7391,-1357
+shooter	18t Aluminum Pulley (HTD 5mm, 9mm Wide, 8mm SplineXS Bore)	-165,16,362	14,32,32	-2704,5934,-264
+shooter	18t Aluminum Pulley (HTD 5mm, 9mm Wide, 8mm SplineXS Bore)	165,-6,426	14,32,32	2705,6975,100
+shooter	18t Aluminum Pulley (HTD 5mm, 9mm Wide, 8mm SplineXS Bore)-Mirrored	-165,-6,426	14,32,32	-2704,6975,101
+shooter	2" Flex Wheel (60A, 1/2" Wide, 1/2" Hex Bore)	-101,57,309	13,51,51	-1647,5061,-942
+shooter	2" Flex Wheel (60A, 1/2" Wide, 1/2" Hex Bore)	-101,85,371	13,51,51	-1647,6071,-1392
+shooter	2" Flex Wheel (60A, 1/2" Wide, 1/2" Hex Bore)	-126,57,309	13,51,51	-2063,5061,-942
+shooter	2" Flex Wheel (60A, 1/2" Wide, 1/2" Hex Bore)	-126,85,371	13,51,51	-2063,6071,-1392
+shooter	2" Flex Wheel (60A, 1/2" Wide, 1/2" Hex Bore)	-50,57,309	13,51,51	-815,5061,-942
+shooter	2" Flex Wheel (60A, 1/2" Wide, 1/2" Hex Bore)	-50,85,371	13,51,51	-815,6071,-1392
+shooter	2" Flex Wheel (60A, 1/2" Wide, 1/2" Hex Bore)	-75,57,309	13,51,51	-1231,5061,-942
+shooter	2" Flex Wheel (60A, 1/2" Wide, 1/2" Hex Bore)	-75,85,371	13,51,51	-1231,6071,-1392
+shooter	2" Flex Wheel (60A, 1/2" Wide, 1/2" Hex Bore)	0,57,309	13,51,51	0,5061,-942
+shooter	2" Flex Wheel (60A, 1/2" Wide, 1/2" Hex Bore)	0,85,371	13,51,51	0,6070,-1392
+shooter	2" Flex Wheel (60A, 1/2" Wide, 1/2" Hex Bore)	101,57,309	13,51,51	1652,5061,-942
+shooter	2" Flex Wheel (60A, 1/2" Wide, 1/2" Hex Bore)	101,85,371	13,51,51	1652,6070,-1392
+shooter	2" Flex Wheel (60A, 1/2" Wide, 1/2" Hex Bore)	126,57,309	13,51,51	2068,5061,-942
+shooter	2" Flex Wheel (60A, 1/2" Wide, 1/2" Hex Bore)	126,85,371	13,51,51	2068,6070,-1392
+shooter	2" Flex Wheel (60A, 1/2" Wide, 1/2" Hex Bore)	25,57,309	13,51,51	404,5061,-942
+shooter	2" Flex Wheel (60A, 1/2" Wide, 1/2" Hex Bore)	25,85,371	13,51,51	404,6070,-1392
+shooter	2" Flex Wheel (60A, 1/2" Wide, 1/2" Hex Bore)	50,57,309	13,51,51	820,5061,-942
+shooter	2" Flex Wheel (60A, 1/2" Wide, 1/2" Hex Bore)	50,85,371	13,51,51	820,6070,-1392
+shooter	2" Flex Wheel (60A, 1/2" Wide, 1/2" Hex Bore)	75,57,309	13,51,51	1236,5061,-942
+shooter	2" Flex Wheel (60A, 1/2" Wide, 1/2" Hex Bore)	75,85,371	13,51,51	1236,6070,-1392
+shooter	2" Flex Wheel (60A, 1/2" Wide, 1/2" Hex Bore)	75,85,371	13,51,51	1236,6070,-1392
+shooter	2" Flex Wheel (60A, 1/2" Wide, 1/2" Hex Bore)-Mirrored	-25,57,309	13,51,51	-403,5061,-942
+shooter	2" Flex Wheel (60A, 1/2" Wide, 1/2" Hex Bore)-Mirrored	-25,85,371	13,51,51	-403,6070,-1392
+shooter	25t Custom HTD 5mm Pulley (0.375" Wide,‎ *0.5" Hex Bore)	200,322,409	16,44,44	3283,6696,-5273
+shooter	3/16" Blind Rivet (.250" - .438" Grip Length, Aluminum)	191,81,111	9,19,9	3121,1824,-1329
+shooter	310-007 (Rear 1/2 Thunderhex)	14,322,409	388,13,14	237,6696,-5273
+shooter	310-008 (Top Kicker Wheel Shaft)	0,85,371	359,13,14	0,6070,-1392
+shooter	310-009 (Shooter Shaft)	7,83,451	393,13,14	117,7391,-1357
+shooter	310-010 (Lower Kicker Wheel Shaft)	0,57,309	359,13,14	0,5061,-942
+shooter	310-014 (1-3dp Back Support)	0,189,175	349,15,13	0,2872,-3101
+shooter	310-015 (2-3dp Back Support)	0,-24,384	349,15,13	0,6287,397
+shooter	310-015 (2-3dp Back Support)	0,13,474	349,15,13	0,7769,-211
+shooter	310-015 (2-3dp Back Support)	0,224,243	349,15,13	0,3984,-3669
+shooter	310-016 (3-3dp Back Support)	0,255,313	349,15,13	0,5124,-4177
+shooter	310-017 (4-3dp back support)	0,266,378	349,15,13	0,6191,-4354
+shooter	310-020 (3D Printed Lower Left Ramp)	87,150,203	175,201,158	1431,3327,-2451
+shooter	310-021 (3DP-Upper Left Backing)	87,254,347	175,49,176	1431,5677,-4153
+shooter	310-022 (3D printed Lower Right Ramp)	-87,150,203	175,201,158	-1430,3327,-2451
+shooter	310-023 (3DP-Upper Right Backing)	-87,254,347	175,49,176	-1430,5677,-4153
+shooter	310-024 (27� Horizontal Frame Tube)	0,102,111	686,51,25	0,1825,-1665
+shooter	310-025 (Right Vertical Frame Tube)	-190,102,226	25,51,203	-3121,3698,-1665
+shooter	310-026 (Right Front Gusset)	-256,129,184	150,3,164	-4194,3010,-2107
+shooter	310-026 (Right Front Gusset)	-256,75,184	150,3,164	-4194,3010,-1223
+shooter	310-026 (Right Front Gusset)	256,129,184	150,3,164	4195,3010,-2107
+shooter	310-026 (Right Front Gusset)	256,75,184	150,3,164	4195,3010,-1223
+shooter	310-027 (Left Vertical Frame Tube)	191,102,226	25,51,203	3121,3698,-1665
+shooter	310-033 (45T 5M 9mm Wide Belt)	-165,37,336	9,72,84	-2702,5497,-603
+shooter	310-034 (45T 5M 9mm Wide Belt)	165,71,340	9,58,93	2703,5565,-1167
+shooter	310-035 (55T 5M 9mm Wide Belt)	-165,38,439	9,120,56	-2702,7184,-629
+shooter	310-035 (55T 5M 9mm Wide Belt)	165,38,439	9,120,56	2703,7184,-629
+shooter	310-040 (Upper Churro)	0,268,425	349,15,13	0,6956,-4399
+shooter	310-049 (Polycarb Tube Support)	-260,102,137	76,38,25	-4265,2241,-1665
+shooter	310-050 (Aluminium Tube)	-260,102,302	32,32,343	-4265,4946,-1665
+shooter	310-052 (	-230,102,324	99,51,32	-3772,5310,-1665
+shooter	4InchRubberSolidWheel_Core	-19,83,451	38,76,76	-312,7391,-1357
+shooter	4InchRubberSolidWheel_Core	-57,83,451	38,76,76	-936,7391,-1357
+shooter	4InchRubberSolidWheel_Core	-95,83,451	38,76,76	-1560,7391,-1357
+shooter	4InchRubberSolidWheel_Core	19,83,451	38,76,76	313,7391,-1357
+shooter	4InchRubberSolidWheel_Core	57,83,451	38,76,76	937,7391,-1357
+shooter	4InchRubberSolidWheel_Core	95,83,451	38,76,76	1561,7391,-1357
+shooter	64T 5M 9mm Wide Belt	202,317,358	9,51,143	3317,5864,-5196
+shooter	Kraken X44 Brushless Motor	-196,16,361	112,44,47	-3218,5912,-264
+shooter	Kraken X44 Brushless Motor	156,302,296	112,44,47	2556,4844,-4953
+shooter	Kraken X60 Brushless Motor	196,-5,426	112,63,60	3219,6975,77
+shooter	Kraken X60 Brushless Motor-Mirrored	-196,-5,426	112,63,60	-3218,6975,77
+shooter	Likhin Pocketed Plate	-176,148,314	3,387,380	-2887,5149,-2418
+shooter	Likhin Pocketed Plate	176,148,314	3,387,380	2887,5149,-2418
+shooter	Likhin's Wonderous Endcap	191,102,313	19,44,29	3121,5128,-1665
+shooter	OutsideRubberWheel4Inch	-19,83,451	38,101,102	-312,7391,-1357
+shooter	OutsideRubberWheel4Inch	-57,83,451	38,101,102	-936,7391,-1357
+shooter	OutsideRubberWheel4Inch	-95,83,451	38,101,102	-1560,7391,-1357
+shooter	OutsideRubberWheel4Inch	19,83,451	38,101,102	313,7391,-1357
+shooter	OutsideRubberWheel4Inch	57,83,451	38,101,102	937,7391,-1357
+shooter	OutsideRubberWheel4Inch	95,83,451	38,101,102	1561,7391,-1357
+shooter	Part 1	-117,83,451	6,101,102	-1924,7391,-1357
+shooter	Part 1	118,83,451	6,101,102	1925,7391,-1357
+shooter	Part 2	-127,83,451	13,101,102	-2080,7391,-1357
+shooter	Part 2	127,83,451	13,101,102	2081,7391,-1357
+shooter	Part 2	63,85,371	13,18,18	1028,6071,-1392
+shooter	Part 87	-215,302,297	75,50,50	-3528,4866,-4952
+shooter	Socket button head cap screw #10-32 x 0.5	-173,-24,384	15,9,9	-2830,6287,398
+shooter	Socket button head cap screw #10-32 x 0.5	-173,13,474	15,9,9	-2830,7769,-210
+shooter	Socket button head cap screw #10-32 x 0.5	-173,189,175	15,9,9	-2830,2872,-3100
+shooter	Socket button head cap screw #10-32 x 0.5	-173,224,243	15,9,9	-2830,3984,-3668
+shooter	Socket button head cap screw #10-32 x 0.5	-173,255,313	15,9,9	-2830,5124,-4176
+shooter	Socket button head cap screw #10-32 x 0.5	-173,266,378	15,9,9	-2830,6191,-4353
+shooter	Socket button head cap screw #10-32 x 0.5	-173,268,425	15,9,9	-2830,6956,-4398
+shooter	Socket button head cap screw #10-32 x 0.5	-180,-1,362	15,9,9	-2944,5934,23
+shooter	Socket button head cap screw #10-32 x 0.5	-180,-32,426	15,9,9	-2944,6975,517
+shooter	Socket button head cap screw #10-32 x 0.5	-180,-6,400	15,9,9	-2944,6559,101
+shooter	Socket button head cap screw #10-32 x 0.5	-180,-6,451	15,9,9	-2944,7391,101
+shooter	Socket button head cap screw #10-32 x 0.5	-180,16,345	15,9,9	-2944,5648,-263
+shooter	Socket button head cap screw #10-32 x 0.5	-180,16,380	15,9,9	-2944,6221,-263
+shooter	Socket button head cap screw #10-32 x 0.5	-180,19,426	15,9,9	-2944,6975,-315
+shooter	Socket button head cap screw #10-32 x 0.5	-180,34,362	15,9,9	-2944,5934,-549
+shooter	Socket button head cap screw #10-32 x 0.5	173,-24,384	15,9,9	2830,6287,398
+shooter	Socket button head cap screw #10-32 x 0.5	173,13,474	15,9,9	2830,7769,-210
+shooter	Socket button head cap screw #10-32 x 0.5	173,189,175	15,9,9	2830,2872,-3100
+shooter	Socket button head cap screw #10-32 x 0.5	173,224,243	15,9,9	2830,3984,-3668
+shooter	Socket button head cap screw #10-32 x 0.5	173,255,313	15,9,9	2830,5124,-4176
+shooter	Socket button head cap screw #10-32 x 0.5	173,266,378	15,9,9	2830,6191,-4353
+shooter	Socket button head cap screw #10-32 x 0.5	173,268,425	15,9,9	2830,6956,-4398
+shooter	Socket button head cap screw #10-32 x 0.5	173,285,297	15,9,9	2830,4866,-4666
+shooter	Socket button head cap screw #10-32 x 0.5	173,302,280	15,9,9	2830,4580,-4952
+shooter	Socket button head cap screw #10-32 x 0.5	173,302,314	15,9,9	2830,5152,-4952
+shooter	Socket button head cap screw #10-32 x 0.5	173,320,297	15,9,9	2830,4866,-5238
+shooter	Socket button head cap screw #10-32 x 0.5	180,-32,426	15,9,9	2944,6975,517
+shooter	Socket button head cap screw #10-32 x 0.5	180,-6,400	15,9,9	2944,6559,101
+shooter	Socket button head cap screw #10-32 x 0.5	180,-6,451	15,9,9	2944,7391,101
+shooter	Socket button head cap screw #10-32 x 0.5	180,19,426	15,9,9	2944,6975,-315
+shooter	Socket head cap screw #10-32 x 0.5	-177,66,333	18,8,8	-2899,5452,-1084
+shooter	Spur gear (10 teeth)	-92,322,409	114,30,30	-1508,6696,-5273
+shooter	Spur gear (10 teeth)	92,322,409	114,30,30	1509,6696,-5273
+vision	310-051 (Camera Mount)	-259,96,495	62,49,68	-4237,8104,-1580
+vision	Base	-258,77,516	61,28,43	-4231,8460,-1268
+vision	Binding head machine screw #2-56 x 0.5	-243,67,505	4,14,9	-3979,8281,-1104
+vision	Binding head machine screw #2-56 x 0.5	-243,80,532	4,14,9	-3979,8713,-1306
+vision	Binding head machine screw #2-56 x 0.5	-272,65,506	4,14,9	-4454,8297,-1070
+vision	Binding head machine screw #2-56 x 0.5	-272,78,533	4,14,9	-4454,8729,-1272
+vision	New Lid	-258,70,520	61,27,42	-4222,8514,-1155
+vision	PCB	-258,64,519	38,41,38	-4226,8500,-1055
+vision	Socket button head cap screw #10-32 x 0.375	-232,73,522	9,13,10	-3802,8549,-1204
+vision	Socket button head cap screw #10-32 x 0.375	-283,70,523	9,13,10	-4631,8577,-1144

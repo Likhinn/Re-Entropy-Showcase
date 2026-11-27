@@ -1,6 +1,8 @@
 // Raw Onshape export -> web-ready model in public/model.
 // Usage: npm run model                          Re-Entropy: Kentropy Main.glb -> robot.glb
-//        npm run model -- entropy              Entropy:    Entropy.glb       -> entropy.glb
+//        npm run model -- entropy              Entropy at Worlds:  Entropy.glb      -> entropy.glb
+//        npm run model -- entropy-albany       Entropy at Albany:  Albany Bot.glb   -> entropy-albany.glb
+//        npm run model -- entropy-dalton       Entropy at Dalton:  Dalton boty.glb  -> entropy-dalton.glb
 //        npm run model -- <robot> path/to/export.glb
 import { NodeIO, Document } from '@gltf-transform/core';
 import { EXTMeshoptCompression, KHRMeshQuantization } from '@gltf-transform/extensions';
@@ -10,11 +12,36 @@ import fs from 'node:fs';
 import { OLD, flywheelDrive, intakeBelt } from './flywheel-drive.mjs';
 import { elastic } from './elastic.mjs';
 import { roller } from './roller.mjs';
+import { pushBlock, PUSH_BLOCKS } from './push-block.mjs';
 import { weightedNormals } from './normals.mjs';
 import * as FIXES from './subsystems.mjs';
 import { classify, rig, spin, finish, removed, recolor, setRobot, hubOf, glass, DROP, POLY_GRAY } from './subsystems.mjs';
 
-const ROBOTS = { 're-entropy': ['Kentropy Main.glb', 'robot.glb'], entropy: ['Entropy.glb', 'entropy.glb'] };
+const ROBOTS = {
+  're-entropy': ['Kentropy Main.glb', 'robot.glb'],
+  entropy: ['Entropy.glb', 'entropy.glb'],
+  'entropy-albany': ['Albany Bot.glb', 'entropy-albany.glb'],
+  'entropy-dalton': ['Dalton boty.glb', 'entropy-dalton.glb'],
+};
+// Albany's hopper is the right one: every Entropy is built with it in place of its own
+const HOPPER_SRC = 'Albany Bot.glb', HOPPER_NODE = /^400-000 \(Hopper\)/;
+// Entropy's earlier CADs face the other way and sit 7 mm lower: turned 180 degrees about Z and raised,
+// they line up with the Worlds CAD (measured on the drivebase tubes and the intake pivot motor)
+const FLIP = [-1, 0, 0, 0, 0, -1, 0, 0, 0, 0, 1, 0, 0, 0, 0.007, 1];
+const ALIGN = { 'Albany Bot.glb': FLIP, 'Dalton boty.glb': FLIP };
+// Parts one event's CAD is missing, taken from another's: [from file, the assembly or part to take,
+// mm to move it by once both CADs are lined up, optionally which of them by centre (mm), and whether to
+// mirror it left to right first]
+const BORROW = {
+  // Albany's tray has no battery in it: Dalton's, in the same tray
+  'entropy-albany': [['Dalton boty.glb', /^Robot Battery$/, [0, 0, 0]]],
+  // Dalton has the camera mount but no camera: Albany's ThriftyCam, onto Dalton's mount 12 mm higher
+  // and its intake has only one side plate and one pivot drive plate: the side plate mirrored onto the other side, on the outside
+  // of where the reinforcement plate sat (as on the first side)
+  'entropy-dalton': [['Albany Bot.glb', /^TTB-0241 ThriftyCam/, [0, 0, 12]], ['Dalton boty.glb', /^220-002 /, [3, 0, 0], null, true],
+    // the pivot drive plate isn't symmetric, so Albany's right one
+    ['Albany Bot.glb', /^210-001 /, [0, 0, 0], ([x]) => x > 0]],
+};
 const ROBOT = process.argv[2] && !process.argv[2].endsWith('.glb') ? process.argv[2] : 're-entropy';
 if (!ROBOTS[ROBOT]) throw new Error(`unknown robot ${ROBOT}; one of ${Object.keys(ROBOTS).join(', ')}`);
 const SRC = process.argv.slice(2).find((a) => a.endsWith('.glb')) || ROBOTS[ROBOT][0];
@@ -28,19 +55,23 @@ await MeshoptSimplifier.ready;
 await MeshoptEncoder.ready;
 
 // ---- minimal GLB reader (the export has ~150k accessors, so skip the generic parser) ----
-const raw = fs.readFileSync(SRC);
-const jsonLen = raw.readUInt32LE(12);
-const g = JSON.parse(raw.subarray(20, 20 + jsonLen).toString('utf8'));
-const binOff = 20 + jsonLen + 8;
 const COMP = { 5121: [1, 'readUInt8'], 5123: [2, 'readUInt16LE'], 5125: [4, 'readUInt32LE'], 5126: [4, 'readFloatLE'] };
 const WIDTH = { SCALAR: 1, VEC2: 2, VEC3: 3 };
-function acc(i) {
-  const a = g.accessors[i], v = g.bufferViews[a.bufferView], n = WIDTH[a.type], [sz, fn] = COMP[a.componentType];
-  const out = a.componentType === 5126 ? new Float32Array(a.count * n) : new Uint32Array(a.count * n);
-  const base = binOff + (v.byteOffset || 0) + (a.byteOffset || 0), stride = v.byteStride || sz * n;
-  for (let k = 0; k < a.count; k++) for (let c = 0; c < n; c++) out[k * n + c] = raw[fn](base + k * stride + c * sz);
-  return out;
+function open(file) {
+  const raw = fs.readFileSync(file);
+  const jsonLen = raw.readUInt32LE(12);
+  const g = JSON.parse(raw.subarray(20, 20 + jsonLen).toString('utf8'));
+  const binOff = 20 + jsonLen + 8;
+  const acc = (i) => {
+    const a = g.accessors[i], v = g.bufferViews[a.bufferView], n = WIDTH[a.type], [sz, fn] = COMP[a.componentType];
+    const out = a.componentType === 5126 ? new Float32Array(a.count * n) : new Uint32Array(a.count * n);
+    const base = binOff + (v.byteOffset || 0) + (a.byteOffset || 0), stride = v.byteStride || sz * n;
+    for (let k = 0; k < a.count; k++) for (let c = 0; c < n; c++) out[k * n + c] = raw[fn](base + k * stride + c * sz);
+    return out;
+  };
+  return { file, g, acc };
 }
+const main = open(SRC);
 const I4 = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
 const mul = (a, b) => {
   const o = new Array(16).fill(0);
@@ -54,8 +85,9 @@ const bounds = () => ({ mn: [1e9, 1e9, 1e9], mx: [-1e9, -1e9, -1e9] });
 // ---- one simplified mesh per unique CAD part --------------------------------------------
 const cache = new Map();
 let triIn = 0, triOut = 0;
-function part(mi) {
-  if (cache.has(mi)) return cache.get(mi);
+function part(mi, { file, g, acc }) {
+  const ck = `${file}#${mi}`;
+  if (cache.has(ck)) return cache.get(ck);
   const fresh = () => ({ p: [], n: [], c: [], i: [], map: new Map() });
   const groups = { solid: fresh(), clear: fresh() };
   for (const pr of g.meshes[mi].primitives) {
@@ -108,7 +140,7 @@ function part(mi) {
     });
     if (i.length) out[k] = weightedNormals(p, c, i);
   }
-  cache.set(mi, out);
+  cache.set(ck, out);
   return out;
 }
 
@@ -119,11 +151,12 @@ const PLATE = JSON.parse(fs.readFileSync(new URL('./hopper-plate.json', import.m
 const trianglePlate = (x) => ({ solid: weightedNormals(
   PLATE.p.map((v, k) => (k % 3 ? v : v + x) / 1000), Array.from({ length: PLATE.p.length / 3 }, () => [0.7, 0.7, 0.7, 1]).flat(), PLATE.i) });
 const slots = {}; // where the replaced flywheel pulleys sat
-function emit(source, M, path) {
+function emit(source, M, path, R = main) {
+  if (R !== main && !path.some((n) => R.only.test(n))) return; // from another CAD: only what's borrowed
   const move = MOVE.find((f) => f.test(path));
   if (move) { M = [...M]; move.by.forEach((v, d) => { M[12 + d] += v / 1000; }); console.log('moved', path[path.length - 1]); }
   const paint = recolor(path), clear = glass(path);
-  let pm = typeof source === 'number' ? part(source) : source;
+  let pm = typeof source === 'number' ? part(source, R) : source;
   if (clear) pm = { clear: pm.solid || pm.clear };
   const xf = {}, { mn, mx } = bounds();
   for (const k in pm) {
@@ -137,6 +170,7 @@ function emit(source, M, path) {
     xf[k] = { P, Q };
   }
   const centre = mn.map((a, d) => (a + mx[d]) * 500);
+  if (R.pick && !R.pick(centre)) return;
   const place = !path[path.length - 1] && PLACE.find((f) => f.from.every((v, d) => Math.abs(v - centre[d]) < 2));
   if (place) {
     const by = place.to.map((v, d) => v - centre[d]);
@@ -173,7 +207,9 @@ function emit(source, M, path) {
   const hub = RIGID.find((f) => f.test(path))?.centre || hubOf(path, centre) || centre;
   const home = [hub[0], hub[2], -hub[1], 0].map((v) => Math.round(v / 2000 * 32767));
   const sub = classify(path, centre);
-  listing.push([sub, path[path.length - 1], centre.map(Math.round).join()].join('\t'));
+  if (sub === 'hopper' && swapHopper && R === main) return; // replaced by Albany's
+  // name, centre and size (mm), and the centre as the viewer stores it: tools/changes.mjs diffs these between events
+  listing.push([sub, path[path.length - 1], centre.map(Math.round).join(), mx.map((v, d) => Math.round((v - mn[d]) * 1000)).join(), home.slice(0, 3).join()].join('\t'));
   home[3] = (rig(path, sub, centre) + 10 * spin(path, sub, hub)) * 1000;
   const st = (stats[sub] ||= { parts: 0, tris: 0, ...bounds() });
   st.parts++;
@@ -197,20 +233,32 @@ function emit(source, M, path) {
     st.tris += i.length / 3;
   }
 }
-function walk(ni, M, path) {
-  const nd = g.nodes[ni], nm = clean(nd.name);
+function walk(ni, M, path, R = main) {
+  const nd = R.g.nodes[ni], nm = clean(nd.name);
   if (DROP.test(nm)) return;
   if (nd.rotation || nd.scale) throw new Error(`rotation/scale TRS not handled: ${nm}`);
   let L = nd.matrix || I4;
   if (!nd.matrix && nd.translation) { L = [...I4]; [L[12], L[13], L[14]] = nd.translation; }
   const W = mul(M, L), np = path[path.length - 1] === nm ? path : [...path, nm];
-  if (nd.mesh != null) emit(nd.mesh, W, np);
-  (nd.children || []).forEach((c) => walk(c, W, np));
+  if (nd.mesh != null) emit(nd.mesh, W, np, R);
+  (nd.children || []).forEach((c) => walk(c, W, np, R));
 }
-g.scenes[g.scene || 0].nodes.forEach((n) => walk(n, I4, []));
+const swapHopper = !RE && SRC !== HOPPER_SRC;
+main.g.scenes[main.g.scene || 0].nodes.forEach((n) => walk(n, ALIGN[SRC] || I4, []));
+const borrow = [...(swapHopper ? [[HOPPER_SRC, HOPPER_NODE, [0, 0, 0]]] : []), ...(BORROW[ROBOT] || [])];
+const opened = new Map(); // each CAD read once
+for (const [file, only, by, pick, mirror] of borrow) {
+  if (!opened.has(file)) opened.set(file, file === SRC ? main : open(file));
+  const R = { ...opened.get(file), only, pick }, T = [...I4];
+  by.forEach((v, d) => { T[12 + d] = v / 1000; });
+  if (mirror) T[0] = -1;
+  R.g.scenes[R.g.scene || 0].nodes.forEach((n) => walk(n, mul(T, ALIGN[file] || I4), [], R));
+}
 // Entropy's indexer floor rollers: black silicone over each 1.25" polycarbonate tube [x from, x to, y, z]
 if (ROBOT === 'entropy') for (const [x0, x1, y, z] of [[-147.5, 147.5, 8, 130], [-149.5, 145.5, -72, 134], [-149.5, 145.5, -152, 138], [-100, 106, -232, 142], [-98, 108, -311, 145]])
   emit(roller(x0, x1, y, z, 17.6, 16), I4, ['robot', 'Indexer Assembly <1>', 'Silicone Sleeve']);
+// the blocks on the intake cross bar that push the hopper out, where the CAD doesn't have them
+for (const x of PUSH_BLOCKS[ROBOT] || []) emit(pushBlock(x), I4, ['robot', '200-000 (Intake) <1>', 'Hopper Push Block']);
 if (RE) for (const x of [-330, 330]) emit(elastic(x), I4, ['robot', 'Hopper Complete Assembly <1>', 'Static Hopper Assembly <1>', 'Lock Elastic']);
 if (RE) for (const side of [-1, 1]) { const b = intakeBelt(side); emit(b.pm, I4, ['robot', 'Intake Master Assembly <1>', 'Intake Moving Assembly <1>', b.name]); }
 if (slots.big && slots.small) for (const { name, pm } of flywheelDrive(slots.big, slots.small)) emit(pm, I4, ['robot', 'Shootdexer Complete Assembly <1>', 'Static Shootdexer Assembly <1>', name]);
