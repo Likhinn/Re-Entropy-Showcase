@@ -6,6 +6,7 @@ import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { PIVOT, CLIPS, CONE, ELASTIC, SWERVE_SECONDS, pose, swerve } from './mechanism.js';
 import { Fuel, RUNS } from './fuel.js';
 import { egg, spunInPlace, EGG_SECONDS, EGG_AREA } from './egg.js';
+import { Crash } from './crash.js';
 import { MeshBVH, acceleratedRaycast } from 'three-mesh-bvh';
 
 THREE.Mesh.prototype.raycast = acceleratedRaycast;
@@ -14,6 +15,7 @@ const SATURATION = 1.6; // 1 = CAD colors as exported
 const CLEAR = 0.22; // opacity multiplier for polycarbonate parts
 const CLEAR_BY = { intake: 0.95 }; // per-subsystem overrides of CLEAR
 const GHOST = 0.07; // opacity dimmed subsystems settle at
+const CHANGED = 'vec3(0.29, 0.87, 0.5)'; // parts new since another event: the page accent, #4ade80
 const EXPLODE_MS = 2200;
 // moves every part by shift + (part centre - subsystem centre) * spread; shared by color, depth pre-pass and shadow
 const v2 = (p) => `vec2(${p.map((n) => n.toFixed(5)).join(', ')})`;
@@ -21,7 +23,9 @@ const explodeVertex = (s, u) => {
   Object.assign(s.uniforms, u);
   s.vertexShader = s.vertexShader
     .replace('void main() {', `attribute vec4 _center;
-      uniform vec3 uShift, uSpread, uOrigin;
+      attribute float _changed;
+      varying float vChanged;
+      uniform vec3 uShift, uSpread, uOrigin, uLift;
       uniform vec4 uPivot;
       uniform vec3 uMove;
       uniform float uUnit, uSpin;
@@ -34,6 +38,7 @@ const explodeVertex = (s, u) => {
       void main() {
       float code = floor(_center.w * 32.767 + 0.5), spinId = floor(code / 10.0), rigId = code - spinId * 10.0;
       vEgg = rigId > 5.5 && rigId < 6.5 ? 1.0 : 0.0;
+      vChanged = _changed;
       float spinBy = uSpin * (spinId < 0.5 ? 0.0 : spinId < 1.5 ? 1.0 : spinId < 2.5 ? -1.0 : -4.07);
       // swerve: the axle points out from the robot's centre in the rest pose
       vec2 side = sign(_center.xz);
@@ -79,7 +84,7 @@ const explodeVertex = (s, u) => {
         if (rigId < 1.5) wp.z += uMove.y;
         transformed = (wp - modelMatrix[3].xyz) / uUnit;
       }
-      transformed += (uShift + (_center.xyz * 2.0 - uOrigin) * uSpread) / uUnit;`);
+      transformed += (uShift + (_center.xyz * 2.0 - uOrigin) * uSpread + uLift) / uUnit;`);
 };
 // turned-metal look for the flywheel (its axis is X): highlights fan out from the hub and fine tool marks circle it
 const BRASS_SHEEN = `
@@ -144,6 +149,10 @@ export class Stage {
     this.subs = new Map();
     this.shift = { x: 0, y: 0 }; // current view offset, fraction of the viewport
     this.mech = { d: 1, h: 1, l: 1, p: 1 }; // see pose() in mechanism.js
+    this.change = { value: 0 }; // 0..1 how strongly the parts from markChanged() stand out
+    this.changePick = { value: 0 }; // which of those changes is picked, 1..n; 0 all alike
+    this.time = { value: 0 }; // s, for the highlight's glow
+    this.changeTo = 0;
     // how this robot moves: pivots, poses, clips and fuel runs (Re-Entropy's unless the robot brings its own)
     this.kit = { PIVOT, CLIPS, pose, RUNS, CONES: [CONE] };
     this.fuel = new Fuel(this.scene);
@@ -172,7 +181,77 @@ export class Stage {
   }
 
   async load(url, explode, onProgress) {
-    const gltf = await new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).loadAsync(url, onProgress);
+    this.install(await this.fetchModel(url, onProgress), explode);
+  }
+
+  // a model's file, fetched ahead of time so switching to it later is quick
+  prefetch(url) {
+    this.files ||= new Map();
+    if (!this.files.has(url)) this.files.set(url, fetch(url).then((r) => (r.ok ? r.arrayBuffer() : Promise.reject(new Error(r.status)))));
+    return this.files.get(url);
+  }
+
+  async fetchModel(url, onProgress) {
+    const loader = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);
+    if (this.files?.has(url)) return loader.parseAsync(await this.files.get(url), '');
+    return loader.loadAsync(url, onProgress);
+  }
+
+  // Swap in another model of the same robot (Entropy at another event): the one shown drops out of view
+  // and the new one comes in from the other side. dir 1: the old one leaves downward, the new one comes
+  // from above; -1 the other way round. Resolves once the new one has landed.
+  async swap(url, explode, dir) {
+    const DROP = 2.6; // m, far enough to leave the frame
+    this.stopRun();
+    this.fuel.clear();
+    this.clip = null;
+    this.crashPending = false;
+    this.wreck?.stop();
+    this.driveT = undefined;
+    this.rate = {};
+    this.change.value = this.changeTo = 0;
+    this.isolate(null);
+    this.ex = this.exTo = 0; // in one piece
+    this.afterAssembly = null;
+    this.applyExplode();
+    if (this.cone) this.cone.visible = false;
+    const old = { root: this.root, lift: this.lift, cone: this.cone, wreck: this.wreck, exMeshes: this.exMeshes };
+    const loading = this.fetchModel(url);
+    await this.slide(old.lift.value, -dir * DROP, 650, (k) => k * k * k);
+    const gltf = await loading;
+    old.root.traverse((o) => { if (o.isMesh) { o.geometry.dispose(); o.material.dispose(); o.customDepthMaterial?.dispose(); } });
+    for (const m of old.exMeshes) m.geometry.dispose();
+    this.scene.remove(old.root);
+    if (old.cone) this.scene.remove(old.cone);
+    if (old.wreck?.group) this.scene.remove(old.wreck.group);
+    this.subs = new Map();
+    this.wreck = this.cone = null;
+    this.focusId = null;
+    this.install(gltf, explode);
+    this.setMech(1, 1, 1);
+    this.lift.value.y = dir * DROP;
+    await this.slide(this.lift.value, 0, 900, (k) => 1 - (1 - k) ** 3);
+  }
+
+  // move a model up or down (its lift, a vector) to y over ms; resolves when it gets there
+  slide(lift, to, ms, curve) {
+    return new Promise((done) => {
+      const from = lift.y, t0 = performance.now();
+      this.slides = [...(this.slides || []), { step: (now) => {
+        const k = calm ? 1 : Math.min(1, (now - t0) / ms);
+        lift.y = from + (to - from) * curve(k);
+        if (k === 1) done();
+        return k < 1;
+      } }];
+      this.dirty = true;
+    });
+  }
+
+  install(gltf, explode) {
+    this.root = gltf.scene;
+    // how far the whole model is raised or lowered, added after everything else in the vertex shader
+    // (the mechanisms turn about fixed points, so the model itself stays put)
+    this.lift = { value: new THREE.Vector3() };
     gltf.scene.updateMatrixWorld(true);
     const meshes = [];
     gltf.scene.traverse((o) => { if (o.isMesh) meshes.push(o); });
@@ -180,7 +259,7 @@ export class Stage {
       m.geometry.computeBoundingBox();
       const [id, fin] = m.name.split('__');
       const sub = this.subs.get(id) || { id, a: 1, to: 1, parts: [], box: new THREE.Box3(), exBox: new THREE.Box3(), shift: new THREE.Vector3(...(explode[id]?.shift || [0, 0, 0])), spread: new THREE.Vector3(...(explode[id]?.spread || [0, 0, 0])) };
-      sub.u ||= { uShift: { value: new THREE.Vector3() }, uSpread: { value: new THREE.Vector3() }, uOrigin: { value: new THREE.Vector3() }, uMove: { value: new THREE.Vector3() }, uSpin: { value: 0 }, uDrive: { value: new THREE.Vector4() }, uEgg: { value: new THREE.Matrix4() }, uEggA: { value: 1 }, uGear: { value: new THREE.Vector3(...(this.kit.PIVOT[id]?.gear || [0, 0, 0])) }, uPivot: { value: new THREE.Vector4(...(this.kit.PIVOT[id]?.main || [0, 0]), ...(this.kit.PIVOT[id]?.spin || [0, 0])) } };
+      sub.u ||= { uShift: { value: new THREE.Vector3() }, uSpread: { value: new THREE.Vector3() }, uOrigin: { value: new THREE.Vector3() }, uMove: { value: new THREE.Vector3() }, uSpin: { value: 0 }, uDrive: { value: new THREE.Vector4() }, uEgg: { value: new THREE.Matrix4() }, uEggA: { value: 1 }, uGear: { value: new THREE.Vector3(...(this.kit.PIVOT[id]?.gear || [0, 0, 0])) }, uPivot: { value: new THREE.Vector4(...(this.kit.PIVOT[id]?.main || [0, 0]), ...(this.kit.PIVOT[id]?.spin || [0, 0])) }, uLift: this.lift };
       const u = { ...sub.u, uUnit: { value: m.matrixWorld.getMaxScaleOnAxis() } };
       const displace = (mt) => { mt.onBeforeCompile = (s) => explodeVertex(s, u); return mt; };
       this.subs.set(id, sub);
@@ -195,11 +274,24 @@ export class Stage {
           s.fragmentShader = s.fragmentShader.replace('void main() {', 'varying vec3 vHome; uniform vec3 uHub; void main() {');
         }
         s.uniforms.uGhost = ghost;
+        s.uniforms.uChange = this.change;
+        s.uniforms.uPick = this.changePick;
+        s.uniforms.uTime = this.time;
         s.fragmentShader = s.fragmentShader
-          .replace('void main() {', 'uniform float uGhost, uEggA;\nvarying float vEgg;\nvoid main() {')
+          .replace('void main() {', 'uniform float uGhost, uEggA, uChange, uPick, uTime;\nvarying float vEgg, vChanged;\nvoid main() {')
           .replace('#include <color_fragment>', `#include <color_fragment>
             float lum = dot(diffuseColor.rgb, vec3(0.2126, 0.7152, 0.0722));
-            diffuseColor.rgb = clamp(mix(vec3(lum), diffuseColor.rgb, ${fin === 'brass' ? '1.0' : SATURATION.toFixed(2)}), 0.0, 1.0);`)
+            diffuseColor.rgb = clamp(mix(vec3(lum), diffuseColor.rgb, ${fin === 'brass' ? '1.0' : SATURATION.toFixed(2)}), 0.0, 1.0);
+            // what changed since another event (vChanged: which change, 1..n): those parts take a tint of the
+            // accent, the picked change most; everything else keeps its shading but sinks back, darker and grayer
+            float changed = step(0.5, vChanged);
+            float hi = changed * uChange * (uPick < 0.5 || abs(vChanged - uPick) < 0.5 ? 1.0 : 0.3);
+            diffuseColor.rgb = mix(diffuseColor.rgb, mix(${CHANGED}, diffuseColor.rgb * 0.5 + ${CHANGED} * 0.6, 0.45), 0.7 * hi);
+            diffuseColor.rgb = mix(diffuseColor.rgb, vec3(lum) * 0.42, 0.82 * uChange * (1.0 - hi));`)
+          .replace('#include <emissivemap_fragment>', `#include <emissivemap_fragment>
+            // a glow that breathes, brightest at the rims
+            float rim = 1.0 - abs(dot(normalize(normal), normalize(vViewPosition)));
+            totalEmissiveRadiance += ${CHANGED} * hi * (0.1 + 0.08 * sin(uTime * 2.6) + 0.85 * rim * rim * rim);`)
           .replace('#include <lights_fragment_end>', `#include <lights_fragment_end>
             ${fin === 'brass' ? BRASS_SHEEN : ''}`)
           // ghosts fade on faces toward the viewer and keep a faint silhouette
@@ -314,6 +406,7 @@ export class Stage {
     if (on) {
       this.stopRun();
       if (this.eggT !== undefined) this.eggT = EGG_SECONDS;
+      this.wreck?.stop();
       this.play('rest', true);
     }
     this.dirty = true;
@@ -323,6 +416,7 @@ export class Stage {
     const s = id ? this.subs.get(id) : this;
     if (this.exTo) return s.exBox;
     if (this.eggT !== undefined && (!id || id === 'shooter')) return s.box.clone().union(EGG_AREA);
+    if (this.wreck?.running && (!id || id === 'intake')) return s.box.clone().union(this.wreck.area);
     // leave headroom for the folded intake
     // and for the camera's view cone
     if (id === 'vision' && this.kit.CONES[0] === CONE) return s.box.clone().expandByPoint(new THREE.Vector3(-0.24, 0.55, -0.7));
@@ -402,7 +496,7 @@ export class Stage {
 
   // --- running a subsystem ------------------------------------------------------------------
   run(id) {
-    if (this.exTo) return;
+    if (this.exTo || this.wreck?.running) return;
     this.stopRun();
     this.fuel.clear();
     this.play('rest', true); // finish any folding first
@@ -421,6 +515,63 @@ export class Stage {
     this.play('rest', true);
     this.eggT = 0;
     this.onEgg?.(true);
+  }
+
+  // Entropy's easter egg: the intake blows apart and puts itself back together; see crash.js
+  crash() {
+    if (this.exTo || this.wreck?.running || this.crashPending || !this.subs.has('intake')) return;
+    this.stopRun();
+    this.play('rest', true);
+    this.crashPending = true; // once the intake is down
+    this.dirty = true;
+  }
+
+  stepCrash(dt) {
+    if (this.crashPending && !this.clip) {
+      this.crashPending = false;
+      (this.wreck ||= new Crash(this, this.subs.get('intake'))).start();
+      this.onEgg?.(true);
+    } else if (this.wreck?.running && !this.wreck.step(dt)) this.onEgg?.(false);
+    else if (!this.wreck?.running) return;
+    this.renderer.shadowMap.needsUpdate = true;
+    this.dirty = true;
+  }
+
+  // parts to pick out as changed since another event, by their centres as the model stores them
+  // (int16 per vertex, see tools/changes.mjs); showChanges() fades the highlight in and out
+  // groups: for each change, the centres (as the model stores them) of the parts it touched; each
+  // vertex learns which change it belongs to, 1..n (0 none)
+  markChanged(groups) {
+    const which = new Map();
+    groups.forEach((keys, k) => { for (const key of keys) if (!which.has(key.join())) which.set(key.join(), k + 1); });
+    const q = (v) => Math.round(v * 32767);
+    for (const m of this.meshes) {
+      const c = m.geometry.attributes._center, flag = new Float32Array(c.count);
+      for (let i = 0; i < c.count; i++) flag[i] = which.get(`${q(c.getX(i))},${q(c.getY(i))},${q(c.getZ(i))}`) || 0;
+      m.geometry.setAttribute('_changed', new THREE.BufferAttribute(flag, 1));
+    }
+    this.changePick.value = 0;
+  }
+
+  // pick one change to stand out (1..n), or 0 for all of them
+  pickChange(k) {
+    this.changePick.value = k;
+    this.dirty = true;
+  }
+
+  // the change (1..n) of the part under the pointer, if the highlight is showing
+  changeAt(x, y) {
+    if (!this.changeTo) return 0;
+    const ray = (this.ray ||= new THREE.Raycaster());
+    ray.firstHitOnly = true;
+    ray.setFromCamera(new THREE.Vector2((x / this.w) * 2 - 1, -(y / this.h) * 2 + 1), this.camera);
+    const hit = ray.intersectObjects(this.meshes.filter((m) => m.visible && m.geometry.boundsTree && m.geometry.attributes._changed), false)[0];
+    return hit ? hit.object.geometry.attributes._changed.getX(hit.face.a) : 0;
+  }
+
+  showChanges(on) {
+    this.changeTo = on ? 1 : 0;
+    this.dirty = true;
   }
 
   // soft contact shadow so the loose flywheel reads as sitting on the floor
@@ -600,7 +751,7 @@ export class Stage {
     const ray = (this.ray ||= new THREE.Raycaster());
     ray.firstHitOnly = true;
     ray.setFromCamera(new THREE.Vector2((x / this.w) * 2 - 1, -(y / this.h) * 2 + 1), this.camera);
-    const hits = ray.intersectObjects((this.exTo ? this.exMeshes : this.meshes).filter((m) => m.geometry.boundsTree && m.userData.sub !== 'frame'), false);
+    const hits = ray.intersectObjects((this.exTo ? this.exMeshes : this.meshes).filter((m) => m.visible && m.geometry.boundsTree && m.userData.sub !== 'frame'), false);
     // what is in focus wins over ghosts drawn in front of it
     return (hits.find((h) => h.object.userData.sub === this.focusId) || hits[0])?.object.userData.sub || null;
   }
@@ -626,9 +777,21 @@ export class Stage {
         s.a = calm || Math.abs(s.to - s.a) < 0.004 ? s.to : THREE.MathUtils.damp(s.a, s.to, 5, dt);
       }
       if (fading) { this.applyAlpha(); this.dirty = true; }
+      if (this.change.value > 0) { this.time.value = now / 1000; this.dirty = true; } // the glow breathes
+      if (this.change.value !== this.changeTo) {
+        const c = this.change;
+        c.value = calm || Math.abs(this.changeTo - c.value) < 0.004 ? this.changeTo : THREE.MathUtils.damp(c.value, this.changeTo, 4, dt);
+        this.dirty = true;
+      }
+      if (this.slides?.length) {
+        this.slides = this.slides.filter((s) => s.step(now));
+        this.renderer.shadowMap.needsUpdate = true;
+        this.dirty = true;
+      }
       if (this.clip) this.stepMech(dt);
       this.stepRun(dt);
       this.stepEgg(dt);
+      this.stepCrash(dt);
       if (this.ex !== this.exTo) {
         const d = calm ? 1 : (dt * 1000) / EXPLODE_MS;
         this.ex = this.exTo ? Math.min(1, this.ex + d) : Math.max(0, this.ex - d);
